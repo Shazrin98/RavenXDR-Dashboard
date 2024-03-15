@@ -322,15 +322,17 @@ import TaskList from "./Dashboard/TaskList";
 import UserTable from "./Dashboard/UserTable";
 import config from "@/config";
 import { MotCounts } from "@/data/mockData.js";
+import { getTrafficAllowed } from '@/services/api.service'; // Import the getTrafficAllowed function
 
 export default {
   components: {
     LineChart,
-    BarChart,
+    BarChart
   },
   data() {
     return {
-      allowedTraffic: MotCounts.allowedTraffic,
+      // allowedTraffic: MotCounts.allowedTraffic,
+      allowedTraffic: 0, ////initialize with 0 first
       droppedTraffic: MotCounts.droppedTraffic,
       droppedTrafficSeverityGovNet: MotCounts.droppedTrafficSeverityGovNet,
       droppedTrafficSeverityInternet: MotCounts.droppedTrafficSeverityInternet,
@@ -450,6 +452,18 @@ export default {
       },
     };
   },
+  ///////////////////////////////
+  async created() {
+    try {
+      console.log('src\pages\Dashboard.vue');////////
+      const response = await getTrafficAllowed();
+      console.log('Response from API:', response); // Log the response object////////
+      this.allowedTraffic = response && response.count ? response.count : 0;
+    } catch (error) {
+      console.error('Error fetching allowed traffic:', error);
+    }
+  },
+  ///////////////////////////////
   computed: {
     enableRTL() {
       return this.$route.query.enableRTL;

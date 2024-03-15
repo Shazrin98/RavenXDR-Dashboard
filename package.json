@@ -13,11 +13,15 @@
     "lint-fix": "vue-cli-service lint --fix"
   },
   "dependencies": {
+    "@elastic/elasticsearch": "^8.12.2",
     "@fortawesome/fontawesome-free": "^6.5.1",
+    "axios": "^1.6.7",
     "chart.js": "^2.9.3",
     "eslint-plugin-vue": "^9.8.0",
     "flag-icon-css": "^4.1.7",
     "register-service-worker": "^1.7.2",
+    "stream-http": "^3.2.0",
+    "url": "^0.11.3",
     "vue": "^2.7.14",
     "vue-chartjs": "3.5.1",
     "vue-i18n": "^8.18.2",
@@ -26,15 +30,20 @@
     "vue2-transitions": "^0.3.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.23.9",
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0",
     "@vue/cli-plugin-babel": "^5.0.8",
     "@vue/cli-plugin-eslint": "^5.0.8",
     "@vue/cli-plugin-pwa": "^5.0.8",
     "@vue/cli-service": "^5.0.8",
+    "https-browserify": "^1.0.0",
     "sass": "1.56.2",
     "sass-loader": "10.2.0",
     "vue-cli-plugin-i18n": "^2.3.2",
     "vue-loader": "^17.4.2",
-    "vue-template-compiler": "2.7.14"
+    "vue-template-compiler": "2.7.14",
+    "webpack-node-externals": "^3.0.0"
   },
   "browserslist": [
     "> 1%",
