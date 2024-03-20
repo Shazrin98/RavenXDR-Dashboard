@@ -1,26 +1,19 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-absolute"
-       :class="{'bg-white': showMenu, 'navbar-transparent': !showMenu}">
+    :class="{ 'bg-white': showMenu, 'navbar-transparent': !showMenu }">
     <div class="container-fluid">
       <div class="navbar-wrapper">
-        <div class="navbar-toggle d-inline" :class="{toggled: $sidebar.showSidebar}">
-          <button type="button"
-                  class="navbar-toggler"
-                  aria-label="Navbar toggle button"
-                  @click="toggleSidebar">
+        <div class="navbar-toggle d-inline" :class="{ toggled: $sidebar.showSidebar }">
+          <button type="button" class="navbar-toggler" aria-label="Navbar toggle button" @click="toggleSidebar">
             <span class="navbar-toggler-bar bar1"></span>
             <span class="navbar-toggler-bar bar2"></span>
             <span class="navbar-toggler-bar bar3"></span>
           </button>
         </div>
-        <a class="navbar-brand" href="#pablo">{{routeName}}</a>
+        <a class="navbar-brand" href="#pablo">{{ routeName }}</a>
       </div>
-      <button class="navbar-toggler" type="button"
-              @click="toggleMenu"
-              data-toggle="collapse"
-              data-target="#navigation"
-              aria-controls="navigation-index"
-              aria-label="Toggle navigation">
+      <button class="navbar-toggler" type="button" @click="toggleMenu" data-toggle="collapse" data-target="#navigation"
+        aria-controls="navigation-index" aria-label="Toggle navigation">
         <span class="navbar-toggler-bar navbar-kebab"></span>
         <span class="navbar-toggler-bar navbar-kebab"></span>
         <span class="navbar-toggler-bar navbar-kebab"></span>
@@ -37,14 +30,12 @@
               </button>
               <!-- You can choose types of search input -->
             </div>
-            <modal :show.sync="searchModalVisible"
-                   class="modal-search"
-                   id="searchModal"
-                   :centered="false"
-                   :show-close="true">
-              <input slot="header" v-model="searchQuery" type="text" class="form-control" id="inlineFormInputGroup" placeholder="SEARCH">
+            <modal :show.sync="searchModalVisible" class="modal-search" id="searchModal" :centered="false"
+              :show-close="true">
+              <input slot="header" v-model="searchQuery" type="text" class="form-control" id="inlineFormInputGroup"
+                placeholder="SEARCH">
             </modal>
-            <base-dropdown tag="li"
+            <!-- <base-dropdown tag="li"
                            :menu-on-right="!$rtl.isRTL"
                            title-tag="a" class="nav-item">
               <a slot="title" href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="true">
@@ -69,12 +60,36 @@
               <li class="nav-link">
                 <a href="#" class="nav-item dropdown-item">Another one</a>
               </li>
-            </base-dropdown>
-            <base-dropdown tag="li"
-                           :menu-on-right="!$rtl.isRTL"
-                           title-tag="a"
-                           class="nav-item"
-                           menu-classes="dropdown-navbar">
+            </base-dropdown> -->
+
+            <!-- /////////////////////////////////// -->
+            <!-- ////////////////////////////////// -->
+            <div>
+              <!-- Dropdown for predefined time ranges -->
+              <select v-model="selectedTimeRange" @change="handleTimeRangeChange">
+                <option value="" disabled selected>Choose a time range</option>
+                <option value="5m">Last 5 minutes</option>
+                <option value="10m">Last 10 minutes</option>
+                <option value="30m">Last 30 minutes</option>
+                <option value="1h">Last 1 hour</option>
+                <option value="1d">Last 1 day</option>
+                <option value="7d">Last 7 days</option>
+              </select>
+            </div>
+
+            <div>
+              <!-- Start date picker for custom date range -->
+              <datepicker v-model="customStartDate" :placeholder="customStartDatePlaceholder"
+                @input="handleCustomStartDateChange"></datepicker>
+              <!-- End date picker for custom date range -->
+              <datepicker v-model="customEndDate" :placeholder="customEndDatePlaceholder"
+                @input="handleCustomEndDateChange"></datepicker>
+            </div>
+
+            <!-- /////////////////////////////////// -->
+            <!-- /////////////////////////////////// -->
+            <base-dropdown tag="li" :menu-on-right="!$rtl.isRTL" title-tag="a" class="nav-item"
+              menu-classes="dropdown-navbar">
               <a slot="title" href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="true">
                 <div class="photo">
                   <img src="img/anime3.png">
@@ -102,52 +117,149 @@
   </nav>
 </template>
 <script>
-  import { CollapseTransition } from 'vue2-transitions';
-  import Modal from '@/components/Modal';
+import { CollapseTransition } from 'vue2-transitions';
+import Modal from '@/components/Modal';
+////////////////////////////////
+import { format } from 'date-fns';
+import Datepicker from 'vuejs-datepicker'; // Import the Datepicker component
+import { getTrafficAllowed } from '@/services/api.service';
+///////////////////////////////
 
-  export default {
-    components: {
-      CollapseTransition,
-      Modal
+export default {
+  components: {
+    ////////////////////
+    Datepicker, // Register the DatePicker component
+    ////////////////////
+    CollapseTransition,
+    Modal
+  },
+  computed: {
+    routeName() {
+      const { name } = this.$route;
+      return this.capitalizeFirstLetter(name);
     },
-    computed: {
-      routeName() {
-        const { name } = this.$route;
-        return this.capitalizeFirstLetter(name);
-      },
-      isRTL() {
-        return this.$rtl.isRTL;
-      }
-    },
-    data() {
-      return {
-        activeNotifications: false,
-        showMenu: false,
-        searchModalVisible: false,
-        searchQuery: ''
-      };
-    },
-    methods: {
-      capitalizeFirstLetter(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1);
-      },
-      toggleNotificationDropDown() {
-        this.activeNotifications = !this.activeNotifications;
-      },
-      closeDropDown() {
-        this.activeNotifications = false;
-      },
-      toggleSidebar() {
-        this.$sidebar.displaySidebar(!this.$sidebar.showSidebar);
-      },
-      hideSidebar() {
-        this.$sidebar.displaySidebar(false);
-      },
-      toggleMenu() {
-        this.showMenu = !this.showMenu;
-      }
+    isRTL() {
+      return this.$rtl.isRTL;
     }
-  };
+  },
+  data() {
+    return {
+      /////////////////////////////////
+      selectedTimeRange: '',
+      customStartDate: null,
+      customEndDate: null,
+      customStartDatePlaceholder: 'Choose a date',
+      customEndDatePlaceholder: 'Choose a date',
+      //////////////////////////////////
+      activeNotifications: false,
+      showMenu: false,
+      searchModalVisible: false,
+      searchQuery: ''
+    };
+  },
+  ////////////////////////
+  mounted() {
+    // Fetch data based on default time range when component is mounted
+    this.fetchData();
+  },
+  ////////////////////////
+  methods: {
+    ////////////////////////////////
+    handleTimeRangeChange() {
+      // Get the selected time range from the dropdown
+      const selectedTimeRange = this.selectedTimeRange;
+      // Set selectedTimeRange to the chosen value
+      this.selectedTimeRange = selectedTimeRange;
+
+      this.customStartDate = null;
+      this.customEndDate = null;
+      this.fetchData();
+      console.log('handleTimeRangeChange this.fetchData():', this.fetchData());////////////
+    },
+    handleCustomStartDateChange() {
+      // Get the selected start date from the datepicker
+      const selectedStartDate = this.customStartDate;
+      // Format the selected start date
+      const formattedStartDate = format(selectedStartDate, 'yyyy-MM-dd');
+      // Set customStartDate to the chosen value
+      this.customStartDate = formattedStartDate;
+
+      this.selectedTimeRange = '';
+      this.fetchData();
+      console.log('handleCustomStartDateChange this.fetchData():', this.fetchData());////////////
+
+    },
+    handleCustomEndDateChange() {
+      // Get the selected end date from the datepicker
+      const selectedEndDate = this.customEndDate;
+      // Format the selected end date
+      const formattedEndDate = format(selectedEndDate, 'yyyy-MM-dd');
+      // Set customEndDate to the chosen value
+      this.customEndDate = formattedEndDate;
+
+      this.selectedTimeRange = '';
+      this.fetchData();
+      console.log('handleCustomEndDateChange this.fetchData():', this.fetchData());////////////
+
+    },
+    ////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////
+    async fetchData() {
+      try {
+        let timeRange;
+        if (this.selectedTimeRange !== '') {
+          // Use predefined time range
+          const timeRangeMap = {
+            '5m': { gte: 'now-5m/m', lte: 'now/m' },
+            '10m': { gte: 'now-10m/m', lte: 'now/m' },
+            '30m': { gte: 'now-30m/m', lte: 'now/m' },
+            '1h': { gte: 'now-1h/h', lte: 'now/h' },
+            '1d': { gte: 'now-1d/d', lte: 'now/d' },
+            '7d': { gte: 'now-7d/d', lte: 'now/d' },
+          };
+          timeRange = timeRangeMap[this.selectedTimeRange];
+        } else {
+          // Use custom date range if selected
+          timeRange = {
+            gte: this.customStartDate,
+            lte: this.customEndDate,
+            format: 'yyyy-MM-dd',
+          };
+        }
+
+        console.log('TopNavbar fetchData timeRange:', timeRange);////////////
+
+        // Call getTrafficAllowed with the determined time range
+        const response = await getTrafficAllowed(timeRange);
+
+        console.log('TopNavbar fetchData response:', response);/////////////
+
+        // Emit event to parent component (Dashboard.vue) with selected time range
+        this.$emit('TopNavbar timeRangeChanged', timeRange);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    },
+    //////////////////////////////////
+    capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    },
+    toggleNotificationDropDown() {
+      this.activeNotifications = !this.activeNotifications;
+    },
+    closeDropDown() {
+      this.activeNotifications = false;
+    },
+    toggleSidebar() {
+      this.$sidebar.displaySidebar(!this.$sidebar.showSidebar);
+    },
+    hideSidebar() {
+      this.$sidebar.displaySidebar(false);
+    },
+    toggleMenu() {
+      this.showMenu = !this.showMenu;
+    }
+  }
+};
 </script>
-<style>
-</style>
+<style></style>
