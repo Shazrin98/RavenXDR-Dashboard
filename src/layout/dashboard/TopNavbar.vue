@@ -62,8 +62,8 @@
               </li>
             </base-dropdown> -->
 
-            <!-- /////////////////////////////////// -->
-            <!-- ////////////////////////////////// -->
+            <!-- /////////////////////////////////////////////// -->
+            <!-- /////////////////////////////////////////////// -->
             <div>
               <!-- Dropdown for predefined time ranges -->
               <select v-model="selectedTimeRange" @change="handleTimeRangeChange">
@@ -86,8 +86,8 @@
                 @input="handleCustomEndDateChange"></datepicker>
             </div>
 
-            <!-- /////////////////////////////////// -->
-            <!-- /////////////////////////////////// -->
+            <!-- //////////////////////////////////////////////// -->
+            <!-- //////////////////////////////////////////////// -->
             <base-dropdown tag="li" :menu-on-right="!$rtl.isRTL" title-tag="a" class="nav-item"
               menu-classes="dropdown-navbar">
               <a slot="title" href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="true">
@@ -235,12 +235,13 @@ export default {
         console.log('TopNavbar fetchData response:', response);/////////////
 
         // Emit event to parent component (Dashboard.vue) with selected time range
-        this.$emit('TopNavbar timeRangeChanged', timeRange);
+        this.$root.$emit('timeRangeChanged', timeRange);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     },
-    //////////////////////////////////
+    ////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////
     capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);
     },

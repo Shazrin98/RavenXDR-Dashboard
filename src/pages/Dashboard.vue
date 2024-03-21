@@ -3,7 +3,7 @@
     <!-- ////////////////////////// -->
 
     <!-- ////////////////////////// -->
-    <!-- <div class="row">
+    <div class="row">
       <div class="col-12">
         <card type="chart">
           <template slot="header">
@@ -40,7 +40,7 @@
           </div>
         </card>
       </div>
-    </div> -->
+    </div>
     <!-- //////////////////////////// -->
     <!-- /////////////////////////////// -->
     <div class="row">
@@ -302,111 +302,111 @@ export default {
       top10AppsUsedInternally: MotCounts.top10AppsUsedInternally,
       top10RequestedAppsGovNet: MotCounts.top10RequestedAppsGovNet,
       top10RequestedAppsInternet: MotCounts.top10RequestedAppsInternet,
-      /////////////////////
-      // bigLineChart: {
-      //   allData: [
-      //     [100, 70, 90, 70, 85, 60, 75, 60, 90, 80, 110, 100],
-      //     [80, 120, 105, 110, 95, 105, 90, 100, 80, 95, 70, 120],
-      //     [60, 80, 65, 130, 80, 105, 90, 130, 70, 115, 60, 130],
-      //   ],
-      //   activeIndex: 0,
-      //   chartData: {
-      //     datasets: [{}],
-      //     labels: [
-      //       "JAN",
-      //       "FEB",
-      //       "MAR",
-      //       "APR",
-      //       "MAY",
-      //       "JUN",
-      //       "JUL",
-      //       "AUG",
-      //       "SEP",
-      //       "OCT",
-      //       "NOV",
-      //       "DEC",
-      //     ],
-      //   },
-      //   extraOptions: chartConfigs.purpleChartOptions,
-      //   gradientColors: config.colors.primaryGradient,
-      //   gradientStops: [1, 0.4, 0],
-      //   categories: [],
-      // },
-      // purpleLineChart: {
-      //   extraOptions: chartConfigs.purpleChartOptions,
-      //   chartData: {
-      //     labels: ["JUL", "AUG", "SEP", "OCT", "NOV", "DEC"],
-      //     datasets: [
-      //       {
-      //         label: "Data",
-      //         fill: true,
-      //         borderColor: config.colors.primary,
-      //         borderWidth: 2,
-      //         borderDash: [],
-      //         borderDashOffset: 0.0,
-      //         pointBackgroundColor: config.colors.primary,
-      //         pointBorderColor: "rgba(255,255,255,0)",
-      //         pointHoverBackgroundColor: config.colors.primary,
-      //         pointBorderWidth: 20,
-      //         pointHoverRadius: 4,
-      //         pointHoverBorderWidth: 15,
-      //         pointRadius: 4,
-      //         data: [80, 100, 70, 80, 120, 80],
-      //       },
-      //     ],
-      //   },
-      //   gradientColors: config.colors.primaryGradient,
-      //   gradientStops: [1, 0.2, 0],
-      // },
-      // greenLineChart: {
-      //   extraOptions: chartConfigs.greenChartOptions,
-      //   chartData: {
-      //     labels: ["JUL", "AUG", "SEP", "OCT", "NOV"],
-      //     datasets: [
-      //       {
-      //         label: "My First dataset",
-      //         fill: true,
-      //         borderColor: config.colors.danger,
-      //         borderWidth: 2,
-      //         borderDash: [],
-      //         borderDashOffset: 0.0,
-      //         pointBackgroundColor: config.colors.danger,
-      //         pointBorderColor: "rgba(255,255,255,0)",
-      //         pointHoverBackgroundColor: config.colors.danger,
-      //         pointBorderWidth: 20,
-      //         pointHoverRadius: 4,
-      //         pointHoverBorderWidth: 15,
-      //         pointRadius: 4,
-      //         data: [90, 27, 60, 12, 80],
-      //       },
-      //     ],
-      //   },
-      //   gradientColors: [
-      //     "rgba(66,134,121,0.15)",
-      //     "rgba(66,134,121,0.0)",
-      //     "rgba(66,134,121,0)",
-      //   ],
-      //   gradientStops: [1, 0.4, 0],
-      // },
-      // blueBarChart: {
-      //   extraOptions: chartConfigs.barChartOptions,
-      //   chartData: {
-      //     labels: ["USA", "GER", "AUS", "UK", "RO", "BR"],
-      //     datasets: [
-      //       {
-      //         label: "Countries",
-      //         fill: true,
-      //         borderColor: config.colors.info,
-      //         borderWidth: 2,
-      //         borderDash: [],
-      //         borderDashOffset: 0.0,
-      //         data: [53, 20, 10, 80, 100, 45],
-      //       },
-          // ],
-      //   },
-      //   gradientColors: config.colors.primaryGradient,
-      //   gradientStops: [1, 0.4, 0],
-      // },
+      ///////////////////////////////////////////////////////////////////
+      bigLineChart: {
+        allData: [
+          [100, 70, 90, 70, 85, 60, 75, 60, 90, 80, 110, 100],
+          [80, 120, 105, 110, 95, 105, 90, 100, 80, 95, 70, 120],
+          [60, 80, 65, 130, 80, 105, 90, 130, 70, 115, 60, 130],
+        ],
+        activeIndex: 0,
+        chartData: {
+          datasets: [{}],
+          labels: [
+            "JAN",
+            "FEB",
+            "MAR",
+            "APR",
+            "MAY",
+            "JUN",
+            "JUL",
+            "AUG",
+            "SEP",
+            "OCT",
+            "NOV",
+            "DEC",
+          ],
+        },
+        extraOptions: chartConfigs.purpleChartOptions,
+        gradientColors: config.colors.primaryGradient,
+        gradientStops: [1, 0.4, 0],
+        categories: [],
+      },
+      purpleLineChart: {
+        extraOptions: chartConfigs.purpleChartOptions,
+        chartData: {
+          labels: ["JUL", "AUG", "SEP", "OCT", "NOV", "DEC"],
+          datasets: [
+            {
+              label: "Data",
+              fill: true,
+              borderColor: config.colors.primary,
+              borderWidth: 2,
+              borderDash: [],
+              borderDashOffset: 0.0,
+              pointBackgroundColor: config.colors.primary,
+              pointBorderColor: "rgba(255,255,255,0)",
+              pointHoverBackgroundColor: config.colors.primary,
+              pointBorderWidth: 20,
+              pointHoverRadius: 4,
+              pointHoverBorderWidth: 15,
+              pointRadius: 4,
+              data: [80, 100, 70, 80, 120, 80],
+            },
+          ],
+        },
+        gradientColors: config.colors.primaryGradient,
+        gradientStops: [1, 0.2, 0],
+      },
+      greenLineChart: {
+        extraOptions: chartConfigs.greenChartOptions,
+        chartData: {
+          labels: ["JUL", "AUG", "SEP", "OCT", "NOV"],
+          datasets: [
+            {
+              label: "My First dataset",
+              fill: true,
+              borderColor: config.colors.danger,
+              borderWidth: 2,
+              borderDash: [],
+              borderDashOffset: 0.0,
+              pointBackgroundColor: config.colors.danger,
+              pointBorderColor: "rgba(255,255,255,0)",
+              pointHoverBackgroundColor: config.colors.danger,
+              pointBorderWidth: 20,
+              pointHoverRadius: 4,
+              pointHoverBorderWidth: 15,
+              pointRadius: 4,
+              data: [90, 27, 60, 12, 80],
+            },
+          ],
+        },
+        gradientColors: [
+          "rgba(66,134,121,0.15)",
+          "rgba(66,134,121,0.0)",
+          "rgba(66,134,121,0)",
+        ],
+        gradientStops: [1, 0.4, 0],
+      },
+      blueBarChart: {
+        extraOptions: chartConfigs.barChartOptions,
+        chartData: {
+          labels: ["USA", "GER", "AUS", "UK", "RO", "BR"],
+          datasets: [
+            {
+              label: "Countries",
+              fill: true,
+              borderColor: config.colors.info,
+              borderWidth: 2,
+              borderDash: [],
+              borderDashOffset: 0.0,
+              data: [53, 20, 10, 80, 100, 45],
+            },
+          ],
+        },
+        gradientColors: config.colors.primaryGradient,
+        gradientStops: [1, 0.4, 0],
+      },
     };
   },
   computed: {
@@ -420,8 +420,8 @@ export default {
       return this.$t("dashboard.chartCategories");
     },
   },
-  ///////////////////////////////
-  ////////////////////////////////
+  /////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
   async created() {
     await this.fetchData(); // Fetch data when component is initially created
   },
@@ -433,45 +433,33 @@ export default {
     },
   },
   //////////////////////////////////////////
-  // created() {
-  //   // Listen for timeRangeChanged event emitted by TopNavbar.vue
-  //   this.$root.$on('timeRangeChanged', this.fetchData);
-  // },
+  async created() {
+    // Listen for timeRangeChanged event emitted by TopNavbar.vue
+    this.$root.$on('timeRangeChanged', this.fetchData);
+  },
 
-  // destroyed() {
-  //   // Ensure to remove the event listener when the component is destroyed
-  //   this.$root.$off('timeRangeChanged', this.fetchData);
-  // },
+  destroyed() {
+    // Ensure to remove the event listener when the component is destroyed
+    this.$root.$off('timeRangeChanged', this.fetchData);
+  },
   ///////////////////////////////
   methods: {
     //////////////////////////
-    // async fetchData(timeRange) {
-    //   try {
-    //     if (!timeRange) {
-    //       timeRange = this.$route.query.timeRange; // Fetch time range from route query parameters
-    //     }
-
-    //     console.log('Dashboard fetchData timeRange:', timeRange);
-
-    //     const response = await getTrafficAllowed(timeRange); // Fetch data with the provided time range
-
-    //     console.log('Dashboard fetchData response:', response);
-
-    //     this.allowedTraffic = response && response.count ? response.count : 0; // Update allowedTraffic
-    //   } catch (error) {
-    //     console.error('Error fetching allowed traffic:', error);
-    //   }
-    // },
-    //////////////////////////////////////////////
-    async fetchData() {
+    async fetchData(timeRange) {
       try {
-        // Get the time range from the route query parameters
-        const timeRange = this.$route.query.timeRange;
+        // If timeRange is not provided, use the default value from the route query parameters
+        if (!timeRange) {
+          timeRange = {
+            gte: this.$route.query.gte,
+            lte: this.$route.query.lte,
+            format: 'yyyy-MM-dd',
+          };
+        }
 
         console.log('Dashboard fetchData timeRange:', timeRange);//////////////////
 
         // Fetch data with the provided time range
-        const response = await getTrafficAllowed({ ...timeRange });
+        const response = await getTrafficAllowed(timeRange);
 
         console.log('Dashboard fetchData response:', response);//////////////////
 
@@ -481,7 +469,7 @@ export default {
         console.error('Error fetching allowed traffic:', error);
       }
     },
-    /////////////////////////////////////////
+    ///////////////////////////////////////////////////////////
     formatNumber(number) {
       if (Number.isInteger(number)) {
         return number.toLocaleString(); // Format integer numbers with commas using toLocaleString
@@ -489,46 +477,46 @@ export default {
         return number.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }); // Format floating-point numbers with decimal points and commas
       }
     },
-    ////////////////////////////
-    ///////////////////////////
-    // initBigChart(index) {
-    //   let chartData = {
-    //     datasets: [
-    //       {
-    //         fill: true,
-    //         borderColor: config.colors.primary,
-    //         borderWidth: 2,
-    //         borderDash: [],
-    //         borderDashOffset: 0.0,
-    //         pointBackgroundColor: config.colors.primary,
-    //         pointBorderColor: "rgba(255,255,255,0)",
-    //         pointHoverBackgroundColor: config.colors.primary,
-    //         pointBorderWidth: 20,
-    //         pointHoverRadius: 4,
-    //         pointHoverBorderWidth: 15,
-    //         pointRadius: 4,
-    //         data: this.bigLineChart.allData[index],
-    //       },
-    //     ],
-    //     labels: [
-    //       "JAN",
-    //       "FEB",
-    //       "MAR",
-    //       "APR",
-    //       "MAY",
-    //       "JUN",
-    //       "JUL",
-    //       "AUG",
-    //       "SEP",
-    //       "OCT",
-    //       "NOV",
-    //       "DEC",
-    //     ],
-    //   };
-    //   this.$refs.bigChart.updateGradients(chartData);
-    //   this.bigLineChart.chartData = chartData;
-    //   this.bigLineChart.activeIndex = index;
-    // },
+    //////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////
+    initBigChart(index) {
+      let chartData = {
+        datasets: [
+          {
+            fill: true,
+            borderColor: config.colors.primary,
+            borderWidth: 2,
+            borderDash: [],
+            borderDashOffset: 0.0,
+            pointBackgroundColor: config.colors.primary,
+            pointBorderColor: "rgba(255,255,255,0)",
+            pointHoverBackgroundColor: config.colors.primary,
+            pointBorderWidth: 20,
+            pointHoverRadius: 4,
+            pointHoverBorderWidth: 15,
+            pointRadius: 4,
+            data: this.bigLineChart.allData[index],
+          },
+        ],
+        labels: [
+          "JAN",
+          "FEB",
+          "MAR",
+          "APR",
+          "MAY",
+          "JUN",
+          "JUL",
+          "AUG",
+          "SEP",
+          "OCT",
+          "NOV",
+          "DEC",
+        ],
+      };
+      this.$refs.bigChart.updateGradients(chartData);
+      this.bigLineChart.chartData = chartData;
+      this.bigLineChart.activeIndex = index;
+    },
   },
   mounted() {
     this.i18n = this.$i18n;
