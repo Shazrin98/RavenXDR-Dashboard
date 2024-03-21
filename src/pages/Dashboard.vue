@@ -87,8 +87,8 @@
               {{ $t("dashboard.droppedTrafficSeverityGovNet") }}
             </h5>
             <ul class="list-group list-group-flush">
-              <li v-for="severityData in droppedTrafficSeverityGovNet" :key="severityData.severity">
-                {{ severityData.severity }}: {{ severityData.count }}
+              <li v-for="severityData in droppedTrafficSeverityGovNet" :key="severityData.key">
+                {{ severityData.key }}: {{ formatNumber(severityData.docCount) }}
               </li>
             </ul>
           </template>
@@ -280,7 +280,8 @@ import TaskList from "./Dashboard/TaskList";
 import UserTable from "./Dashboard/UserTable";
 import config from "@/config";
 import { MotCounts } from "@/data/mockData.js";
-import { getTrafficAllowed } from '@/services/api.service'; // Import the getTrafficAllowed function
+import { getAllowedTraffic } from '@/services/api.service';
+import { getDroppedTrafficSeverityGovNet } from '@/services/api.service';
 
 export default {
   components: {
@@ -289,19 +290,19 @@ export default {
   },
   data() {
     return {
-      allowedTraffic: 0, ////initialize with 0 first
-      droppedTraffic: 0, ////initialize with 0 first
-      droppedTrafficSeverityGovNet: MotCounts.droppedTrafficSeverityGovNet,
-      droppedTrafficSeverityInternet: MotCounts.droppedTrafficSeverityInternet,
-      top5CountryTrafficAllowed: MotCounts.top5CountryTrafficAllowed,
-      top5CountryTrafficBlocked: MotCounts.top5CountryTrafficBlocked,
-      vpnUsersConnected: MotCounts.vpnUsersConnected,
-      successfulReceivedEmail: 0, ////initialize with 0 first
-      quarantinedReceivedEmail: 0, ////initialize with 0 first
-      failedReceivedEmail: 0, ////initialize with 0 first
-      top10AppsUsedInternally: MotCounts.top10AppsUsedInternally,
-      top10RequestedAppsGovNet: MotCounts.top10RequestedAppsGovNet,
-      top10RequestedAppsInternet: MotCounts.top10RequestedAppsInternet,
+      allowedTraffic: 0, /////////////////////////////////
+      droppedTraffic: 0,
+      droppedTrafficSeverityGovNet: 0,////////////////////
+      droppedTrafficSeverityInternet: 0,
+      top5CountryTrafficAllowed: 0,
+      top5CountryTrafficBlocked: 0,
+      vpnUsersConnected: 0,
+      successfulReceivedEmail: 0,
+      quarantinedReceivedEmail: 0,
+      failedReceivedEmail: 0,
+      top10AppsUsedInternally: 0,
+      top10RequestedAppsGovNet: 0,
+      top10RequestedAppsInternet: 0,
       ///////////////////////////////////////////////////////////////////
       bigLineChart: {
         allData: [
@@ -421,30 +422,17 @@ export default {
     },
   },
   /////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////
   async created() {
-    await this.fetchData(); // Fetch data when component is initially created
-  },
-  watch: {
-    // Watch for changes in the time range and fetch data accordingly
-    $route: {
-      handler: 'fetchData',
-      deep: true,
-    },
-  },
-  //////////////////////////////////////////
-  async created() {
-    // Listen for timeRangeChanged event emitted by TopNavbar.vue
     this.$root.$on('timeRangeChanged', this.fetchData);
   },
 
   destroyed() {
-    // Ensure to remove the event listener when the component is destroyed
     this.$root.$off('timeRangeChanged', this.fetchData);
   },
-  ///////////////////////////////
+  ///////////////////////////////////////////////////////
   methods: {
-    //////////////////////////
+    ///////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////
     async fetchData(timeRange) {
       try {
         // If timeRange is not provided, use the default value from the route query parameters
@@ -458,13 +446,26 @@ export default {
 
         console.log('Dashboard fetchData timeRange:', timeRange);//////////////////
 
-        // Fetch data with the provided time range
-        const response = await getTrafficAllowed(timeRange);
+        // Allowed Traffic
+        const allowedTrafficResponse = await getAllowedTraffic(timeRange);
+        console.log('Dashboard fetchData allowedTrafficResponse:', allowedTrafficResponse);//////////////////
+        this.allowedTraffic = allowedTrafficResponse && allowedTrafficResponse.count ? allowedTrafficResponse.count : 0;
 
-        console.log('Dashboard fetchData response:', response);//////////////////
+        // Dropped Traffic Severity By GovNet Source
+        const droppedTrafficSeverityGovNetResponse = await getDroppedTrafficSeverityGovNet(timeRange);
+        console.log('Dashboard fetchData droppedTrafficSeverityGovNetResponse:', droppedTrafficSeverityGovNetResponse);
+        // Extract relevant data from the dropped traffic severity response
+        const buckets = droppedTrafficSeverityGovNetResponse.aggregations.top_attacks.buckets;
+        // Map the extracted data to get an array of objects with keys and doc counts
+        const droppedTrafficSeverityData = buckets.map(bucket => ({
+          key: bucket.key,
+          docCount: bucket.doc_count,
+        }));
+        // Update droppedTrafficSeverityGovNet with the new data
+        this.droppedTrafficSeverityGovNet = droppedTrafficSeverityData;
 
-        // Update allowedTraffic with the new data
-        this.allowedTraffic = response && response.count ? response.count : 0;
+
+
       } catch (error) {
         console.error('Error fetching allowed traffic:', error);
       }

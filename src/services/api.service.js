@@ -11,23 +11,8 @@ const api = axios.create({
   },
 });
 
-// Function to make GET requests
-export const get = async (url, params) => {
-  try {
-    const response = await api.get(url, { params });
-    return response.data;
-  } catch (error) {
-    console.error("Error making GET request:", error);
-    console.error("Error status code:", error.response?.status);
-    console.error("Error response data:", error.response?.data);
-
-    throw new Error(`Failed to fetch data from the server: ${error.message}`);
-  }
-};
-
-// API function to fetch traffic allowed data
-// export const getTrafficAllowed = async () => {
-  export const getTrafficAllowed = async (timeRange = {}) => {
+/////////////////////////////////////////////////////////////////////////
+  export const getAllowedTraffic = async (timeRange = {}) => {
     const url = "/raven*/_count";
     const data = {
       query: {
@@ -35,15 +20,13 @@ export const get = async (url, params) => {
           must: [
             { wildcard: { "data.action": "pass" } },
             { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
-            // { range: { "@timestamp": { gte: "now-1d/d", lte: "now/d" } } },
-            { range: { "@timestamp": timeRange } }, // Use provided time range
+            { range: { "@timestamp": timeRange } },
           ],
         },
       },
     };
 
-    console.log("getTrafficAllowed timeRange:", timeRange);/////////////
-    console.log("getTrafficAllowed data:", data);/////////////
+    console.log("getAllowedTraffic data:", data);/////////////
     
     try {
         const response = await api.post(url, data);
@@ -52,6 +35,39 @@ export const get = async (url, params) => {
         console.error("Error fetching allowed traffic:", error);
         throw new Error(`Failed to fetch allowed traffic data: ${error.message}`);
       }
+};
+/////////////////////////////////////////////////////////////////////////
+export const getDroppedTrafficSeverityGovNet = async (timeRange = {}) => {
+  const url = "/raven*/_search?pretty";
+  const data = {
+    "size": 0,
+    "query": {
+      "bool": {
+        "must": [
+          { "prefix": { "data.srcip": "10." } },
+          { "range": { "@timestamp": timeRange } }
+        ]
+      }
+    },
+    "aggs": {
+      "top_attacks": {
+        "terms": {
+          "field": "data.apprisk",
+          "size": 5
+        }
+      }
+    }
+  };
+
+  console.log("getDroppedTrafficSeverityGovNet data:", data);////////
+
+  try {
+    const response = await api.post(url, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching dropped traffic severity:", error);
+    throw new Error(`Failed to fetch dropped traffic severity data: ${error.message}`);
+  }
 };
 
   
