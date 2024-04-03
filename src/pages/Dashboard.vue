@@ -218,7 +218,7 @@
     <!-- //////////////////////////////// -->
     <div class="row">
       <!-- ///////////////////////// -->
-      <div class="col-lg-4" :class="{ 'text-right': isRTL }">
+      <div class="col-lg-12" :class="{ 'text-right': isRTL }">
         <card>
           <template slot="header">
             <h5 class="card-category text-info">
@@ -234,7 +234,11 @@
         </card>
       </div>
       <!-- //////////////////////////// -->
-      <div class="col-lg-4" :class="{ 'text-right': isRTL }">
+    </div>
+    <!-- //////////////////////////////// -->
+    <div class="row">
+      <!-- ///////////////////////// -->
+      <div class="col-lg-6" :class="{ 'text-right': isRTL }">
         <card>
           <template slot="header">
             <h5 class="card-category text-info">
@@ -250,7 +254,7 @@
         </card>
       </div>
       <!-- ///////////////////////// -->
-      <div class="col-lg-4" :class="{ 'text-right': isRTL }">
+      <div class="col-lg-6" :class="{ 'text-right': isRTL }">
         <card>
           <template slot="header">
             <h5 class="card-category text-info">
@@ -445,7 +449,6 @@ export default {
     ////////////////////////////////////////////////////////
     async fetchData(timeRange) {
       try {
-        // If timeRange is not provided, use the default value from the route query parameters
         if (!timeRange) {
           timeRange = {
             gte: this.$route.query.gte,
@@ -491,7 +494,7 @@ export default {
         }));
         this.droppedTrafficSeverityGovNet = droppedTrafficSeverityGovNetData;
 
-        // Dropped Traffic Severity By Internet Source////////
+        // Dropped Traffic Severity By Internet Source
         const droppedTrafficSeverityInternetResponse = await getDroppedTrafficSeverityInternet(timeRange);
         console.log('Dashboard fetchData droppedTrafficSeverityInternetResponse:', droppedTrafficSeverityInternetResponse);
         const DTSIbuckets = droppedTrafficSeverityInternetResponse.aggregations.top_attacks.buckets;
@@ -501,7 +504,7 @@ export default {
         }));
         this.droppedTrafficSeverityInternet = droppedTrafficSeverityInternetData;
 
-        // Top 5 Country Traffic Allowed////////////
+        // Top 5 Country Traffic Allowed
         const top5CountryTrafficAllowedResponse = await getTop5CountryTrafficAllowed(timeRange);
         console.log('Dashboard fetchData top5CountryTrafficAllowedResponse:', top5CountryTrafficAllowedResponse);
         const T5CTAbuckets = top5CountryTrafficAllowedResponse.aggregations.top_countries.buckets;
@@ -511,7 +514,7 @@ export default {
         }));
         this.top5CountryTrafficAllowed = top5CountryTrafficAllowedData;
 
-        // Top 5 Country Traffic Blocked//////////
+        // Top 5 Country Traffic Blocked
         const top5CountryTrafficBlockedResponse = await getTop5CountryTrafficBlocked(timeRange);
         console.log('Dashboard fetchData top5CountryTrafficBlockedResponse:', top5CountryTrafficBlockedResponse);
         const T5CTBbuckets = top5CountryTrafficBlockedResponse.aggregations.top_countries.buckets;
@@ -521,7 +524,7 @@ export default {
         }));
         this.top5CountryTrafficBlocked = top5CountryTrafficBlockedData;
 
-        // VPN Users Connected/////////
+        // VPN Users Connected
         const vpnUsersConnectedResponse = await getVpnUsersConnected(timeRange);
         console.log('Dashboard fetchData vpnUsersConnectedResponse:', vpnUsersConnectedResponse);
         const VUCbuckets = vpnUsersConnectedResponse.aggregations.top_users.buckets;
@@ -531,7 +534,7 @@ export default {
         }));
         this.vpnUsersConnected = vpnUsersConnectedData;
 
-        // Top 10 Apps Used Internally//////////
+        // Top 10 Apps Used Internally
         const top10AppsUsedInternallyResponse = await getTop10AppsUsedInternally(timeRange);
         console.log('Dashboard fetchData top10AppsUsedInternallyResponse:', top10AppsUsedInternallyResponse);
         const T10AUIbuckets = top10AppsUsedInternallyResponse.aggregations.top_websites.buckets;
@@ -541,7 +544,7 @@ export default {
         }));
         this.top10AppsUsedInternally = top10AppsUsedInternallyData;
 
-        // Top 10 Requested Apps By GovNet//////////
+        // Top 10 Requested Apps By GovNet
         const top10RequestedAppsGovNetResponse = await getTop10RequestedAppsGovNet(timeRange);
         console.log('Dashboard fetchData top10RequestedAppsGovNetResponse:', top10RequestedAppsGovNetResponse);
         const T10RAGNbuckets = top10RequestedAppsGovNetResponse.aggregations.top_websites.buckets;
@@ -551,10 +554,10 @@ export default {
         }));
         this.top10RequestedAppsGovNet = top10RequestedAppsGovNetData;
 
-        // Top 10 Requested Apps By Internet//////
+        // Top 10 Requested Apps By Internet
         const top10RequestedAppsInternetResponse = await getTop10RequestedAppsInternet(timeRange);
         console.log('Dashboard fetchData top10RequestedAppsInternetResponse:', top10RequestedAppsInternetResponse);
-        const T10RAIbuckets = top10RequestedAppsInternetResponse.aggregations.top_website.buckets;
+        const T10RAIbuckets = top10RequestedAppsInternetResponse.aggregations.top_websites.buckets;
         const top10RequestedAppsInternetData = T10RAIbuckets.map(bucket => ({
           key: bucket.key,
           docCount: bucket.doc_count,

@@ -202,6 +202,9 @@ export const getTop5CountryTrafficAllowed = async (timeRange = {}) => {
           { match: { "decoder.name": "fortigate-firewall-v5" } },
           { range: { "@timestamp": timeRange } },
         ],
+        must_not: [
+          { term: { "data.srccountry": "Reserved" } },
+        ],
       },
     },
     aggs: {
@@ -234,6 +237,9 @@ export const getTop5CountryTrafficBlocked = async (timeRange = {}) => {
           { match: { "data.action": "dropped" } },
           { match: { "decoder.name": "fortigate-firewall-v5" } },
           { range: { "@timestamp": timeRange } },
+        ],
+        must_not: [
+          { term: { "data.srccountry": "Reserved" } },
         ],
       },
     },
@@ -352,20 +358,24 @@ export const getTop10RequestedAppsGovNet = async (timeRange = {}) => {
     );
   }
 };
-// top10RequestedAppsInternet
+// top10RequestedAppsInternet////////////////
 export const getTop10RequestedAppsInternet = async (timeRange = {}) => {
   const url = "/raven*/_search?pretty";
   const data = {
     size: 0,
     query: {
       bool: {
-        must_not: [{ prefix: { "data.srcip": "10." } }],
-        filter: { range: { "@timestamp": timeRange } },
-        must: [{ match: { "decoder.name": "Barracuda_custom" } }],
+        must_not: [
+          { wildcard: { "data.src": "10.*" } }
+        ],
+        must: [
+          { match: { "decoder.name": "Barracuda_custom" } },
+          { range: { "@timestamp": timeRange } }
+        ],
       },
     },
     aggs: {
-      top_website: {
+      top_websites: {
         terms: {
           field: "data.dhost",
           size: 10,
