@@ -367,32 +367,26 @@ export default {
 
         // Allowed Traffic
         const allowedTrafficResponse = await apiService.getAllowedTraffic(timeRange);
-        // console.log('Dashboard fetchData allowedTrafficResponse:', allowedTrafficResponse);//////////////////
         this.allowedTraffic = allowedTrafficResponse && allowedTrafficResponse.count ? allowedTrafficResponse.count : 0;
 
         // Dropped Traffic
         const droppedTrafficResponse = await apiService.getDroppedTraffic(timeRange);
-        // console.log('Dashboard fetchData droppedTrafficResponse:', droppedTrafficResponse);//////////////////
         this.droppedTraffic = droppedTrafficResponse && droppedTrafficResponse.count ? droppedTrafficResponse.count : 0;
 
         // Successful Received Email
         const successfulReceivedEmailResponse = await apiService.getSuccessfulReceivedEmail(timeRange);
-        // console.log('Dashboard fetchData successfulReceivedEmailResponse:', successfulReceivedEmailResponse);//////////////////
         this.successfulReceivedEmail = successfulReceivedEmailResponse && successfulReceivedEmailResponse.count ? successfulReceivedEmailResponse.count : 0;
 
         // Quarantined Received Email
         const quarantinedReceivedEmailResponse = await apiService.getQuarantinedReceivedEmail(timeRange);
-        // console.log('Dashboard fetchData quarantinedReceivedEmailResponse:', quarantinedReceivedEmailResponse);//////////////////
         this.quarantinedReceivedEmail = quarantinedReceivedEmailResponse && quarantinedReceivedEmailResponse.count ? quarantinedReceivedEmailResponse.count : 0;
 
         // Failed Received Email
         const failedReceivedEmailResponse = await apiService.getFailedReceivedEmail(timeRange);
-        // console.log('Dashboard fetchData failedReceivedEmailResponse:', failedReceivedEmailResponse);//////////////////
         this.failedReceivedEmail = failedReceivedEmailResponse && failedReceivedEmailResponse.count ? failedReceivedEmailResponse.count : 0;
 
         // Dropped Traffic Severity By GovNet Source
         const droppedTrafficSeverityGovNetResponse = await apiService.getDroppedTrafficSeverityGovNet(timeRange);
-        // console.log('Dashboard fetchData droppedTrafficSeverityGovNetResponse:', droppedTrafficSeverityGovNetResponse);
         const DTSGNbuckets = droppedTrafficSeverityGovNetResponse.aggregations.top_attacks.buckets;
         const droppedTrafficSeverityGovNetData = DTSGNbuckets.map(bucket => ({
           key: bucket.key,
@@ -402,7 +396,6 @@ export default {
 
         // Dropped Traffic Severity By Internet Source
         const droppedTrafficSeverityInternetResponse = await apiService.getDroppedTrafficSeverityInternet(timeRange);
-        // console.log('Dashboard fetchData droppedTrafficSeverityInternetResponse:', droppedTrafficSeverityInternetResponse);
         const DTSIbuckets = droppedTrafficSeverityInternetResponse.aggregations.top_attacks.buckets;
         const droppedTrafficSeverityInternetData = DTSIbuckets.map(bucket => ({
           key: bucket.key,
@@ -412,7 +405,6 @@ export default {
 
         // Top 5 Country Traffic Allowed
         const top5CountryTrafficAllowedResponse = await apiService.getTop5CountryTrafficAllowed(timeRange);
-        // console.log('Dashboard fetchData top5CountryTrafficAllowedResponse:', top5CountryTrafficAllowedResponse);
         const T5CTAbuckets = top5CountryTrafficAllowedResponse.aggregations.top_countries.buckets;
         const top5CountryTrafficAllowedData = T5CTAbuckets.map(bucket => ({
           key: bucket.key,
@@ -422,7 +414,6 @@ export default {
 
         // Top 5 Country Traffic Blocked
         const top5CountryTrafficBlockedResponse = await apiService.getTop5CountryTrafficBlocked(timeRange);
-        // console.log('Dashboard fetchData top5CountryTrafficBlockedResponse:', top5CountryTrafficBlockedResponse);
         const T5CTBbuckets = top5CountryTrafficBlockedResponse.aggregations.top_countries.buckets;
         const top5CountryTrafficBlockedData = T5CTBbuckets.map(bucket => ({
           key: bucket.key,
@@ -432,7 +423,6 @@ export default {
 
         // VPN Users Connected
         const vpnUsersConnectedResponse = await apiService.getVpnUsersConnected(timeRange);
-        // console.log('Dashboard fetchData vpnUsersConnectedResponse:', vpnUsersConnectedResponse);
         const VUCbuckets = vpnUsersConnectedResponse.aggregations.top_users.buckets;
         const vpnUsersConnectedData = VUCbuckets.map(bucket => ({
           key: bucket.key,
@@ -442,7 +432,6 @@ export default {
 
         // Top 10 Apps Used Internally
         const top10AppsUsedInternallyResponse = await apiService.getTop10AppsUsedInternally(timeRange);
-        // console.log('Dashboard fetchData top10AppsUsedInternallyResponse:', top10AppsUsedInternallyResponse);
         const T10AUIbuckets = top10AppsUsedInternallyResponse.aggregations.top_websites.buckets;
         const top10AppsUsedInternallyData = T10AUIbuckets.map(bucket => ({
           key: bucket.key,
@@ -452,7 +441,6 @@ export default {
 
         // Top 10 Requested Apps By GovNet
         const top10RequestedAppsGovNetResponse = await apiService.getTop10RequestedAppsGovNet(timeRange);
-        // console.log('Dashboard fetchData top10RequestedAppsGovNetResponse:', top10RequestedAppsGovNetResponse);
         const T10RAGNbuckets = top10RequestedAppsGovNetResponse.aggregations.top_websites.buckets;
         const top10RequestedAppsGovNetData = T10RAGNbuckets.map(bucket => ({
           key: bucket.key,
@@ -462,7 +450,6 @@ export default {
 
         // Top 10 Requested Apps By Internet
         const top10RequestedAppsInternetResponse = await apiService.getTop10RequestedAppsInternet(timeRange);
-        // console.log('Dashboard fetchData top10RequestedAppsInternetResponse:', top10RequestedAppsInternetResponse);
         const T10RAIbuckets = top10RequestedAppsInternetResponse.aggregations.top_websites.buckets;
         const top10RequestedAppsInternetData = T10RAIbuckets.map(bucket => ({
           key: bucket.key,
@@ -478,17 +465,11 @@ export default {
     async fetchDataForWeek(weekNumber, selectedOption) {
       try {
 
-        // console.log('Dashboard fetchDataForWeek weekNumber:', weekNumber);
-        // console.log('Dashboard fetchDataForWeek selectedOption:', selectedOption);
-
         const allowedTrafficResponse = await apiService[`getAllowedTrafficWeek${weekNumber}`]();
         const droppedTrafficResponse = await apiService[`getDroppedTrafficWeek${weekNumber}`]();
 
         const allowedTrafficCount = allowedTrafficResponse.count;
         const droppedTrafficCount = droppedTrafficResponse.count;
-
-        // console.log('Dashboard fetchDataForWeek allowedTrafficCount:', allowedTrafficCount);
-        // console.log('Dashboard fetchDataForWeek droppedTrafficCount:', droppedTrafficCount);
 
         let weekTraffic;
 
@@ -497,8 +478,6 @@ export default {
         } else if (selectedOption === 'Dropped') {
           weekTraffic = droppedTrafficCount;
         }
-
-        // console.log('Dashboard fetchDataForWeek weekTraffic:', weekTraffic);
 
         return {
           weekTraffic: weekTraffic
@@ -534,12 +513,8 @@ export default {
           promises.push(this.fetchDataForWeek(i, selectedOption));
         }
 
-        console.log('Dashboard initBigChart promises:', promises);
-
         // Wait for all promises to resolve
         const results = await Promise.all(promises);
-
-        console.log('Dashboard initBigChart results:', results);
 
         // Initialize data arrays for allowed and dropped traffic
         const allowedData = [];
@@ -547,9 +522,6 @@ export default {
 
         // Aggregate data for allowed and dropped traffic
         results.forEach((result, i) => {
-          console.log(`Fetched data for Week ${i + 1}:`, result);/////////////
-          // console.log('Allowed traffic count for week', i + 1, ':', result.allowedTraffic);/////////////////
-          // console.log('Dropped traffic count for week', i + 1, ':', result.droppedTraffic);/////////////////
 
           // Add weekTraffic to the respective data array
           if (selectedOption === 'Allowed') {
@@ -599,17 +571,10 @@ export default {
           chartData.datasets.push(droppedDataset);
         }
 
-        console.log('Dashboard initBigChart chartData.datasets.data:', chartData.datasets.data);
-
-        // console.log('Dashboard initBigChart chartData test1:', chartData);
-        console.log('Dashboard initBigChart chartData.datasets:', chartData.datasets);
-        ////////////////////////////////////////////
         this.$refs.bigChart.updateGradients(chartData);
         this.bigLineChart.chartData = chartData;
         this.bigLineChart.activeIndex = index;
         this.selectedOption = selectedOption;
-        ////////////////////////////////////////////
-        console.log('Dashboard initBigChart chartData test2:', chartData);
       } catch (error) {
         console.error(`Error initializing chart for week ${weekNumber}:`, error);
       }
