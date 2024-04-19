@@ -10,11 +10,11 @@
             <div class="row">
               <div class="col-sm-6" :class="isRTL ? 'text-right' : 'text-left'">
                 <h5 class="card-category">
-                  {{ $t("dashboard.totalShipments") }}
+                  {{ $t("dashboard.totalCombination") }}
                   Traffic
                 </h5>
                 <h2 class="card-title text-warning">
-                  {{ $t("dashboard.performance") }}
+                  {{ $t("dashboard.traffic") }}
                   Activity
                 </h2>
               </div>
@@ -22,10 +22,10 @@
                 <div class="btn-group btn-group-toggle" :class="isRTL ? 'float-left' : 'float-right'"
                   data-toggle="buttons">
                   <label v-for="(option, index) in bigLineChartCategories" :key="option"
-                    class="btn btn-sm btn-primary btn-simple" :class="{ active: bigLineChart.activeIndex === index }"
+                    class="btn btn-sm btn-primary btn-simple" :class="{ active: selectedOption === option }"
                     :id="index">
-                    <input type="radio" @click="initBigChart(index)" name="options" autocomplete="off"
-                      :checked="bigLineChart.activeIndex === index" />
+                    <input type="radio" @click="initBigChart(option)" name="options" autocomplete="off"
+                      :checked="selectedOption === option" />
                     {{ option }}
                   </label>
                 </div>
@@ -159,7 +159,8 @@
           </h5>
           <ul class="list-group list-group-flush list-unstyled">
             <li v-for="vpnUserData in vpnUsersConnected" :key="vpnUserData.key">
-              <i class="tim-icons icon-single-02 text-success"></i> {{ vpnUserData.key }}: {{ formatNumber(vpnUserData.docCount) }}
+              <i class="tim-icons icon-single-02 text-success"></i> {{ vpnUserData.key }}: {{
+                formatNumber(vpnUserData.docCount) }}
             </li>
           </ul>
         </card>
@@ -283,24 +284,14 @@ import * as chartConfigs from "@/components/Charts/config";
 import TaskList from "./Dashboard/TaskList";
 import UserTable from "./Dashboard/UserTable";
 import config from "@/config";
-import { getAllowedTraffic } from '@/services/api.service';
-import { getDroppedTraffic } from '@/services/api.service';
-import { getDroppedTrafficSeverityGovNet } from '@/services/api.service';
-import { getDroppedTrafficSeverityInternet } from '@/services/api.service';
-import { getTop5CountryTrafficAllowed } from '@/services/api.service';
-import { getTop5CountryTrafficBlocked } from '@/services/api.service';
-import { getVpnUsersConnected } from '@/services/api.service';
-import { getSuccessfulReceivedEmail } from '@/services/api.service';
-import { getQuarantinedReceivedEmail } from '@/services/api.service';
-import { getFailedReceivedEmail } from '@/services/api.service';
-import { getTop10AppsUsedInternally } from '@/services/api.service';
-import { getTop10RequestedAppsGovNet } from '@/services/api.service';
-import { getTop10RequestedAppsInternet } from '@/services/api.service';
+import * as apiService from "@/services/api.service";
 
 export default {
   components: {
     LineChart,
     BarChart,
+    TaskList,
+    UserTable
   },
   data() {
     return {
@@ -318,28 +309,20 @@ export default {
       top10RequestedAppsGovNet: 0,
       top10RequestedAppsInternet: 0,
       ///////////////////////////////////////////////////////////////////
+      selectedOption: 'Allowed',
       bigLineChart: {
-        allData: [
-          [100, 70, 90, 70, 85, 60, 75, 60, 90, 80, 110, 100],
-          [80, 120, 105, 110, 95, 105, 90, 100, 80, 95, 70, 120],
-          [60, 80, 65, 130, 80, 105, 90, 130, 70, 115, 60, 130],
-        ],
+        allData: [],
         activeIndex: 0,
         chartData: {
           datasets: [{}],
           labels: [
-            "JAN",
-            "FEB",
-            "MAR",
-            "APR",
-            "MAY",
-            "JUN",
-            "JUL",
-            "AUG",
-            "SEP",
-            "OCT",
-            "NOV",
-            "DEC",
+            "1 Week Ago",
+            "2 Weeks Ago",
+            "3 Weeks Ago",
+            "4 Weeks Ago",
+            "5 Weeks Ago",
+            "6 Weeks Ago",
+            "7 Weeks Ago",
           ],
         },
         extraOptions: chartConfigs.purpleChartOptions,
@@ -347,83 +330,9 @@ export default {
         gradientStops: [1, 0.4, 0],
         categories: [],
       },
-      purpleLineChart: {
-        extraOptions: chartConfigs.purpleChartOptions,
-        chartData: {
-          labels: ["JUL", "AUG", "SEP", "OCT", "NOV", "DEC"],
-          datasets: [
-            {
-              label: "Data",
-              fill: true,
-              borderColor: config.colors.primary,
-              borderWidth: 2,
-              borderDash: [],
-              borderDashOffset: 0.0,
-              pointBackgroundColor: config.colors.primary,
-              pointBorderColor: "rgba(255,255,255,0)",
-              pointHoverBackgroundColor: config.colors.primary,
-              pointBorderWidth: 20,
-              pointHoverRadius: 4,
-              pointHoverBorderWidth: 15,
-              pointRadius: 4,
-              data: [80, 100, 70, 80, 120, 80],
-            },
-          ],
-        },
-        gradientColors: config.colors.primaryGradient,
-        gradientStops: [1, 0.2, 0],
-      },
-      greenLineChart: {
-        extraOptions: chartConfigs.greenChartOptions,
-        chartData: {
-          labels: ["JUL", "AUG", "SEP", "OCT", "NOV"],
-          datasets: [
-            {
-              label: "My First dataset",
-              fill: true,
-              borderColor: config.colors.danger,
-              borderWidth: 2,
-              borderDash: [],
-              borderDashOffset: 0.0,
-              pointBackgroundColor: config.colors.danger,
-              pointBorderColor: "rgba(255,255,255,0)",
-              pointHoverBackgroundColor: config.colors.danger,
-              pointBorderWidth: 20,
-              pointHoverRadius: 4,
-              pointHoverBorderWidth: 15,
-              pointRadius: 4,
-              data: [90, 27, 60, 12, 80],
-            },
-          ],
-        },
-        gradientColors: [
-          "rgba(66,134,121,0.15)",
-          "rgba(66,134,121,0.0)",
-          "rgba(66,134,121,0)",
-        ],
-        gradientStops: [1, 0.4, 0],
-      },
-      blueBarChart: {
-        extraOptions: chartConfigs.barChartOptions,
-        chartData: {
-          labels: ["USA", "GER", "AUS", "UK", "RO", "BR"],
-          datasets: [
-            {
-              label: "Countries",
-              fill: true,
-              borderColor: config.colors.info,
-              borderWidth: 2,
-              borderDash: [],
-              borderDashOffset: 0.0,
-              data: [53, 20, 10, 80, 100, 45],
-            },
-          ],
-        },
-        gradientColors: config.colors.primaryGradient,
-        gradientStops: [1, 0.4, 0],
-      },
     };
   },
+  ////////////////////////////////////////////////////////////////////////
   computed: {
     enableRTL() {
       return this.$route.query.enableRTL;
@@ -432,10 +341,9 @@ export default {
       return this.$rtl.isRTL;
     },
     bigLineChartCategories() {
-      return this.$t("dashboard.chartCategories");
-    },
+      return this.$t('dashboard.chartCategoriesTraffic');
+    }
   },
-  /////////////////////////////////////////////////////////////////
   async created() {
     this.$root.$on('timeRangeChanged', this.fetchData);
   },
@@ -443,10 +351,8 @@ export default {
   destroyed() {
     this.$root.$off('timeRangeChanged', this.fetchData);
   },
-  ///////////////////////////////////////////////////////
   methods: {
-    ///////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////
+    ///////////////////////////////////////////
     async fetchData(timeRange) {
       try {
         if (!timeRange) {
@@ -457,36 +363,36 @@ export default {
           };
         }
 
-        console.log('Dashboard fetchData timeRange:', timeRange);//////////////////
+        console.log('Dashboard fetchData timeRange:', timeRange);
 
         // Allowed Traffic
-        const allowedTrafficResponse = await getAllowedTraffic(timeRange);
-        console.log('Dashboard fetchData allowedTrafficResponse:', allowedTrafficResponse);//////////////////
+        const allowedTrafficResponse = await apiService.getAllowedTraffic(timeRange);
+        // console.log('Dashboard fetchData allowedTrafficResponse:', allowedTrafficResponse);//////////////////
         this.allowedTraffic = allowedTrafficResponse && allowedTrafficResponse.count ? allowedTrafficResponse.count : 0;
 
         // Dropped Traffic
-        const droppedTrafficResponse = await getDroppedTraffic(timeRange);
-        console.log('Dashboard fetchData droppedTrafficResponse:', droppedTrafficResponse);//////////////////
+        const droppedTrafficResponse = await apiService.getDroppedTraffic(timeRange);
+        // console.log('Dashboard fetchData droppedTrafficResponse:', droppedTrafficResponse);//////////////////
         this.droppedTraffic = droppedTrafficResponse && droppedTrafficResponse.count ? droppedTrafficResponse.count : 0;
 
         // Successful Received Email
-        const successfulReceivedEmailResponse = await getSuccessfulReceivedEmail(timeRange);
-        console.log('Dashboard fetchData successfulReceivedEmailResponse:', successfulReceivedEmailResponse);//////////////////
+        const successfulReceivedEmailResponse = await apiService.getSuccessfulReceivedEmail(timeRange);
+        // console.log('Dashboard fetchData successfulReceivedEmailResponse:', successfulReceivedEmailResponse);//////////////////
         this.successfulReceivedEmail = successfulReceivedEmailResponse && successfulReceivedEmailResponse.count ? successfulReceivedEmailResponse.count : 0;
 
         // Quarantined Received Email
-        const quarantinedReceivedEmailResponse = await getQuarantinedReceivedEmail(timeRange);
-        console.log('Dashboard fetchData quarantinedReceivedEmailResponse:', quarantinedReceivedEmailResponse);//////////////////
+        const quarantinedReceivedEmailResponse = await apiService.getQuarantinedReceivedEmail(timeRange);
+        // console.log('Dashboard fetchData quarantinedReceivedEmailResponse:', quarantinedReceivedEmailResponse);//////////////////
         this.quarantinedReceivedEmail = quarantinedReceivedEmailResponse && quarantinedReceivedEmailResponse.count ? quarantinedReceivedEmailResponse.count : 0;
 
         // Failed Received Email
-        const failedReceivedEmailResponse = await getFailedReceivedEmail(timeRange);
-        console.log('Dashboard fetchData failedReceivedEmailResponse:', failedReceivedEmailResponse);//////////////////
+        const failedReceivedEmailResponse = await apiService.getFailedReceivedEmail(timeRange);
+        // console.log('Dashboard fetchData failedReceivedEmailResponse:', failedReceivedEmailResponse);//////////////////
         this.failedReceivedEmail = failedReceivedEmailResponse && failedReceivedEmailResponse.count ? failedReceivedEmailResponse.count : 0;
 
         // Dropped Traffic Severity By GovNet Source
-        const droppedTrafficSeverityGovNetResponse = await getDroppedTrafficSeverityGovNet(timeRange);
-        console.log('Dashboard fetchData droppedTrafficSeverityGovNetResponse:', droppedTrafficSeverityGovNetResponse);
+        const droppedTrafficSeverityGovNetResponse = await apiService.getDroppedTrafficSeverityGovNet(timeRange);
+        // console.log('Dashboard fetchData droppedTrafficSeverityGovNetResponse:', droppedTrafficSeverityGovNetResponse);
         const DTSGNbuckets = droppedTrafficSeverityGovNetResponse.aggregations.top_attacks.buckets;
         const droppedTrafficSeverityGovNetData = DTSGNbuckets.map(bucket => ({
           key: bucket.key,
@@ -495,8 +401,8 @@ export default {
         this.droppedTrafficSeverityGovNet = droppedTrafficSeverityGovNetData;
 
         // Dropped Traffic Severity By Internet Source
-        const droppedTrafficSeverityInternetResponse = await getDroppedTrafficSeverityInternet(timeRange);
-        console.log('Dashboard fetchData droppedTrafficSeverityInternetResponse:', droppedTrafficSeverityInternetResponse);
+        const droppedTrafficSeverityInternetResponse = await apiService.getDroppedTrafficSeverityInternet(timeRange);
+        // console.log('Dashboard fetchData droppedTrafficSeverityInternetResponse:', droppedTrafficSeverityInternetResponse);
         const DTSIbuckets = droppedTrafficSeverityInternetResponse.aggregations.top_attacks.buckets;
         const droppedTrafficSeverityInternetData = DTSIbuckets.map(bucket => ({
           key: bucket.key,
@@ -505,8 +411,8 @@ export default {
         this.droppedTrafficSeverityInternet = droppedTrafficSeverityInternetData;
 
         // Top 5 Country Traffic Allowed
-        const top5CountryTrafficAllowedResponse = await getTop5CountryTrafficAllowed(timeRange);
-        console.log('Dashboard fetchData top5CountryTrafficAllowedResponse:', top5CountryTrafficAllowedResponse);
+        const top5CountryTrafficAllowedResponse = await apiService.getTop5CountryTrafficAllowed(timeRange);
+        // console.log('Dashboard fetchData top5CountryTrafficAllowedResponse:', top5CountryTrafficAllowedResponse);
         const T5CTAbuckets = top5CountryTrafficAllowedResponse.aggregations.top_countries.buckets;
         const top5CountryTrafficAllowedData = T5CTAbuckets.map(bucket => ({
           key: bucket.key,
@@ -515,8 +421,8 @@ export default {
         this.top5CountryTrafficAllowed = top5CountryTrafficAllowedData;
 
         // Top 5 Country Traffic Blocked
-        const top5CountryTrafficBlockedResponse = await getTop5CountryTrafficBlocked(timeRange);
-        console.log('Dashboard fetchData top5CountryTrafficBlockedResponse:', top5CountryTrafficBlockedResponse);
+        const top5CountryTrafficBlockedResponse = await apiService.getTop5CountryTrafficBlocked(timeRange);
+        // console.log('Dashboard fetchData top5CountryTrafficBlockedResponse:', top5CountryTrafficBlockedResponse);
         const T5CTBbuckets = top5CountryTrafficBlockedResponse.aggregations.top_countries.buckets;
         const top5CountryTrafficBlockedData = T5CTBbuckets.map(bucket => ({
           key: bucket.key,
@@ -525,8 +431,8 @@ export default {
         this.top5CountryTrafficBlocked = top5CountryTrafficBlockedData;
 
         // VPN Users Connected
-        const vpnUsersConnectedResponse = await getVpnUsersConnected(timeRange);
-        console.log('Dashboard fetchData vpnUsersConnectedResponse:', vpnUsersConnectedResponse);
+        const vpnUsersConnectedResponse = await apiService.getVpnUsersConnected(timeRange);
+        // console.log('Dashboard fetchData vpnUsersConnectedResponse:', vpnUsersConnectedResponse);
         const VUCbuckets = vpnUsersConnectedResponse.aggregations.top_users.buckets;
         const vpnUsersConnectedData = VUCbuckets.map(bucket => ({
           key: bucket.key,
@@ -535,8 +441,8 @@ export default {
         this.vpnUsersConnected = vpnUsersConnectedData;
 
         // Top 10 Apps Used Internally
-        const top10AppsUsedInternallyResponse = await getTop10AppsUsedInternally(timeRange);
-        console.log('Dashboard fetchData top10AppsUsedInternallyResponse:', top10AppsUsedInternallyResponse);
+        const top10AppsUsedInternallyResponse = await apiService.getTop10AppsUsedInternally(timeRange);
+        // console.log('Dashboard fetchData top10AppsUsedInternallyResponse:', top10AppsUsedInternallyResponse);
         const T10AUIbuckets = top10AppsUsedInternallyResponse.aggregations.top_websites.buckets;
         const top10AppsUsedInternallyData = T10AUIbuckets.map(bucket => ({
           key: bucket.key,
@@ -545,8 +451,8 @@ export default {
         this.top10AppsUsedInternally = top10AppsUsedInternallyData;
 
         // Top 10 Requested Apps By GovNet
-        const top10RequestedAppsGovNetResponse = await getTop10RequestedAppsGovNet(timeRange);
-        console.log('Dashboard fetchData top10RequestedAppsGovNetResponse:', top10RequestedAppsGovNetResponse);
+        const top10RequestedAppsGovNetResponse = await apiService.getTop10RequestedAppsGovNet(timeRange);
+        // console.log('Dashboard fetchData top10RequestedAppsGovNetResponse:', top10RequestedAppsGovNetResponse);
         const T10RAGNbuckets = top10RequestedAppsGovNetResponse.aggregations.top_websites.buckets;
         const top10RequestedAppsGovNetData = T10RAGNbuckets.map(bucket => ({
           key: bucket.key,
@@ -555,75 +461,178 @@ export default {
         this.top10RequestedAppsGovNet = top10RequestedAppsGovNetData;
 
         // Top 10 Requested Apps By Internet
-        const top10RequestedAppsInternetResponse = await getTop10RequestedAppsInternet(timeRange);
-        console.log('Dashboard fetchData top10RequestedAppsInternetResponse:', top10RequestedAppsInternetResponse);
+        const top10RequestedAppsInternetResponse = await apiService.getTop10RequestedAppsInternet(timeRange);
+        // console.log('Dashboard fetchData top10RequestedAppsInternetResponse:', top10RequestedAppsInternetResponse);
         const T10RAIbuckets = top10RequestedAppsInternetResponse.aggregations.top_websites.buckets;
         const top10RequestedAppsInternetData = T10RAIbuckets.map(bucket => ({
           key: bucket.key,
           docCount: bucket.doc_count,
         }));
-        this.top10RequestedAppsInternet = top10RequestedAppsInternetData;        
+        this.top10RequestedAppsInternet = top10RequestedAppsInternetData;
 
       } catch (error) {
         console.error('Error fetching allowed traffic:', error);
       }
     },
-    ///////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////
+    async fetchDataForWeek(weekNumber, selectedOption) {
+      try {
+
+        // console.log('Dashboard fetchDataForWeek weekNumber:', weekNumber);
+        // console.log('Dashboard fetchDataForWeek selectedOption:', selectedOption);
+
+        const allowedTrafficResponse = await apiService[`getAllowedTrafficWeek${weekNumber}`]();
+        const droppedTrafficResponse = await apiService[`getDroppedTrafficWeek${weekNumber}`]();
+
+        const allowedTrafficCount = allowedTrafficResponse.count;
+        const droppedTrafficCount = droppedTrafficResponse.count;
+
+        // console.log('Dashboard fetchDataForWeek allowedTrafficCount:', allowedTrafficCount);
+        // console.log('Dashboard fetchDataForWeek droppedTrafficCount:', droppedTrafficCount);
+
+        let weekTraffic;
+
+        if (selectedOption === 'Allowed') {
+          weekTraffic = allowedTrafficCount;
+        } else if (selectedOption === 'Dropped') {
+          weekTraffic = droppedTrafficCount;
+        }
+
+        // console.log('Dashboard fetchDataForWeek weekTraffic:', weekTraffic);
+
+        return {
+          weekTraffic: weekTraffic
+        };
+      } catch (error) {
+        console.error("Error fetching traffic data:", error);
+        throw new Error(`Failed to fetch traffic data for week ${weekNumber}: ${error.message}`);
+      }
+    },
+    ////////////////////////////////////////////////////////////////////////////////
+    async initBigChart(selectedOption) {
+      console.log('Dashboard initBigChart selectedOption:', selectedOption);
+      let index = 1;
+      const weekNumber = index;
+
+      try {
+        const promises = [];
+        let chartData = {
+          datasets: [],
+          labels: [
+            "1 Week Ago",
+            "2 Weeks Ago",
+            "3 Weeks Ago",
+            "4 Weeks Ago",
+            "5 Weeks Ago",
+            "6 Weeks Ago",
+            "7 Weeks Ago",
+          ],
+        };
+
+        // Fetch data for all seven weeks asynchronously
+        for (let i = 1; i <= 7; i++) {
+          promises.push(this.fetchDataForWeek(i, selectedOption));
+        }
+
+        console.log('Dashboard initBigChart promises:', promises);
+
+        // Wait for all promises to resolve
+        const results = await Promise.all(promises);
+
+        console.log('Dashboard initBigChart results:', results);
+
+        // Initialize data arrays for allowed and dropped traffic
+        const allowedData = [];
+        const droppedData = [];
+
+        // Aggregate data for allowed and dropped traffic
+        results.forEach((result, i) => {
+          console.log(`Fetched data for Week ${i + 1}:`, result);/////////////
+          // console.log('Allowed traffic count for week', i + 1, ':', result.allowedTraffic);/////////////////
+          // console.log('Dropped traffic count for week', i + 1, ':', result.droppedTraffic);/////////////////
+
+          // Add weekTraffic to the respective data array
+          if (selectedOption === 'Allowed') {
+            allowedData.push(result.weekTraffic);
+          } else if (selectedOption === 'Dropped') {
+            droppedData.push(result.weekTraffic);
+          }
+        });
+
+        // Create datasets for allowed and dropped traffic
+        const allowedDataset = {
+          data: allowedData,
+          fill: true,
+          borderColor: config.colors.primary,
+          borderWidth: 2,
+          borderDash: [],
+          borderDashOffset: 0.0,
+          pointBackgroundColor: config.colors.primary,
+          pointBorderColor: 'rgba(255,255,255,0)',
+          pointHoverBackgroundColor: config.colors.primary,
+          pointBorderWidth: 20,
+          pointHoverRadius: 4,
+          pointHoverBorderWidth: 15,
+          pointRadius: 4,
+        };
+
+        const droppedDataset = {
+          data: droppedData,
+          fill: true,
+          borderColor: config.colors.danger,
+          borderWidth: 2,
+          borderDash: [],
+          borderDashOffset: 0.0,
+          pointBackgroundColor: config.colors.danger,
+          pointBorderColor: 'rgba(255,255,255,0)',
+          pointHoverBackgroundColor: config.colors.danger,
+          pointBorderWidth: 20,
+          pointHoverRadius: 4,
+          pointHoverBorderWidth: 15,
+          pointRadius: 4,
+        };
+
+        // Add datasets to chartData
+        if (selectedOption === 'Allowed') {
+          chartData.datasets.push(allowedDataset);
+        } else if (selectedOption === 'Dropped') {
+          chartData.datasets.push(droppedDataset);
+        }
+
+        console.log('Dashboard initBigChart chartData.datasets.data:', chartData.datasets.data);
+
+        // console.log('Dashboard initBigChart chartData test1:', chartData);
+        console.log('Dashboard initBigChart chartData.datasets:', chartData.datasets);
+        ////////////////////////////////////////////
+        this.$refs.bigChart.updateGradients(chartData);
+        this.bigLineChart.chartData = chartData;
+        this.bigLineChart.activeIndex = index;
+        this.selectedOption = selectedOption;
+        ////////////////////////////////////////////
+        console.log('Dashboard initBigChart chartData test2:', chartData);
+      } catch (error) {
+        console.error(`Error initializing chart for week ${weekNumber}:`, error);
+      }
+    },
+    ///////////////////////////////////////////////////////////////
     formatNumber(number) {
       if (Number.isInteger(number)) {
-        return number.toLocaleString(); // Format integer numbers with commas using toLocaleString
+        return number.toLocaleString();
       } else {
         return number.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }); // Format floating-point numbers with decimal points and commas
       }
     },
-    //////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////
-    initBigChart(index) {
-      let chartData = {
-        datasets: [
-          {
-            fill: true,
-            borderColor: config.colors.primary,
-            borderWidth: 2,
-            borderDash: [],
-            borderDashOffset: 0.0,
-            pointBackgroundColor: config.colors.primary,
-            pointBorderColor: "rgba(255,255,255,0)",
-            pointHoverBackgroundColor: config.colors.primary,
-            pointBorderWidth: 20,
-            pointHoverRadius: 4,
-            pointHoverBorderWidth: 15,
-            pointRadius: 4,
-            data: this.bigLineChart.allData[index],
-          },
-        ],
-        labels: [
-          "JAN",
-          "FEB",
-          "MAR",
-          "APR",
-          "MAY",
-          "JUN",
-          "JUL",
-          "AUG",
-          "SEP",
-          "OCT",
-          "NOV",
-          "DEC",
-        ],
-      };
-      this.$refs.bigChart.updateGradients(chartData);
-      this.bigLineChart.chartData = chartData;
-      this.bigLineChart.activeIndex = index;
-    },
+    //////////////////////////////////////////////////////////////////////
   },
-  mounted() {
+  ////////////////////////////////////////////////////////////////////////
+  async mounted() {
     this.i18n = this.$i18n;
     if (this.enableRTL) {
-      this.i18n.locale = "ar";
+      this.i18n.locale = 'ar';
       this.$rtl.enableRTL();
     }
-    this.initBigChart(0);
+    // Fetch and initialize data for the first week
+    await this.initBigChart(this.selectedOption);
   },
   beforeDestroy() {
     if (this.$rtl.isRTL) {

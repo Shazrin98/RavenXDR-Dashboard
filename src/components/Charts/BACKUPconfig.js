@@ -70,13 +70,8 @@ export let purpleChartOptions = {
         zeroLineColor: "transparent",
       },
       ticks: {
-        callback: function(value, index, values) {
-          return value.toLocaleString(); // Convert number to string with commas
-        },
-        suggestedMin: 200000,
-        suggestedMax: 13000000,
-        // suggestedMin: 60,
-        // suggestedMax: 125,
+        suggestedMin: 60,
+        suggestedMax: 125,
         padding: 20,
         fontColor: "#9a9a9a"
       }

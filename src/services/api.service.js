@@ -10,7 +10,325 @@ const api = axios.create({
     password: process.env.API_PASSWORD || "1qazXSW@", // Password
   },
 });
-
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+// Chart Traffic Data For WEEK 1
+// allowedTrafficWeek1
+export const getAllowedTrafficWeek1 = async () => {
+  const url = "/raven*/_count";
+  const data = {
+    query: {
+      bool: {
+        must: [
+          { wildcard: { "data.action": "pass" } },
+          { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
+          { range: { "@timestamp": { "gte": "now-7d/d", "lte": "now/d" } } },
+        ],
+      },
+    },
+  };
+  try {
+    const response = await api.post(url, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching allowedTraffic:", error);
+    throw new Error(`Failed to fetch allowedTraffic data: ${error.message}`);
+  }
+};
+// droppedTrafficWeek1
+export const getDroppedTrafficWeek1 = async () => {
+  const url = "/raven*/_count";
+  const data = {
+    query: {
+      bool: {
+        must: [
+          { wildcard: { "data.action": "dropped" } },
+          { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
+          { range: { "@timestamp": { "gte": "now-7d/d", "lte": "now/d" } } },
+        ],
+      },
+    },
+  };
+  try {
+    const response = await api.post(url, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching droppedTraffic:", error);
+    throw new Error(`Failed to fetch droppedTraffic data: ${error.message}`);
+  }
+};
+// Chart Traffic Data For WEEK 2
+// allowedTrafficWeek2
+export const getAllowedTrafficWeek2 = async () => {
+  const url = "/raven*/_count";
+  const data = {
+    query: {
+      bool: {
+        must: [
+          { wildcard: { "data.action": "pass" } },
+          { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
+          { range: { "@timestamp": { "gte": "now-14d/d", "lte": "now-7d/d" } } },
+        ],
+      },
+    },
+  };
+  try {
+    const response = await api.post(url, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching allowedTraffic:", error);
+    throw new Error(`Failed to fetch allowedTraffic data: ${error.message}`);
+  }
+};
+// droppedTrafficWeek2
+export const getDroppedTrafficWeek2 = async () => {
+  const url = "/raven*/_count";
+  const data = {
+    query: {
+      bool: {
+        must: [
+          { wildcard: { "data.action": "dropped" } },
+          { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
+          { range: { "@timestamp": { "gte": "now-14d/d", "lte": "now-7d/d" } } },
+        ],
+      },
+    },
+  };
+  try {
+    const response = await api.post(url, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching droppedTraffic:", error);
+    throw new Error(`Failed to fetch droppedTraffic data: ${error.message}`);
+  }
+};
+// Chart Traffic Data For WEEK 3
+// allowedTrafficWeek3
+export const getAllowedTrafficWeek3 = async () => {
+  const url = "/raven*/_count";
+  const data = {
+    query: {
+      bool: {
+        must: [
+          { wildcard: { "data.action": "pass" } },
+          { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
+          { range: { "@timestamp": { "gte": "now-21d/d", "lte": "now-14d/d" } } },
+        ],
+      },
+    },
+  };
+  try {
+    const response = await api.post(url, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching allowedTraffic:", error);
+    throw new Error(`Failed to fetch allowedTraffic data: ${error.message}`);
+  }
+};
+// droppedTrafficWeek3
+export const getDroppedTrafficWeek3 = async () => {
+  const url = "/raven*/_count";
+  const data = {
+    query: {
+      bool: {
+        must: [
+          { wildcard: { "data.action": "dropped" } },
+          { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
+          { range: { "@timestamp": { "gte": "now-21d/d", "lte": "now-14d/d" } } },
+        ],
+      },
+    },
+  };
+  try {
+    const response = await api.post(url, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching droppedTraffic:", error);
+    throw new Error(`Failed to fetch droppedTraffic data: ${error.message}`);
+  }
+};
+// Chart Traffic Data For WEEK 4
+// allowedTrafficWeek4
+export const getAllowedTrafficWeek4 = async () => {
+  const url = "/raven*/_count";
+  const data = {
+    query: {
+      bool: {
+        must: [
+          { wildcard: { "data.action": "pass" } },
+          { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
+          { range: { "@timestamp": { "gte": "now-28d/d", "lte": "now-21d/d" } } },
+        ],
+      },
+    },
+  };
+  try {
+    const response = await api.post(url, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching allowedTraffic:", error);
+    throw new Error(`Failed to fetch allowedTraffic data: ${error.message}`);
+  }
+};
+// droppedTrafficWeek4
+export const getDroppedTrafficWeek4 = async () => {
+  const url = "/raven*/_count";
+  const data = {
+    query: {
+      bool: {
+        must: [
+          { wildcard: { "data.action": "dropped" } },
+          { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
+          { range: { "@timestamp": { "gte": "now-28d/d", "lte": "now-21d/d" } } },
+        ],
+      },
+    },
+  };
+  try {
+    const response = await api.post(url, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching droppedTraffic:", error);
+    throw new Error(`Failed to fetch droppedTraffic data: ${error.message}`);
+  }
+};
+// Chart Traffic Data For WEEK 5
+// allowedTrafficWeek5
+export const getAllowedTrafficWeek5 = async () => {
+  const url = "/raven*/_count";
+  const data = {
+    query: {
+      bool: {
+        must: [
+          { wildcard: { "data.action": "pass" } },
+          { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
+          { range: { "@timestamp": { "gte": "now-35d/d", "lte": "now-28d/d" } } },
+        ],
+      },
+    },
+  };
+  try {
+    const response = await api.post(url, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching allowedTraffic:", error);
+    throw new Error(`Failed to fetch allowedTraffic data: ${error.message}`);
+  }
+};
+// droppedTrafficWeek5
+export const getDroppedTrafficWeek5 = async () => {
+  const url = "/raven*/_count";
+  const data = {
+    query: {
+      bool: {
+        must: [
+          { wildcard: { "data.action": "dropped" } },
+          { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
+          { range: { "@timestamp": { "gte": "now-35d/d", "lte": "now-28d/d" } } },
+        ],
+      },
+    },
+  };
+  try {
+    const response = await api.post(url, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching droppedTraffic:", error);
+    throw new Error(`Failed to fetch droppedTraffic data: ${error.message}`);
+  }
+};
+// Chart Traffic Data For WEEK 6
+// allowedTrafficWeek6
+export const getAllowedTrafficWeek6 = async () => {
+  const url = "/raven*/_count";
+  const data = {
+    query: {
+      bool: {
+        must: [
+          { wildcard: { "data.action": "pass" } },
+          { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
+          { range: { "@timestamp": { "gte": "now-42d/d", "lte": "now-35d/d" } } },
+        ],
+      },
+    },
+  };
+  try {
+    const response = await api.post(url, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching allowedTraffic:", error);
+    throw new Error(`Failed to fetch allowedTraffic data: ${error.message}`);
+  }
+};
+// droppedTrafficWeek6
+export const getDroppedTrafficWeek6 = async () => {
+  const url = "/raven*/_count";
+  const data = {
+    query: {
+      bool: {
+        must: [
+          { wildcard: { "data.action": "dropped" } },
+          { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
+          { range: { "@timestamp": { "gte": "now-42d/d", "lte": "now-35d/d" } } },
+        ],
+      },
+    },
+  };
+  try {
+    const response = await api.post(url, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching droppedTraffic:", error);
+    throw new Error(`Failed to fetch droppedTraffic data: ${error.message}`);
+  }
+};
+// Chart Traffic Data For WEEK 7
+// allowedTrafficWeek7
+export const getAllowedTrafficWeek7 = async () => {
+  const url = "/raven*/_count";
+  const data = {
+    query: {
+      bool: {
+        must: [
+          { wildcard: { "data.action": "pass" } },
+          { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
+          { range: { "@timestamp": { "gte": "now-49d/d", "lte": "now-42d/d" } } },
+        ],
+      },
+    },
+  };
+  try {
+    const response = await api.post(url, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching allowedTraffic:", error);
+    throw new Error(`Failed to fetch allowedTraffic data: ${error.message}`);
+  }
+};
+// droppedTrafficWeek7
+export const getDroppedTrafficWeek7 = async () => {
+  const url = "/raven*/_count";
+  const data = {
+    query: {
+      bool: {
+        must: [
+          { wildcard: { "data.action": "dropped" } },
+          { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
+          { range: { "@timestamp": { "gte": "now-49d/d", "lte": "now-42d/d" } } },
+        ],
+      },
+    },
+  };
+  try {
+    const response = await api.post(url, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching droppedTraffic:", error);
+    throw new Error(`Failed to fetch droppedTraffic data: ${error.message}`);
+  }
+};
+//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 // allowedTraffic
 export const getAllowedTraffic = async (timeRange = {}) => {
   const url = "/raven*/_count";

@@ -13,6 +13,12 @@
     "top10AppsUsedInternally": "Top 10 Applications Used Internally",
     "top10RequestedAppsGovNet": "Top 10 Requested Applications by GovNet Source",
     "top10RequestedAppsInternet": "Top 10 Requested Applications by Internet Source",
+    "totalCombination": "Total Combination",
+    "traffic": "Traffic",
+    "chartCategoriesTraffic": [
+      "Allowed",
+      "Dropped"
+    ],
 
     "completedTasks": "Completed Tasks",
     "dailySales": "Daily Sales",
