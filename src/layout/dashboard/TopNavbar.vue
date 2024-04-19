@@ -62,8 +62,6 @@
               </li>
             </base-dropdown> -->
 
-            <!-- /////////////////////////////////////////////// -->
-            <!-- /////////////////////////////////////////////// -->
             <div>
               <!-- Dropdown for predefined time ranges -->
               <select v-model="selectedTimeRange" @change="handleTimeRangeChange">
@@ -86,8 +84,6 @@
                 @input="handleCustomEndDateChange"></datepicker>
             </div>
 
-            <!-- //////////////////////////////////////////////// -->
-            <!-- //////////////////////////////////////////////// -->
             <base-dropdown tag="li" :menu-on-right="!$rtl.isRTL" title-tag="a" class="nav-item"
               menu-classes="dropdown-navbar">
               <a slot="title" href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="true">
@@ -119,16 +115,12 @@
 <script>
 import { CollapseTransition } from 'vue2-transitions';
 import Modal from '@/components/Modal';
-////////////////////////////////
 import { format } from 'date-fns';
 import Datepicker from 'vuejs-datepicker'; // Import the Datepicker component
-///////////////////////////////
 
 export default {
   components: {
-    ////////////////////
-    Datepicker, // Register the DatePicker component
-    ////////////////////
+    Datepicker,
     CollapseTransition,
     Modal
   },
@@ -143,7 +135,6 @@ export default {
   },
   data() {
     return {
-      /////////////////////////////////
       selectedTimeRange: '',
       customStartDate: null,
       customEndDate: null,
@@ -156,14 +147,11 @@ export default {
       searchQuery: ''
     };
   },
-  ////////////////////////
   mounted() {
     // Fetch data based on default time range when component is mounted
     this.fetchData();
   },
-  ////////////////////////
   methods: {
-    ////////////////////////////////
     handleTimeRangeChange() {
       const selectedTimeRange = this.selectedTimeRange;
       this.selectedTimeRange = selectedTimeRange;
@@ -186,8 +174,7 @@ export default {
       this.selectedTimeRange = '';
       this.fetchData();
     },
-    ////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////
+
     async fetchData() {
       try {
         let timeRange;
@@ -211,16 +198,13 @@ export default {
           };
         }
 
-        console.log('TopNavbar fetchData timeRange:', timeRange);////////////
-
         // Emit event to parent component (Dashboard.vue) with selected time range
         this.$root.$emit('timeRangeChanged', timeRange);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     },
-    ////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////
+
     capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);
     },

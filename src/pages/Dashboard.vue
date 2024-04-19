@@ -363,8 +363,6 @@ export default {
           };
         }
 
-        console.log('Dashboard fetchData timeRange:', timeRange);
-
         // Allowed Traffic
         const allowedTrafficResponse = await apiService.getAllowedTraffic(timeRange);
         this.allowedTraffic = allowedTrafficResponse && allowedTrafficResponse.count ? allowedTrafficResponse.count : 0;
