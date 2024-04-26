@@ -1,8 +1,5 @@
 <template>
   <div>
-    <!-- ////////////////////////// -->
-
-    <!-- ////////////////////////// -->
     <div class="row">
       <div class="col-12">
         <card type="chart">
@@ -41,10 +38,7 @@
         </card>
       </div>
     </div>
-    <!-- //////////////////////////// -->
-    <!-- /////////////////////////////// -->
     <div class="row">
-      <!-- ///////////////////////// -->
       <div class="col-lg-6" :class="{ 'text-right': isRTL }">
         <card>
           <template slot="header">
@@ -59,7 +53,6 @@
           </template>
         </card>
       </div>
-      <!-- //////////////////////////// -->
       <div class="col-lg-6" :class="{ 'text-right': isRTL }">
         <card>
           <template slot="header">
@@ -74,11 +67,8 @@
           </template>
         </card>
       </div>
-      <!-- ///////////////////////// -->
     </div>
-    <!-- ////////////////////////// -->
     <div class="row">
-      <!-- ///////////////////////// -->
       <div class="col-lg-6" :class="{ 'text-right': isRTL }">
         <card>
           <template slot="header">
@@ -94,7 +84,6 @@
           </template>
         </card>
       </div>
-      <!-- //////////////////////////// -->
       <div class="col-lg-6" :class="{ 'text-right': isRTL }">
         <card>
           <template slot="header">
@@ -110,11 +99,8 @@
           </template>
         </card>
       </div>
-      <!-- //////////////////// -->
     </div>
-    <!-- ///////////////////////// -->
     <div class="row">
-      <!-- ///////////////////////// -->
       <div class="col-lg-6" :class="{ 'text-right': isRTL }">
         <card>
           <template slot="header">
@@ -130,7 +116,6 @@
           </template>
         </card>
       </div>
-      <!-- //////////////////////////// -->
       <div class="col-lg-6" :class="{ 'text-right': isRTL }">
         <card>
           <template slot="header">
@@ -146,11 +131,8 @@
           </template>
         </card>
       </div>
-      <!-- //////////////////// -->
     </div>
-    <!-- ///////////////////////////////////// -->
     <div class="row">
-      <!-- //////////////////////////// -->
       <div class="col-lg-12" :class="{ 'text-right': isRTL }">
         <card>
           <h5 class="card-category text-info">
@@ -165,11 +147,8 @@
           </ul>
         </card>
       </div>
-      <!-- //////////////////// -->
     </div>
-    <!-- /////////////////////////////////// -->
     <div class="row">
-      <!-- ///////////////////////// -->
       <div class="col-lg-4" :class="{ 'text-right': isRTL }">
         <card style="width: 20rem">
           <template slot="header">
@@ -184,7 +163,6 @@
           </template>
         </card>
       </div>
-      <!-- //////////////////////////// -->
       <div class="col-lg-4" :class="{ 'text-right': isRTL }">
         <card style="width: 20rem">
           <template slot="header">
@@ -199,7 +177,6 @@
           </template>
         </card>
       </div>
-      <!-- ///////////////////////// -->
       <div class="col-lg-4" :class="{ 'text-right': isRTL }">
         <card style="width: 20rem">
           <template slot="header">
@@ -214,11 +191,8 @@
           </template>
         </card>
       </div>
-      <!-- //////////////////// -->
     </div>
-    <!-- //////////////////////////////// -->
     <div class="row">
-      <!-- ///////////////////////// -->
       <div class="col-lg-12" :class="{ 'text-right': isRTL }">
         <card>
           <template slot="header">
@@ -234,11 +208,8 @@
           </template>
         </card>
       </div>
-      <!-- //////////////////////////// -->
     </div>
-    <!-- //////////////////////////////// -->
     <div class="row">
-      <!-- ///////////////////////// -->
       <div class="col-lg-6" :class="{ 'text-right': isRTL }">
         <card>
           <template slot="header">
@@ -254,7 +225,6 @@
           </template>
         </card>
       </div>
-      <!-- ///////////////////////// -->
       <div class="col-lg-6" :class="{ 'text-right': isRTL }">
         <card>
           <template slot="header">
@@ -270,11 +240,45 @@
           </template>
         </card>
       </div>
-      <!-- //////////////////// -->
     </div>
-    <!-- //////////////////// -->
-    <!-- /////////////////////// -->
-
+    <!-- //////////////////////////////////////////// -->
+    <!-- //////////////////////////////////////////// -->
+    <div class="row">
+      <div class="col-lg-12 col-md-12">
+        <card class="card" :header-classes="{ 'text-right': isRTL }">
+          <h4 slot="header" class="card-title">{{ $t('dashboard.eventsTable') }}</h4>
+          <div class="table-responsive">
+            <base-table :data="tableData" :columns="columns">
+              <template slot="columns">
+                <th class="text-left">ID</th>
+                <th class="text-left">Timestamp</th>
+                <th class="text-left">Destination IP</th>
+                <th class="text-left">Source IP</th>
+                <th class="text-left">Details</th>
+              </template>
+              <template slot-scope="{row}">
+                <td>{{ row.id }}</td>
+                <td>{{ row.timestamp }}</td>
+                <td>{{ row.dstip }}</td>
+                <td>{{ row.srcip }}</td>
+                <td class="td-actions text-center">
+                  <base-button type="success" size="sm" icon @click="showFullEventData(row)">
+                    <i class="tim-icons icon-zoom-split"></i>
+                  </base-button>
+                  <div class="full-event-data" v-if="showData">
+                    <h3>Full Event Data</h3>
+                    <pre>{{ fullEventData }}</pre>
+                    <button @click="close">Close</button>
+                  </div>
+                </td>
+              </template>
+            </base-table>
+          </div>
+        </card>
+      </div>
+    </div>
+    <!-- ////////////////////////////////////////////////// -->
+    <!-- ////////////////////////////////////////////////// -->
   </div>
 </template>
 <script>
@@ -284,17 +288,28 @@ import * as chartConfigs from "@/components/Charts/config";
 import TaskList from "./Dashboard/TaskList";
 import UserTable from "./Dashboard/UserTable";
 import config from "@/config";
+////////////////////////////////////////////////////////////////
 import * as apiService from "@/services/api.service";
+import { BaseTable } from "@/components";
 
 export default {
   components: {
     LineChart,
     BarChart,
     TaskList,
-    UserTable
+    UserTable,
+    BaseTable
+  },
+  props: {
+    fullEventData: Object,
   },
   data() {
     return {
+      /////////////////////////////////////////////////////////
+      showData: false,
+      tableData: [],
+      columns: ["id", "timestamp", "dstip", "srcip", "actions"],
+      ///////////////////////////////////////////////////////////////
       allowedTraffic: 0,
       droppedTraffic: 0,
       droppedTrafficSeverityGovNet: 0,
@@ -308,7 +323,6 @@ export default {
       top10AppsUsedInternally: 0,
       top10RequestedAppsGovNet: 0,
       top10RequestedAppsInternet: 0,
-      ///////////////////////////////////////////////////////////////////
       selectedOption: 'Allowed',
       bigLineChart: {
         allData: [],
@@ -455,11 +469,39 @@ export default {
         }));
         this.top10RequestedAppsInternet = top10RequestedAppsInternetData;
 
+        /////////////////////////////////////////////////////////////////////////////////
+        // All Event Data
+        const allEventDataResponse = await apiService.getAllEventData(timeRange);
+        const allEventDataHits = allEventDataResponse.hits.hits;
+        this.tableData = allEventDataHits.map((hit) => {
+          const timestamp = hit._source.timestamp;
+          const id = hit._id;
+          const dstip = hit._source.data.dst;
+          const srcip = hit._source.data.src;
+          // const data = hit._source.data;
+          // const full_log = hit._source.full_log;
+
+          // console.log('Timestamp:', timestamp);
+          console.log('ID:', id);
+          // console.log('Destination IP:', dstip);
+          // console.log('Source IP:', srcip);
+          // console.log('hit._source.data:', data);
+          // console.log('hit._source.full_log:', full_log);
+
+          return {
+            id: id,
+            timestamp: timestamp,
+            dstip: dstip,
+            srcip: srcip,
+            actions: null, // Placeholder for action button data
+          };
+        });
+        ////////////////////////////////////////////////////////////////////////////////
+
       } catch (error) {
         console.error('Error fetching allowed traffic:', error);
       }
     },
-    ///////////////////////////////////////////////////////////////
     async fetchDataForWeek(weekNumber, selectedOption) {
       try {
 
@@ -485,9 +527,7 @@ export default {
         throw new Error(`Failed to fetch traffic data for week ${weekNumber}: ${error.message}`);
       }
     },
-    ////////////////////////////////////////////////////////////////////////////////
     async initBigChart(selectedOption) {
-      console.log('Dashboard initBigChart selectedOption:', selectedOption);
       let index = 1;
       const weekNumber = index;
 
@@ -506,22 +546,17 @@ export default {
           ],
         };
 
-        // Fetch data for all seven weeks asynchronously
         for (let i = 1; i <= 7; i++) {
           promises.push(this.fetchDataForWeek(i, selectedOption));
         }
 
-        // Wait for all promises to resolve
         const results = await Promise.all(promises);
 
-        // Initialize data arrays for allowed and dropped traffic
         const allowedData = [];
         const droppedData = [];
 
-        // Aggregate data for allowed and dropped traffic
         results.forEach((result, i) => {
 
-          // Add weekTraffic to the respective data array
           if (selectedOption === 'Allowed') {
             allowedData.push(result.weekTraffic);
           } else if (selectedOption === 'Dropped') {
@@ -529,7 +564,6 @@ export default {
           }
         });
 
-        // Create datasets for allowed and dropped traffic
         const allowedDataset = {
           data: allowedData,
           fill: true,
@@ -562,7 +596,6 @@ export default {
           pointRadius: 4,
         };
 
-        // Add datasets to chartData
         if (selectedOption === 'Allowed') {
           chartData.datasets.push(allowedDataset);
         } else if (selectedOption === 'Dropped') {
@@ -577,7 +610,6 @@ export default {
         console.error(`Error initializing chart for week ${weekNumber}:`, error);
       }
     },
-    ///////////////////////////////////////////////////////////////
     formatNumber(number) {
       if (Number.isInteger(number)) {
         return number.toLocaleString();
@@ -585,7 +617,6 @@ export default {
         return number.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }); // Format floating-point numbers with decimal points and commas
       }
     },
-    //////////////////////////////////////////////////////////////////////
   },
   ////////////////////////////////////////////////////////////////////////
   async mounted() {
@@ -594,7 +625,6 @@ export default {
       this.i18n.locale = 'ar';
       this.$rtl.enableRTL();
     }
-    // Fetch and initialize data for the first week
     await this.initBigChart(this.selectedOption);
   },
   beforeDestroy() {

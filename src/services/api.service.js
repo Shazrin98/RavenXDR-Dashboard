@@ -2,7 +2,6 @@ import axios from "axios";
 
 const BASE_URL = process.env.ELASTICSEARCH_URL || "http://172.17.7.12:9200";
 
-// Create a reusable Axios instance with default configuration
 const api = axios.create({
   baseURL: BASE_URL,
   auth: {
@@ -10,8 +9,6 @@ const api = axios.create({
     password: process.env.API_PASSWORD || "1qazXSW@", // Password
   },
 });
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
 // Chart Traffic Data For WEEK 1
 // allowedTrafficWeek1
 export const getAllowedTrafficWeek1 = async () => {
@@ -22,7 +19,7 @@ export const getAllowedTrafficWeek1 = async () => {
         must: [
           { wildcard: { "data.action": "pass" } },
           { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
-          { range: { "@timestamp": { "gte": "now-7d/d", "lte": "now/d" } } },
+          { range: { "@timestamp": { gte: "now-7d/d", lte: "now/d" } } },
         ],
       },
     },
@@ -44,7 +41,7 @@ export const getDroppedTrafficWeek1 = async () => {
         must: [
           { wildcard: { "data.action": "dropped" } },
           { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
-          { range: { "@timestamp": { "gte": "now-7d/d", "lte": "now/d" } } },
+          { range: { "@timestamp": { gte: "now-7d/d", lte: "now/d" } } },
         ],
       },
     },
@@ -67,7 +64,7 @@ export const getAllowedTrafficWeek2 = async () => {
         must: [
           { wildcard: { "data.action": "pass" } },
           { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
-          { range: { "@timestamp": { "gte": "now-14d/d", "lte": "now-7d/d" } } },
+          { range: { "@timestamp": { gte: "now-14d/d", lte: "now-7d/d" } } },
         ],
       },
     },
@@ -89,7 +86,7 @@ export const getDroppedTrafficWeek2 = async () => {
         must: [
           { wildcard: { "data.action": "dropped" } },
           { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
-          { range: { "@timestamp": { "gte": "now-14d/d", "lte": "now-7d/d" } } },
+          { range: { "@timestamp": { gte: "now-14d/d", lte: "now-7d/d" } } },
         ],
       },
     },
@@ -112,7 +109,7 @@ export const getAllowedTrafficWeek3 = async () => {
         must: [
           { wildcard: { "data.action": "pass" } },
           { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
-          { range: { "@timestamp": { "gte": "now-21d/d", "lte": "now-14d/d" } } },
+          { range: { "@timestamp": { gte: "now-21d/d", lte: "now-14d/d" } } },
         ],
       },
     },
@@ -134,7 +131,7 @@ export const getDroppedTrafficWeek3 = async () => {
         must: [
           { wildcard: { "data.action": "dropped" } },
           { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
-          { range: { "@timestamp": { "gte": "now-21d/d", "lte": "now-14d/d" } } },
+          { range: { "@timestamp": { gte: "now-21d/d", lte: "now-14d/d" } } },
         ],
       },
     },
@@ -157,7 +154,7 @@ export const getAllowedTrafficWeek4 = async () => {
         must: [
           { wildcard: { "data.action": "pass" } },
           { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
-          { range: { "@timestamp": { "gte": "now-28d/d", "lte": "now-21d/d" } } },
+          { range: { "@timestamp": { gte: "now-28d/d", lte: "now-21d/d" } } },
         ],
       },
     },
@@ -179,7 +176,7 @@ export const getDroppedTrafficWeek4 = async () => {
         must: [
           { wildcard: { "data.action": "dropped" } },
           { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
-          { range: { "@timestamp": { "gte": "now-28d/d", "lte": "now-21d/d" } } },
+          { range: { "@timestamp": { gte: "now-28d/d", lte: "now-21d/d" } } },
         ],
       },
     },
@@ -202,7 +199,7 @@ export const getAllowedTrafficWeek5 = async () => {
         must: [
           { wildcard: { "data.action": "pass" } },
           { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
-          { range: { "@timestamp": { "gte": "now-35d/d", "lte": "now-28d/d" } } },
+          { range: { "@timestamp": { gte: "now-35d/d", lte: "now-28d/d" } } },
         ],
       },
     },
@@ -224,7 +221,7 @@ export const getDroppedTrafficWeek5 = async () => {
         must: [
           { wildcard: { "data.action": "dropped" } },
           { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
-          { range: { "@timestamp": { "gte": "now-35d/d", "lte": "now-28d/d" } } },
+          { range: { "@timestamp": { gte: "now-35d/d", lte: "now-28d/d" } } },
         ],
       },
     },
@@ -247,7 +244,7 @@ export const getAllowedTrafficWeek6 = async () => {
         must: [
           { wildcard: { "data.action": "pass" } },
           { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
-          { range: { "@timestamp": { "gte": "now-42d/d", "lte": "now-35d/d" } } },
+          { range: { "@timestamp": { gte: "now-42d/d", lte: "now-35d/d" } } },
         ],
       },
     },
@@ -269,7 +266,7 @@ export const getDroppedTrafficWeek6 = async () => {
         must: [
           { wildcard: { "data.action": "dropped" } },
           { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
-          { range: { "@timestamp": { "gte": "now-42d/d", "lte": "now-35d/d" } } },
+          { range: { "@timestamp": { gte: "now-42d/d", lte: "now-35d/d" } } },
         ],
       },
     },
@@ -292,7 +289,7 @@ export const getAllowedTrafficWeek7 = async () => {
         must: [
           { wildcard: { "data.action": "pass" } },
           { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
-          { range: { "@timestamp": { "gte": "now-49d/d", "lte": "now-42d/d" } } },
+          { range: { "@timestamp": { gte: "now-49d/d", lte: "now-42d/d" } } },
         ],
       },
     },
@@ -314,7 +311,7 @@ export const getDroppedTrafficWeek7 = async () => {
         must: [
           { wildcard: { "data.action": "dropped" } },
           { wildcard: { "decoder.name": "fortigate-firewall-v5" } },
-          { range: { "@timestamp": { "gte": "now-49d/d", "lte": "now-42d/d" } } },
+          { range: { "@timestamp": { gte: "now-49d/d", lte: "now-42d/d" } } },
         ],
       },
     },
@@ -327,8 +324,7 @@ export const getDroppedTrafficWeek7 = async () => {
     throw new Error(`Failed to fetch droppedTraffic data: ${error.message}`);
   }
 };
-//////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////
+
 // allowedTraffic
 export const getAllowedTraffic = async (timeRange = {}) => {
   const url = "/raven*/_count";
@@ -421,7 +417,7 @@ export const getQuarantinedReceivedEmail = async (timeRange = {}) => {
     );
   }
 };
-// failedReceivedEmail/////////
+// failedReceivedEmail
 export const getFailedReceivedEmail = async (timeRange = {}) => {
   const url = "/raven*/_count";
   const data = {
@@ -445,7 +441,6 @@ export const getFailedReceivedEmail = async (timeRange = {}) => {
     );
   }
 };
-/////////////////////////////////////////////////////////////////////////
 // droppedTrafficSeverityGovNet
 export const getDroppedTrafficSeverityGovNet = async (timeRange = {}) => {
   const url = "/raven*/_search?pretty";
@@ -520,9 +515,7 @@ export const getTop5CountryTrafficAllowed = async (timeRange = {}) => {
           { match: { "decoder.name": "fortigate-firewall-v5" } },
           { range: { "@timestamp": timeRange } },
         ],
-        must_not: [
-          { term: { "data.srccountry": "Reserved" } },
-        ],
+        must_not: [{ term: { "data.srccountry": "Reserved" } }],
       },
     },
     aggs: {
@@ -556,9 +549,7 @@ export const getTop5CountryTrafficBlocked = async (timeRange = {}) => {
           { match: { "decoder.name": "fortigate-firewall-v5" } },
           { range: { "@timestamp": timeRange } },
         ],
-        must_not: [
-          { term: { "data.srccountry": "Reserved" } },
-        ],
+        must_not: [{ term: { "data.srccountry": "Reserved" } }],
       },
     },
     aggs: {
@@ -676,19 +667,17 @@ export const getTop10RequestedAppsGovNet = async (timeRange = {}) => {
     );
   }
 };
-// top10RequestedAppsInternet////////////////
+// top10RequestedAppsInternet
 export const getTop10RequestedAppsInternet = async (timeRange = {}) => {
   const url = "/raven*/_search?pretty";
   const data = {
     size: 0,
     query: {
       bool: {
-        must_not: [
-          { wildcard: { "data.src": "10.*" } }
-        ],
+        must_not: [{ wildcard: { "data.src": "10.*" } }],
         must: [
           { match: { "decoder.name": "Barracuda_custom" } },
-          { range: { "@timestamp": timeRange } }
+          { range: { "@timestamp": timeRange } },
         ],
       },
     },
@@ -711,7 +700,26 @@ export const getTop10RequestedAppsInternet = async (timeRange = {}) => {
     );
   }
 };
-
-// Add more functions for other API requests...
+/////////////////////////////////////////////////////////////////////////
+// allEventData
+export const getAllEventData = async (timeRange = {}) => {
+  const url = "/raven*/_search?pretty";
+  const data = {
+    size: 2, // Increase size to fetch more hits
+    query: {
+      range: { "@timestamp": timeRange },
+    },
+  };
+  try {
+    const response = await api.post(url, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching allEventData:", error);
+    throw new Error(
+      `Failed to fetch allEventData data: ${error.message}`
+    );
+  }
+};
+////////////////////////////////////////////////////////////////////////////
 
 export default api;

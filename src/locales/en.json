@@ -19,6 +19,7 @@
       "Allowed",
       "Dropped"
     ],
+    "eventsTable": "Events Table",
 
     "completedTasks": "Completed Tasks",
     "dailySales": "Daily Sales",
