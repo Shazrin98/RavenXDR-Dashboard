@@ -705,7 +705,7 @@ export const getTop10RequestedAppsInternet = async (timeRange = {}) => {
 export const getAllEventData = async (timeRange = {}) => {
   const url = "/raven*/_search?pretty";
   const data = {
-    size: 2, // Increase size to fetch more hits
+    size: 5, // Increase size to fetch more hits
     query: {
       range: { "@timestamp": timeRange },
     },

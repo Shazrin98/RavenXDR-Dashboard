@@ -78,7 +78,8 @@
             </h5>
             <ul class="list-group list-group-flush">
               <li v-for="severityData in droppedTrafficSeverityGovNet" :key="severityData.key">
-                {{ severityData.key }}: {{ formatNumber(severityData.docCount) }}
+                {{ severityData.key }}:
+                {{ formatNumber(severityData.docCount) }}
               </li>
             </ul>
           </template>
@@ -93,7 +94,8 @@
             </h5>
             <ul class="list-group list-group-flush">
               <li v-for="severityData in droppedTrafficSeverityInternet" :key="severityData.key">
-                {{ severityData.key }}: {{ formatNumber(severityData.docCount) }}
+                {{ severityData.key }}:
+                {{ formatNumber(severityData.docCount) }}
               </li>
             </ul>
           </template>
@@ -141,8 +143,8 @@
           </h5>
           <ul class="list-group list-group-flush list-unstyled">
             <li v-for="vpnUserData in vpnUsersConnected" :key="vpnUserData.key">
-              <i class="tim-icons icon-single-02 text-success"></i> {{ vpnUserData.key }}: {{
-                formatNumber(vpnUserData.docCount) }}
+              <i class="tim-icons icon-single-02 text-success"></i>
+              {{ vpnUserData.key }}: {{ formatNumber(vpnUserData.docCount) }}
             </li>
           </ul>
         </card>
@@ -246,31 +248,29 @@
     <div class="row">
       <div class="col-lg-12 col-md-12">
         <card class="card" :header-classes="{ 'text-right': isRTL }">
-          <h4 slot="header" class="card-title">{{ $t('dashboard.eventsTable') }}</h4>
+          <h4 slot="header" class="card-title">
+            {{ $t("dashboard.eventsTable") }}
+          </h4>
           <div class="table-responsive">
             <base-table :data="tableData" :columns="columns">
               <template slot="columns">
-                <th class="text-left">ID</th>
                 <th class="text-left">Timestamp</th>
                 <th class="text-left">Destination IP</th>
                 <th class="text-left">Source IP</th>
                 <th class="text-left">Details</th>
               </template>
-              <template slot-scope="{row}">
-                <td>{{ row.id }}</td>
+              <template slot-scope="{ row }">
                 <td>{{ row.timestamp }}</td>
                 <td>{{ row.dstip }}</td>
                 <td>{{ row.srcip }}</td>
-                <td class="td-actions text-center">
-                  <base-button type="success" size="sm" icon @click="showFullEventData(row)">
+                <td class="td-actions text-left">
+                  <base-button type="success" size="sm" icon @click="toggleDetailData(row)">
                     <i class="tim-icons icon-zoom-split"></i>
                   </base-button>
-                  <div class="full-event-data" v-if="showData">
-                    <h3>Full Event Data</h3>
-                    <pre>{{ fullEventData }}</pre>
-                    <button @click="close">Close</button>
-                  </div>
                 </td>
+                <div v-if="row.showDetailData" class="detail-data">
+                  <pre>{{ row.data }}</pre>
+                </div>
               </template>
             </base-table>
           </div>
@@ -298,17 +298,13 @@ export default {
     BarChart,
     TaskList,
     UserTable,
-    BaseTable
-  },
-  props: {
-    fullEventData: Object,
+    BaseTable,
   },
   data() {
     return {
       /////////////////////////////////////////////////////////
-      showData: false,
       tableData: [],
-      columns: ["id", "timestamp", "dstip", "srcip", "actions"],
+      columns: ["timestamp", "dstip", "srcip", "actions"],
       ///////////////////////////////////////////////////////////////
       allowedTraffic: 0,
       droppedTraffic: 0,
@@ -323,7 +319,7 @@ export default {
       top10AppsUsedInternally: 0,
       top10RequestedAppsGovNet: 0,
       top10RequestedAppsInternet: 0,
-      selectedOption: 'Allowed',
+      selectedOption: "Allowed",
       bigLineChart: {
         allData: [],
         activeIndex: 0,
@@ -355,115 +351,165 @@ export default {
       return this.$rtl.isRTL;
     },
     bigLineChartCategories() {
-      return this.$t('dashboard.chartCategoriesTraffic');
-    }
+      return this.$t("dashboard.chartCategoriesTraffic");
+    },
+    /////////////////////////////////////////////////////////////////////
   },
   async created() {
-    this.$root.$on('timeRangeChanged', this.fetchData);
+    this.$root.$on("timeRangeChanged", this.fetchData);
   },
 
   destroyed() {
-    this.$root.$off('timeRangeChanged', this.fetchData);
+    this.$root.$off("timeRangeChanged", this.fetchData);
   },
   methods: {
-    ///////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////
+    toggleDetailData(row) {
+    row.showDetailData = !row.showDetailData; // Toggle the flag
+  },
+    //////////////////////////////////////////////////////////////////
     async fetchData(timeRange) {
       try {
         if (!timeRange) {
           timeRange = {
             gte: this.$route.query.gte,
             lte: this.$route.query.lte,
-            format: 'yyyy-MM-dd',
+            format: "yyyy-MM-dd",
           };
         }
 
         // Allowed Traffic
-        const allowedTrafficResponse = await apiService.getAllowedTraffic(timeRange);
-        this.allowedTraffic = allowedTrafficResponse && allowedTrafficResponse.count ? allowedTrafficResponse.count : 0;
+        const allowedTrafficResponse = await apiService.getAllowedTraffic(
+          timeRange
+        );
+        this.allowedTraffic =
+          allowedTrafficResponse && allowedTrafficResponse.count
+            ? allowedTrafficResponse.count
+            : 0;
 
         // Dropped Traffic
-        const droppedTrafficResponse = await apiService.getDroppedTraffic(timeRange);
-        this.droppedTraffic = droppedTrafficResponse && droppedTrafficResponse.count ? droppedTrafficResponse.count : 0;
+        const droppedTrafficResponse = await apiService.getDroppedTraffic(
+          timeRange
+        );
+        this.droppedTraffic =
+          droppedTrafficResponse && droppedTrafficResponse.count
+            ? droppedTrafficResponse.count
+            : 0;
 
         // Successful Received Email
-        const successfulReceivedEmailResponse = await apiService.getSuccessfulReceivedEmail(timeRange);
-        this.successfulReceivedEmail = successfulReceivedEmailResponse && successfulReceivedEmailResponse.count ? successfulReceivedEmailResponse.count : 0;
+        const successfulReceivedEmailResponse =
+          await apiService.getSuccessfulReceivedEmail(timeRange);
+        this.successfulReceivedEmail =
+          successfulReceivedEmailResponse &&
+            successfulReceivedEmailResponse.count
+            ? successfulReceivedEmailResponse.count
+            : 0;
 
         // Quarantined Received Email
-        const quarantinedReceivedEmailResponse = await apiService.getQuarantinedReceivedEmail(timeRange);
-        this.quarantinedReceivedEmail = quarantinedReceivedEmailResponse && quarantinedReceivedEmailResponse.count ? quarantinedReceivedEmailResponse.count : 0;
+        const quarantinedReceivedEmailResponse =
+          await apiService.getQuarantinedReceivedEmail(timeRange);
+        this.quarantinedReceivedEmail =
+          quarantinedReceivedEmailResponse &&
+            quarantinedReceivedEmailResponse.count
+            ? quarantinedReceivedEmailResponse.count
+            : 0;
 
         // Failed Received Email
-        const failedReceivedEmailResponse = await apiService.getFailedReceivedEmail(timeRange);
-        this.failedReceivedEmail = failedReceivedEmailResponse && failedReceivedEmailResponse.count ? failedReceivedEmailResponse.count : 0;
+        const failedReceivedEmailResponse =
+          await apiService.getFailedReceivedEmail(timeRange);
+        this.failedReceivedEmail =
+          failedReceivedEmailResponse && failedReceivedEmailResponse.count
+            ? failedReceivedEmailResponse.count
+            : 0;
 
         // Dropped Traffic Severity By GovNet Source
-        const droppedTrafficSeverityGovNetResponse = await apiService.getDroppedTrafficSeverityGovNet(timeRange);
-        const DTSGNbuckets = droppedTrafficSeverityGovNetResponse.aggregations.top_attacks.buckets;
-        const droppedTrafficSeverityGovNetData = DTSGNbuckets.map(bucket => ({
+        const droppedTrafficSeverityGovNetResponse =
+          await apiService.getDroppedTrafficSeverityGovNet(timeRange);
+        const DTSGNbuckets =
+          droppedTrafficSeverityGovNetResponse.aggregations.top_attacks.buckets;
+        const droppedTrafficSeverityGovNetData = DTSGNbuckets.map((bucket) => ({
           key: bucket.key,
           docCount: bucket.doc_count,
         }));
         this.droppedTrafficSeverityGovNet = droppedTrafficSeverityGovNetData;
 
         // Dropped Traffic Severity By Internet Source
-        const droppedTrafficSeverityInternetResponse = await apiService.getDroppedTrafficSeverityInternet(timeRange);
-        const DTSIbuckets = droppedTrafficSeverityInternetResponse.aggregations.top_attacks.buckets;
-        const droppedTrafficSeverityInternetData = DTSIbuckets.map(bucket => ({
-          key: bucket.key,
-          docCount: bucket.doc_count,
-        }));
-        this.droppedTrafficSeverityInternet = droppedTrafficSeverityInternetData;
+        const droppedTrafficSeverityInternetResponse =
+          await apiService.getDroppedTrafficSeverityInternet(timeRange);
+        const DTSIbuckets =
+          droppedTrafficSeverityInternetResponse.aggregations.top_attacks
+            .buckets;
+        const droppedTrafficSeverityInternetData = DTSIbuckets.map(
+          (bucket) => ({
+            key: bucket.key,
+            docCount: bucket.doc_count,
+          })
+        );
+        this.droppedTrafficSeverityInternet =
+          droppedTrafficSeverityInternetData;
 
         // Top 5 Country Traffic Allowed
-        const top5CountryTrafficAllowedResponse = await apiService.getTop5CountryTrafficAllowed(timeRange);
-        const T5CTAbuckets = top5CountryTrafficAllowedResponse.aggregations.top_countries.buckets;
-        const top5CountryTrafficAllowedData = T5CTAbuckets.map(bucket => ({
+        const top5CountryTrafficAllowedResponse =
+          await apiService.getTop5CountryTrafficAllowed(timeRange);
+        const T5CTAbuckets =
+          top5CountryTrafficAllowedResponse.aggregations.top_countries.buckets;
+        const top5CountryTrafficAllowedData = T5CTAbuckets.map((bucket) => ({
           key: bucket.key,
           docCount: bucket.doc_count,
         }));
         this.top5CountryTrafficAllowed = top5CountryTrafficAllowedData;
 
         // Top 5 Country Traffic Blocked
-        const top5CountryTrafficBlockedResponse = await apiService.getTop5CountryTrafficBlocked(timeRange);
-        const T5CTBbuckets = top5CountryTrafficBlockedResponse.aggregations.top_countries.buckets;
-        const top5CountryTrafficBlockedData = T5CTBbuckets.map(bucket => ({
+        const top5CountryTrafficBlockedResponse =
+          await apiService.getTop5CountryTrafficBlocked(timeRange);
+        const T5CTBbuckets =
+          top5CountryTrafficBlockedResponse.aggregations.top_countries.buckets;
+        const top5CountryTrafficBlockedData = T5CTBbuckets.map((bucket) => ({
           key: bucket.key,
           docCount: bucket.doc_count,
         }));
         this.top5CountryTrafficBlocked = top5CountryTrafficBlockedData;
 
         // VPN Users Connected
-        const vpnUsersConnectedResponse = await apiService.getVpnUsersConnected(timeRange);
-        const VUCbuckets = vpnUsersConnectedResponse.aggregations.top_users.buckets;
-        const vpnUsersConnectedData = VUCbuckets.map(bucket => ({
+        const vpnUsersConnectedResponse = await apiService.getVpnUsersConnected(
+          timeRange
+        );
+        const VUCbuckets =
+          vpnUsersConnectedResponse.aggregations.top_users.buckets;
+        const vpnUsersConnectedData = VUCbuckets.map((bucket) => ({
           key: bucket.key,
           docCount: bucket.doc_count,
         }));
         this.vpnUsersConnected = vpnUsersConnectedData;
 
         // Top 10 Apps Used Internally
-        const top10AppsUsedInternallyResponse = await apiService.getTop10AppsUsedInternally(timeRange);
-        const T10AUIbuckets = top10AppsUsedInternallyResponse.aggregations.top_websites.buckets;
-        const top10AppsUsedInternallyData = T10AUIbuckets.map(bucket => ({
+        const top10AppsUsedInternallyResponse =
+          await apiService.getTop10AppsUsedInternally(timeRange);
+        const T10AUIbuckets =
+          top10AppsUsedInternallyResponse.aggregations.top_websites.buckets;
+        const top10AppsUsedInternallyData = T10AUIbuckets.map((bucket) => ({
           key: bucket.key,
           docCount: bucket.doc_count,
         }));
         this.top10AppsUsedInternally = top10AppsUsedInternallyData;
 
         // Top 10 Requested Apps By GovNet
-        const top10RequestedAppsGovNetResponse = await apiService.getTop10RequestedAppsGovNet(timeRange);
-        const T10RAGNbuckets = top10RequestedAppsGovNetResponse.aggregations.top_websites.buckets;
-        const top10RequestedAppsGovNetData = T10RAGNbuckets.map(bucket => ({
+        const top10RequestedAppsGovNetResponse =
+          await apiService.getTop10RequestedAppsGovNet(timeRange);
+        const T10RAGNbuckets =
+          top10RequestedAppsGovNetResponse.aggregations.top_websites.buckets;
+        const top10RequestedAppsGovNetData = T10RAGNbuckets.map((bucket) => ({
           key: bucket.key,
           docCount: bucket.doc_count,
         }));
         this.top10RequestedAppsGovNet = top10RequestedAppsGovNetData;
 
         // Top 10 Requested Apps By Internet
-        const top10RequestedAppsInternetResponse = await apiService.getTop10RequestedAppsInternet(timeRange);
-        const T10RAIbuckets = top10RequestedAppsInternetResponse.aggregations.top_websites.buckets;
-        const top10RequestedAppsInternetData = T10RAIbuckets.map(bucket => ({
+        const top10RequestedAppsInternetResponse =
+          await apiService.getTop10RequestedAppsInternet(timeRange);
+        const T10RAIbuckets =
+          top10RequestedAppsInternetResponse.aggregations.top_websites.buckets;
+        const top10RequestedAppsInternetData = T10RAIbuckets.map((bucket) => ({
           key: bucket.key,
           docCount: bucket.doc_count,
         }));
@@ -471,60 +517,60 @@ export default {
 
         /////////////////////////////////////////////////////////////////////////////////
         // All Event Data
-        const allEventDataResponse = await apiService.getAllEventData(timeRange);
+        const allEventDataResponse = await apiService.getAllEventData(
+          timeRange
+        );
         const allEventDataHits = allEventDataResponse.hits.hits;
         this.tableData = allEventDataHits.map((hit) => {
           const timestamp = hit._source.timestamp;
-          const id = hit._id;
           const dstip = hit._source.data.dst;
           const srcip = hit._source.data.src;
-          // const data = hit._source.data;
-          // const full_log = hit._source.full_log;
+          const data = hit._source.data;
 
-          // console.log('Timestamp:', timestamp);
-          console.log('ID:', id);
-          // console.log('Destination IP:', dstip);
-          // console.log('Source IP:', srcip);
           // console.log('hit._source.data:', data);
-          // console.log('hit._source.full_log:', full_log);
 
           return {
-            id: id,
+            data: data,
             timestamp: timestamp,
             dstip: dstip,
             srcip: srcip,
             actions: null, // Placeholder for action button data
+            showDetailData: false, // Flag to control detail visibility
           };
         });
         ////////////////////////////////////////////////////////////////////////////////
-
       } catch (error) {
-        console.error('Error fetching allowed traffic:', error);
+        console.error("Error fetching allowed traffic:", error);
       }
     },
     async fetchDataForWeek(weekNumber, selectedOption) {
       try {
-
-        const allowedTrafficResponse = await apiService[`getAllowedTrafficWeek${weekNumber}`]();
-        const droppedTrafficResponse = await apiService[`getDroppedTrafficWeek${weekNumber}`]();
+        const allowedTrafficResponse = await apiService[
+          `getAllowedTrafficWeek${weekNumber}`
+        ]();
+        const droppedTrafficResponse = await apiService[
+          `getDroppedTrafficWeek${weekNumber}`
+        ]();
 
         const allowedTrafficCount = allowedTrafficResponse.count;
         const droppedTrafficCount = droppedTrafficResponse.count;
 
         let weekTraffic;
 
-        if (selectedOption === 'Allowed') {
+        if (selectedOption === "Allowed") {
           weekTraffic = allowedTrafficCount;
-        } else if (selectedOption === 'Dropped') {
+        } else if (selectedOption === "Dropped") {
           weekTraffic = droppedTrafficCount;
         }
 
         return {
-          weekTraffic: weekTraffic
+          weekTraffic: weekTraffic,
         };
       } catch (error) {
         console.error("Error fetching traffic data:", error);
-        throw new Error(`Failed to fetch traffic data for week ${weekNumber}: ${error.message}`);
+        throw new Error(
+          `Failed to fetch traffic data for week ${weekNumber}: ${error.message}`
+        );
       }
     },
     async initBigChart(selectedOption) {
@@ -556,10 +602,9 @@ export default {
         const droppedData = [];
 
         results.forEach((result, i) => {
-
-          if (selectedOption === 'Allowed') {
+          if (selectedOption === "Allowed") {
             allowedData.push(result.weekTraffic);
-          } else if (selectedOption === 'Dropped') {
+          } else if (selectedOption === "Dropped") {
             droppedData.push(result.weekTraffic);
           }
         });
@@ -572,7 +617,7 @@ export default {
           borderDash: [],
           borderDashOffset: 0.0,
           pointBackgroundColor: config.colors.primary,
-          pointBorderColor: 'rgba(255,255,255,0)',
+          pointBorderColor: "rgba(255,255,255,0)",
           pointHoverBackgroundColor: config.colors.primary,
           pointBorderWidth: 20,
           pointHoverRadius: 4,
@@ -588,7 +633,7 @@ export default {
           borderDash: [],
           borderDashOffset: 0.0,
           pointBackgroundColor: config.colors.danger,
-          pointBorderColor: 'rgba(255,255,255,0)',
+          pointBorderColor: "rgba(255,255,255,0)",
           pointHoverBackgroundColor: config.colors.danger,
           pointBorderWidth: 20,
           pointHoverRadius: 4,
@@ -596,9 +641,9 @@ export default {
           pointRadius: 4,
         };
 
-        if (selectedOption === 'Allowed') {
+        if (selectedOption === "Allowed") {
           chartData.datasets.push(allowedDataset);
-        } else if (selectedOption === 'Dropped') {
+        } else if (selectedOption === "Dropped") {
           chartData.datasets.push(droppedDataset);
         }
 
@@ -607,14 +652,20 @@ export default {
         this.bigLineChart.activeIndex = index;
         this.selectedOption = selectedOption;
       } catch (error) {
-        console.error(`Error initializing chart for week ${weekNumber}:`, error);
+        console.error(
+          `Error initializing chart for week ${weekNumber}:`,
+          error
+        );
       }
     },
     formatNumber(number) {
       if (Number.isInteger(number)) {
         return number.toLocaleString();
       } else {
-        return number.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }); // Format floating-point numbers with decimal points and commas
+        return number.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
       }
     },
   },
@@ -622,7 +673,7 @@ export default {
   async mounted() {
     this.i18n = this.$i18n;
     if (this.enableRTL) {
-      this.i18n.locale = 'ar';
+      this.i18n.locale = "ar";
       this.$rtl.enableRTL();
     }
     await this.initBigChart(this.selectedOption);
@@ -636,5 +687,15 @@ export default {
 };
 </script>
 <style>
-@import '~@fortawesome/fontawesome-free/css/all.css';
+@import "~@fortawesome/fontawesome-free/css/all.css";
+
+.detail-data {
+  list-style: none;
+  padding: 10px;
+  margin: 5px;
+  font-family: monospace;
+  font-size: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}
 </style>
