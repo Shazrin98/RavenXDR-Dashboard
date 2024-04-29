@@ -523,8 +523,8 @@ export default {
         const allEventDataHits = allEventDataResponse.hits.hits;
         this.tableData = allEventDataHits.map((hit) => {
           const timestamp = hit._source.timestamp;
-          const dstip = hit._source.data.dst;
-          const srcip = hit._source.data.src;
+          const dstip = hit._source.data.dst || hit._source.data.dstip;
+          const srcip = hit._source.data.src || hit._source.data.srcip;
           const data = hit._source.data;
 
           // console.log('hit._source.data:', data);
