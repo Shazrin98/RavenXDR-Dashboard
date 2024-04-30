@@ -253,31 +253,41 @@
           </h4>
           <!-- /////////////////////////////////////////////////// -->
           <div class="filters">
-            <!-- Dropdown for source IP options -->
-            <select v-model="selectedSrcIP" @change="applyIPFilters">
-              <option value="" disabled selected>Choose Source IP</option>
-              <option v-for="option in srcIPOptions" :key="option.key" :value="option.value">{{ option.label }}</option>
-            </select>
 
-            <!-- Dropdown for destination IP options -->
-            <select v-model="selectedDstIP" @change="applyIPFilters">
-              <option value="" disabled selected>Choose Destination IP</option>
-              <option v-for="option in dstIPOptions" :key="option.key" :value="option.value">{{ option.label }}</option>
-            </select>
+            <div class="dropdown">
+              <!-- Dropdown for source IP options -->
+              <input type="text" v-model="searchSrcIP" placeholder="Search Source IP">
+              <select v-model="selectedSrcIP" @change="applyIPFilters">
+                <option value="" disabled selected>Choose Source IP</option>
+                <option v-for="option in filteredSrcIPOptions" :key="option.key" :value="option.value">{{ option.label }}
+                </option>
+              </select>
+            </div>
+
+            <div class="dropdown">
+              <!-- Dropdown for destination IP options -->
+              <input type="text" v-model="searchDstIP" placeholder="Search Destination IP">
+              <select v-model="selectedDstIP" @change="applyIPFilters">
+                <option value="" disabled selected>Choose Destination IP</option>
+                <option v-for="option in filteredDstIPOptions" :key="option.key" :value="option.value">{{ option.label }}
+                </option>
+              </select>
+            </div>
+
           </div>
           <!-- ////////////////////////////////////////////////// -->
           <div class="table-responsive">
             <base-table :data="tableData" :columns="columns">
               <template slot="columns">
                 <th class="text-left">Timestamp</th>
-                <th class="text-left">Destination IP</th>
                 <th class="text-left">Source IP</th>
+                <th class="text-left">Destination IP</th>
                 <th class="text-left">Details</th>
               </template>
               <template slot-scope="{ row }">
                 <td>{{ row.timestamp }}</td>
-                <td>{{ row.dstip }}</td>
                 <td>{{ row.srcip }}</td>
+                <td>{{ row.dstip }}</td>
                 <td class="td-actions text-left">
                   <base-button type="success" size="sm" icon @click="toggleDetailData(row)">
                     <i class="tim-icons icon-zoom-split"></i>
@@ -325,6 +335,9 @@ export default {
       srcIPOptions: [], // Source IP options fetched from API
       dstIPOptions: [], // Destination IP options fetched from API
       filteredTableData: [], // Table data after applying IP filters
+
+      searchSrcIP: '',
+      searchDstIP: '',
       ///////////////////////////////////////////////////////////////
       allowedTraffic: 0,
       droppedTraffic: 0,
@@ -364,6 +377,18 @@ export default {
   },
   ////////////////////////////////////////////////////////////////////////
   computed: {
+    ////////////////////////////////////////////////////////////////
+    filteredSrcIPOptions() {
+      return this.srcIPOptions.filter(option =>
+        option.label.toLowerCase().includes(this.searchSrcIP.toLowerCase())
+      );
+    },
+    filteredDstIPOptions() {
+      return this.dstIPOptions.filter(option =>
+        option.label.toLowerCase().includes(this.searchDstIP.toLowerCase())
+      );
+    },
+    ////////////////////////////////////////////////////////////////
     enableRTL() {
       return this.$route.query.enableRTL;
     },
@@ -581,10 +606,8 @@ export default {
         ///////////////////////////////////////////////////////////////////////////////////
         // Source IP Filter Options
         const filterSrcipOptionsResponse = await apiService.getFilterSrcipOptions(timeRange);
-        console.log("Source IP filterSrcipOptionsResponse:", filterSrcipOptionsResponse);
         const filterSrcipOptionsBuckets =
           filterSrcipOptionsResponse.aggregations.unique_source_ips.buckets;
-        console.log("Source IP filterSrcipOptionsBuckets:", filterSrcipOptionsBuckets);
         const srcIPOptionsData = filterSrcipOptionsBuckets.map((bucket) => ({
           key: bucket.key,
           value: bucket.key,
@@ -595,10 +618,8 @@ export default {
 
         // Destination IP Filter Options
         const filterDstipOptionsResponse = await apiService.getFilterDstipOptions(timeRange);
-        console.log("Destination IP filterDstipOptionsResponse:", filterDstipOptionsResponse);
         const filterDstipOptionsBuckets =
           filterDstipOptionsResponse.aggregations.unique_destination_ips.buckets; // Corrected
-        console.log("Destination IP filterDstipOptionsBuckets:", filterDstipOptionsBuckets);
         const dstIPOptionsData = filterDstipOptionsBuckets.map((bucket) => ({
           key: bucket.key,
           value: bucket.key,
