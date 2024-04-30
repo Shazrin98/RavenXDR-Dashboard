@@ -251,6 +251,21 @@
           <h4 slot="header" class="card-title">
             {{ $t("dashboard.eventsTable") }}
           </h4>
+          <!-- /////////////////////////////////////////////////// -->
+          <div class="filters">
+            <!-- Dropdown for source IP options -->
+            <select v-model="selectedSrcIP" @change="applyIPFilters">
+              <option value="" disabled selected>Choose Source IP</option>
+              <option v-for="option in srcIPOptions" :key="option.key" :value="option.value">{{ option.label }}</option>
+            </select>
+
+            <!-- Dropdown for destination IP options -->
+            <select v-model="selectedDstIP" @change="applyIPFilters">
+              <option value="" disabled selected>Choose Destination IP</option>
+              <option v-for="option in dstIPOptions" :key="option.key" :value="option.value">{{ option.label }}</option>
+            </select>
+          </div>
+          <!-- ////////////////////////////////////////////////// -->
           <div class="table-responsive">
             <base-table :data="tableData" :columns="columns">
               <template slot="columns">
@@ -288,7 +303,6 @@ import * as chartConfigs from "@/components/Charts/config";
 import TaskList from "./Dashboard/TaskList";
 import UserTable from "./Dashboard/UserTable";
 import config from "@/config";
-////////////////////////////////////////////////////////////////
 import * as apiService from "@/services/api.service";
 import { BaseTable } from "@/components";
 
@@ -305,6 +319,12 @@ export default {
       /////////////////////////////////////////////////////////
       tableData: [],
       columns: ["timestamp", "dstip", "srcip", "actions"],
+
+      selectedSrcIP: '', // Selected source IP
+      selectedDstIP: '', // Selected destination IP
+      srcIPOptions: [], // Source IP options fetched from API
+      dstIPOptions: [], // Destination IP options fetched from API
+      filteredTableData: [], // Table data after applying IP filters
       ///////////////////////////////////////////////////////////////
       allowedTraffic: 0,
       droppedTraffic: 0,
@@ -353,7 +373,6 @@ export default {
     bigLineChartCategories() {
       return this.$t("dashboard.chartCategoriesTraffic");
     },
-    /////////////////////////////////////////////////////////////////////
   },
   async created() {
     this.$root.$on("timeRangeChanged", this.fetchData);
@@ -362,11 +381,35 @@ export default {
   destroyed() {
     this.$root.$off("timeRangeChanged", this.fetchData);
   },
+  /////////////////////////////////////////////////////////////////
   methods: {
-    /////////////////////////////////////////////////////////////////
     toggleDetailData(row) {
-    row.showDetailData = !row.showDetailData; // Toggle the flag
-  },
+      row.showDetailData = !row.showDetailData; // Toggle the flag
+    },
+    ///////////////////////////////////////////////////////////////////
+    async applyIPFilters() {
+      // Get the selected source and destination IPs
+      const selectedSrcIP = this.selectedSrcIP;
+      const selectedDstIP = this.selectedDstIP;
+
+      // Filter the table data based on selected IPs
+      // If both source and destination IPs are selected
+      if (selectedSrcIP && selectedDstIP) {
+        this.filteredTableData = this.tableData.filter(row => row.srcip === selectedSrcIP && row.dstip === selectedDstIP);
+      }
+      // If only source IP is selected
+      else if (selectedSrcIP && !selectedDstIP) {
+        this.filteredTableData = this.tableData.filter(row => row.srcip === selectedSrcIP);
+      }
+      // If only destination IP is selected
+      else if (!selectedSrcIP && selectedDstIP) {
+        this.filteredTableData = this.tableData.filter(row => row.dstip === selectedDstIP);
+      }
+      // If no IPs are selected, display all table data
+      else {
+        this.filteredTableData = this.tableData;
+      }
+    },
     //////////////////////////////////////////////////////////////////
     async fetchData(timeRange) {
       try {
@@ -523,12 +566,9 @@ export default {
         const allEventDataHits = allEventDataResponse.hits.hits;
         this.tableData = allEventDataHits.map((hit) => {
           const timestamp = hit._source.timestamp;
-          const dstip = hit._source.data.dst || hit._source.data.dstip;
-          const srcip = hit._source.data.src || hit._source.data.srcip;
+          const srcip = hit._source.data.src || hit._source.data.srcip || hit._source.data.SrcIP;
+          const dstip = hit._source.data.dst || hit._source.data.dstip || hit._source.data.DstIP;
           const data = hit._source.data;
-
-          // console.log('hit._source.data:', data);
-
           return {
             data: data,
             timestamp: timestamp,
@@ -538,9 +578,37 @@ export default {
             showDetailData: false, // Flag to control detail visibility
           };
         });
+        ///////////////////////////////////////////////////////////////////////////////////
+        // Source IP Filter Options
+        const filterSrcipOptionsResponse = await apiService.getFilterSrcipOptions(timeRange);
+        console.log("Source IP filterSrcipOptionsResponse:", filterSrcipOptionsResponse);
+        const filterSrcipOptionsBuckets =
+          filterSrcipOptionsResponse.aggregations.unique_source_ips.buckets;
+        console.log("Source IP filterSrcipOptionsBuckets:", filterSrcipOptionsBuckets);
+        const srcIPOptionsData = filterSrcipOptionsBuckets.map((bucket) => ({
+          key: bucket.key,
+          value: bucket.key,
+          label: bucket.key,
+        }));
+        this.srcIPOptions = srcIPOptionsData;
+        console.log("Source IP this.srcIPOptions:", this.srcIPOptions);
+
+        // Destination IP Filter Options
+        const filterDstipOptionsResponse = await apiService.getFilterDstipOptions(timeRange);
+        console.log("Destination IP filterDstipOptionsResponse:", filterDstipOptionsResponse);
+        const filterDstipOptionsBuckets =
+          filterDstipOptionsResponse.aggregations.unique_destination_ips.buckets; // Corrected
+        console.log("Destination IP filterDstipOptionsBuckets:", filterDstipOptionsBuckets);
+        const dstIPOptionsData = filterDstipOptionsBuckets.map((bucket) => ({
+          key: bucket.key,
+          value: bucket.key,
+          label: bucket.key,
+        }));
+        this.dstIPOptions = dstIPOptionsData;
+        console.log("Destination IP this.dstIPOptions:", this.dstIPOptions);
         ////////////////////////////////////////////////////////////////////////////////
       } catch (error) {
-        console.error("Error fetching allowed traffic:", error);
+        console.error("Error fetching data from APIs:", error);
       }
     },
     async fetchDataForWeek(weekNumber, selectedOption) {
