@@ -259,7 +259,8 @@
               <input type="text" v-model="searchSrcIP" placeholder="Search Source IP">
               <select v-model="selectedSrcIP" @change="applyIPFilters">
                 <option value="" disabled selected>Choose Source IP</option>
-                <option v-for="option in filteredSrcIPOptions" :key="option.key" :value="option.value">{{ option.label }}
+                <option v-for="option in filteredSrcIPOptions" :key="option.key" :value="option.value">{{ option.label
+                  }}
                 </option>
               </select>
             </div>
@@ -269,10 +270,13 @@
               <input type="text" v-model="searchDstIP" placeholder="Search Destination IP">
               <select v-model="selectedDstIP" @change="applyIPFilters">
                 <option value="" disabled selected>Choose Destination IP</option>
-                <option v-for="option in filteredDstIPOptions" :key="option.key" :value="option.value">{{ option.label }}
+                <option v-for="option in filteredDstIPOptions" :key="option.key" :value="option.value">{{ option.label
+                  }}
                 </option>
               </select>
             </div>
+
+            <button @click="resetFilters">Reset Filters</button>
 
           </div>
           <!-- ////////////////////////////////////////////////// -->
@@ -338,6 +342,8 @@ export default {
 
       searchSrcIP: '',
       searchDstIP: '',
+
+      timeRange: {}, // Store the time range
       ///////////////////////////////////////////////////////////////
       allowedTraffic: 0,
       droppedTraffic: 0,
@@ -411,40 +417,74 @@ export default {
     toggleDetailData(row) {
       row.showDetailData = !row.showDetailData; // Toggle the flag
     },
+    resetFilters() {
+      this.selectedSrcIP = ''; // Reset selected source IP
+      this.selectedDstIP = ''; // Reset selected destination IP
+      this.searchSrcIP = ''; // Clear search input for source IP
+      this.searchDstIP = ''; // Clear search input for destination IP
+      this.applyIPFilters(); // Reapply filters to show original data table
+    },
     ///////////////////////////////////////////////////////////////////
     async applyIPFilters() {
-      // Get the selected source and destination IPs
-      const selectedSrcIP = this.selectedSrcIP;
-      const selectedDstIP = this.selectedDstIP;
+      try {
+        const selectedSrcIP = this.selectedSrcIP;
+        const selectedDstIP = this.selectedDstIP;
+        const timeRange = this.timeRange || {
+          gte: this.$route.query.gte,
+          lte: this.$route.query.lte,
+          format: "yyyy-MM-dd",
+        };
 
-      // Filter the table data based on selected IPs
-      // If both source and destination IPs are selected
-      if (selectedSrcIP && selectedDstIP) {
-        this.filteredTableData = this.tableData.filter(row => row.srcip === selectedSrcIP && row.dstip === selectedDstIP);
-      }
-      // If only source IP is selected
-      else if (selectedSrcIP && !selectedDstIP) {
-        this.filteredTableData = this.tableData.filter(row => row.srcip === selectedSrcIP);
-      }
-      // If only destination IP is selected
-      else if (!selectedSrcIP && selectedDstIP) {
-        this.filteredTableData = this.tableData.filter(row => row.dstip === selectedDstIP);
-      }
-      // If no IPs are selected, display all table data
-      else {
-        this.filteredTableData = this.tableData;
+        console.log("applyIPFilters selectedSrcIP:" + selectedSrcIP);
+        console.log("applyIPFilters selectedDstIP:" + selectedDstIP);
+        console.log("applyIPFilters timeRange:" + timeRange);
+
+        // Fetch filtered event data
+        const filteredEventDataResponse = await apiService.getFilteredEventData(
+          selectedSrcIP,
+          selectedDstIP,
+          timeRange
+        );
+
+        // Update tableData with filtered data
+        this.tableData = filteredEventDataResponse.hits.hits.map((hit) => {
+          const timestamp = hit._source.timestamp;
+          const srcip = hit._source.data.src || hit._source.data.srcip || hit._source.data.SrcIP;
+          const dstip = hit._source.data.dst || hit._source.data.dstip || hit._source.data.DstIP;
+          const data = hit._source.data;
+
+          console.log("applyIPFilters srcip:" + srcip);
+          console.log("applyIPFilters dstip:" + dstip);
+
+          return {
+            data: data,
+            timestamp: timestamp,
+            dstip: dstip,
+            srcip: srcip,
+            actions: null,
+            showDetailData: false,
+          };
+        });
+      } catch (error) {
+        console.error("Error applying IP filters:", error);
       }
     },
     //////////////////////////////////////////////////////////////////
     async fetchData(timeRange) {
       try {
         if (!timeRange) {
-          timeRange = {
+          this.timeRange = {
             gte: this.$route.query.gte,
             lte: this.$route.query.lte,
             format: "yyyy-MM-dd",
           };
+          timeRange = this.timeRange;
+        } else {
+          this.timeRange = timeRange;
         }
+
+        console.log("fetchData this.timeRange:" + this.timeRange);
+        console.log("fetchData timeRange:" + timeRange);
 
         // Allowed Traffic
         const allowedTrafficResponse = await apiService.getAllowedTraffic(
@@ -585,9 +625,7 @@ export default {
 
         /////////////////////////////////////////////////////////////////////////////////
         // All Event Data
-        const allEventDataResponse = await apiService.getAllEventData(
-          timeRange
-        );
+        const allEventDataResponse = await apiService.getAllEventData(timeRange);
         const allEventDataHits = allEventDataResponse.hits.hits;
         this.tableData = allEventDataHits.map((hit) => {
           const timestamp = hit._source.timestamp;

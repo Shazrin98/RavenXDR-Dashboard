@@ -705,7 +705,7 @@ export const getTop10RequestedAppsInternet = async (timeRange = {}) => {
 export const getAllEventData = async (timeRange = {}) => {
   const url = "/raven*/_search?pretty";
   const data = {
-    size: 100, // Increase size to fetch more hits
+    size: 5, // Increase size to fetch more hits
     query: {
       range: { "@timestamp": timeRange },
     },
@@ -774,6 +774,46 @@ export const getFilterDstipOptions = async (timeRange = {}) => {
     );
   }
 };
+// filteredEventData
+export const getFilteredEventData = async (selectedSrcIP, selectedDstIP, timeRange = {}) => {
+
+  console.log("getFilteredEventData timerange:" + timeRange);
+
+  const url = "/raven*/_search?pretty";
+  const query = {
+    size: 5, // Increase size to fetch more hits
+    query: {
+      bool: {
+        must: [
+          { range: { "@timestamp": timeRange } },
+        ],
+      },
+    },
+  };
+
+  // Add the source IP filter if selectedSrcIP is provided
+  if (selectedSrcIP) {
+    query.query.bool.must.push({ match: { "data.srcip": selectedSrcIP }});
+  }
+
+  // Add the destination IP filter if selectedDstIP is provided
+  if (selectedDstIP) {
+    query.query.bool.must.push({ match: { "data.dstip": selectedDstIP }});
+  }
+
+  console.log("getFilteredEventData query:" + query);
+
+  try {
+    const response = await api.post(url, query);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching filteredEventData:", error);
+    throw new Error(
+      `Failed to fetch filteredEventData data: ${error.message}`
+    );
+  }
+};
+
 ////////////////////////////////////////////////////////////////////////////
 
 export default api;
