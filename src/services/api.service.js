@@ -705,7 +705,7 @@ export const getTop10RequestedAppsInternet = async (timeRange = {}) => {
 export const getAllEventData = async (timeRange = {}) => {
   const url = "/raven*/_search?pretty";
   const data = {
-    size: 5, // Increase size to fetch more hits
+    size: 100, // Increase size to fetch more hits
     query: {
       range: { "@timestamp": timeRange },
     },
@@ -732,7 +732,7 @@ export const getFilterSrcipOptions = async (timeRange = {}) => {
       unique_source_ips: {
         terms: {
           field: "data.srcip",
-          size: 20,
+          size: 100,
         },
       },
     },
@@ -759,7 +759,7 @@ export const getFilterDstipOptions = async (timeRange = {}) => {
       unique_destination_ips: {
         terms: {
           field: "data.dstip",
-          size: 20,
+          size: 100,
         },
       },
     },
@@ -781,7 +781,7 @@ export const getFilteredEventData = async (selectedSrcIP, selectedDstIP, timeRan
 
   const url = "/raven*/_search?pretty";
   const query = {
-    size: 5, // Increase size to fetch more hits
+    size: 100, // Increase size to fetch more hits
     query: {
       bool: {
         must: [

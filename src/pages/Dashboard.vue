@@ -280,7 +280,7 @@
 
           </div>
           <!-- ////////////////////////////////////////////////// -->
-          <div class="table-responsive">
+          <div class="table-container">
             <base-table :data="tableData" :columns="columns">
               <template slot="columns">
                 <th class="text-left">Timestamp</th>
@@ -824,5 +824,11 @@ export default {
   font-size: 0.8rem;
   border: 1px solid #ddd;
   border-radius: 3px;
+}
+
+.table-container {
+  max-height: 500px;
+  /* Adjust the height as needed */
+  overflow-y: auto;
 }
 </style>
