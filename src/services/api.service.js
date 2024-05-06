@@ -324,7 +324,6 @@ export const getDroppedTrafficWeek7 = async () => {
     throw new Error(`Failed to fetch droppedTraffic data: ${error.message}`);
   }
 };
-
 // allowedTraffic
 export const getAllowedTraffic = async (timeRange = {}) => {
   const url = "/raven*/_count";
@@ -700,7 +699,6 @@ export const getTop10RequestedAppsInternet = async (timeRange = {}) => {
     );
   }
 };
-/////////////////////////////////////////////////////////////////////////
 // allEventData
 export const getAllEventData = async (timeRange = {}) => {
   const url = "/raven*/_search?pretty";
@@ -732,7 +730,7 @@ export const getFilterSrcipOptions = async (timeRange = {}) => {
       unique_source_ips: {
         terms: {
           field: "data.srcip",
-          size: 100,
+          size: 1000,////////////
         },
       },
     },
@@ -759,7 +757,7 @@ export const getFilterDstipOptions = async (timeRange = {}) => {
       unique_destination_ips: {
         terms: {
           field: "data.dstip",
-          size: 100,
+          size: 1000,/////////////
         },
       },
     },
@@ -776,9 +774,6 @@ export const getFilterDstipOptions = async (timeRange = {}) => {
 };
 // filteredEventData
 export const getFilteredEventData = async (selectedSrcIP, selectedDstIP, timeRange = {}) => {
-
-  console.log("getFilteredEventData timerange:" + timeRange);
-
   const url = "/raven*/_search?pretty";
   const query = {
     size: 100, // Increase size to fetch more hits
@@ -790,19 +785,12 @@ export const getFilteredEventData = async (selectedSrcIP, selectedDstIP, timeRan
       },
     },
   };
-
-  // Add the source IP filter if selectedSrcIP is provided
   if (selectedSrcIP) {
     query.query.bool.must.push({ match: { "data.srcip": selectedSrcIP }});
   }
-
-  // Add the destination IP filter if selectedDstIP is provided
   if (selectedDstIP) {
     query.query.bool.must.push({ match: { "data.dstip": selectedDstIP }});
   }
-
-  console.log("getFilteredEventData query:" + query);
-
   try {
     const response = await api.post(url, query);
     return response.data;
@@ -813,7 +801,80 @@ export const getFilteredEventData = async (selectedSrcIP, selectedDstIP, timeRan
     );
   }
 };
-
+// totalEventNumbers
+export const getTotalEventNumbers = async (timeRange = {}) => {
+  const url = "/raven*/_search?pretty";
+  const data = {
+    size: 0,
+    query: {
+      range: { "@timestamp": timeRange },
+    },
+    aggs: {
+      total_count: {
+        filter: {
+          exists: { "field": "data.apprisk" }
+        },
+      },
+    },
+  };
+  try {
+    const response = await api.post(url, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching allEventData:", error);
+    throw new Error(
+      `Failed to fetch allEventData data: ${error.message}`
+    );
+  }
+};
+// riskyEventNumbers
+export const getRiskyEventNumbers = async (timeRange = {}) => {
+  const url = "/raven*/_count";
+  const data = {
+    query: {
+      bool: {
+        must: [
+          { terms: { "data.apprisk": [ "high", "critical" ] } },
+          { range: { "@timestamp": timeRange } },
+        ],
+      },
+    },
+  };
+  try {
+    const response = await api.post(url, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching getRiskyEventNumbers:", error);
+    throw new Error(
+      `Failed to fetch getRiskyEventNumbers data: ${error.message}`
+    );
+  }
+};
+////////////////////////////////////////////////////////////////////////////
+// endpointOperationCount
+export const getEndpointOperationCount = async (timeRange = {}) => {
+  const url = "/raven*/_count";
+  const data = {
+    query: {
+      bool: {
+        must: [
+          { wildcard: { "data.event.OperationName": "quarantined_file_update" } },
+          { range: { "@timestamp": timeRange } }
+        ]
+      }
+    }
+  };
+  console.log("getEndpointOperationCount data:" + data);////////////
+  try {
+    const response = await api.post(url, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching getEndpointOperationCount:", error);
+    throw new Error(
+      `Failed to fetch getEndpointOperationCount data: ${error.message}`
+    );
+  }
+};
 ////////////////////////////////////////////////////////////////////////////
 
 export default api;

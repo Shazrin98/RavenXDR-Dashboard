@@ -244,18 +244,25 @@
       </div>
     </div>
     <!-- //////////////////////////////////////////// -->
+    <!-- ///////////////////////////////////////////////// -->
+    <div class="row">
+      <div class="col-lg-12 col-md-12">
+        <card>
+          <!-- <gauge :title="'Risk Scale Meter'" :value="37" /> -->
+          <gauge :title="'Risk Scale Meter'" :value="riskyEventPercentage" />
+        </card>
+      </div>
+    </div>
     <!-- //////////////////////////////////////////// -->
+    <!-- ///////////////////////////////////////////////// -->
     <div class="row">
       <div class="col-lg-12 col-md-12">
         <card class="card" :header-classes="{ 'text-right': isRTL }">
           <h4 slot="header" class="card-title">
             {{ $t("dashboard.eventsTable") }}
           </h4>
-          <!-- /////////////////////////////////////////////////// -->
           <div class="filters">
-
             <div class="dropdown">
-              <!-- Dropdown for source IP options -->
               <input type="text" v-model="searchSrcIP" placeholder="Search Source IP">
               <select v-model="selectedSrcIP" @change="applyIPFilters">
                 <option value="" disabled selected>Choose Source IP</option>
@@ -266,7 +273,6 @@
             </div>
 
             <div class="dropdown">
-              <!-- Dropdown for destination IP options -->
               <input type="text" v-model="searchDstIP" placeholder="Search Destination IP">
               <select v-model="selectedDstIP" @change="applyIPFilters">
                 <option value="" disabled selected>Choose Destination IP</option>
@@ -275,11 +281,8 @@
                 </option>
               </select>
             </div>
-
             <button @click="resetFilters">Reset Filters</button>
-
           </div>
-          <!-- ////////////////////////////////////////////////// -->
           <div class="table-container">
             <base-table :data="tableData" :columns="columns">
               <template slot="columns">
@@ -306,13 +309,12 @@
         </card>
       </div>
     </div>
-    <!-- ////////////////////////////////////////////////// -->
-    <!-- ////////////////////////////////////////////////// -->
   </div>
 </template>
 <script>
 import LineChart from "@/components/Charts/LineChart";
 import BarChart from "@/components/Charts/BarChart";
+import Gauge from "@/components/Gauge/Gauge.vue";////////////////////////////
 import * as chartConfigs from "@/components/Charts/config";
 import TaskList from "./Dashboard/TaskList";
 import UserTable from "./Dashboard/UserTable";
@@ -327,24 +329,22 @@ export default {
     TaskList,
     UserTable,
     BaseTable,
+    Gauge,
   },
   data() {
     return {
+      //////////////////////////////////////////////////////////
+      riskyEventPercentage: 0,
       /////////////////////////////////////////////////////////
       tableData: [],
       columns: ["timestamp", "dstip", "srcip", "actions"],
-
-      selectedSrcIP: '', // Selected source IP
-      selectedDstIP: '', // Selected destination IP
-      srcIPOptions: [], // Source IP options fetched from API
-      dstIPOptions: [], // Destination IP options fetched from API
-      filteredTableData: [], // Table data after applying IP filters
-
+      selectedSrcIP: '',
+      selectedDstIP: '',
+      srcIPOptions: [],
+      dstIPOptions: [],
       searchSrcIP: '',
       searchDstIP: '',
-
-      timeRange: {}, // Store the time range
-      ///////////////////////////////////////////////////////////////
+      timeRange: {},
       allowedTraffic: 0,
       droppedTraffic: 0,
       droppedTrafficSeverityGovNet: 0,
@@ -381,9 +381,8 @@ export default {
       },
     };
   },
-  ////////////////////////////////////////////////////////////////////////
   computed: {
-    ////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
     filteredSrcIPOptions() {
       return this.srcIPOptions.filter(option =>
         option.label.toLowerCase().includes(this.searchSrcIP.toLowerCase())
@@ -394,7 +393,6 @@ export default {
         option.label.toLowerCase().includes(this.searchDstIP.toLowerCase())
       );
     },
-    ////////////////////////////////////////////////////////////////
     enableRTL() {
       return this.$route.query.enableRTL;
     },
@@ -412,19 +410,18 @@ export default {
   destroyed() {
     this.$root.$off("timeRangeChanged", this.fetchData);
   },
-  /////////////////////////////////////////////////////////////////
   methods: {
+    ////////////////////////////////////////////////////////////////////////////////
     toggleDetailData(row) {
-      row.showDetailData = !row.showDetailData; // Toggle the flag
+      row.showDetailData = !row.showDetailData;
     },
     resetFilters() {
-      this.selectedSrcIP = ''; // Reset selected source IP
-      this.selectedDstIP = ''; // Reset selected destination IP
-      this.searchSrcIP = ''; // Clear search input for source IP
-      this.searchDstIP = ''; // Clear search input for destination IP
-      this.applyIPFilters(); // Reapply filters to show original data table
+      this.selectedSrcIP = '';
+      this.selectedDstIP = '';
+      this.searchSrcIP = '';
+      this.searchDstIP = '';
+      this.applyIPFilters();
     },
-    ///////////////////////////////////////////////////////////////////
     async applyIPFilters() {
       try {
         const selectedSrcIP = this.selectedSrcIP;
@@ -434,28 +431,16 @@ export default {
           lte: this.$route.query.lte,
           format: "yyyy-MM-dd",
         };
-
-        console.log("applyIPFilters selectedSrcIP:" + selectedSrcIP);
-        console.log("applyIPFilters selectedDstIP:" + selectedDstIP);
-        console.log("applyIPFilters timeRange:" + timeRange);
-
-        // Fetch filtered event data
         const filteredEventDataResponse = await apiService.getFilteredEventData(
           selectedSrcIP,
           selectedDstIP,
           timeRange
         );
-
-        // Update tableData with filtered data
         this.tableData = filteredEventDataResponse.hits.hits.map((hit) => {
           const timestamp = hit._source.timestamp;
           const srcip = hit._source.data.src || hit._source.data.srcip || hit._source.data.SrcIP;
           const dstip = hit._source.data.dst || hit._source.data.dstip || hit._source.data.DstIP;
           const data = hit._source.data;
-
-          console.log("applyIPFilters srcip:" + srcip);
-          console.log("applyIPFilters dstip:" + dstip);
-
           return {
             data: data,
             timestamp: timestamp,
@@ -482,9 +467,6 @@ export default {
         } else {
           this.timeRange = timeRange;
         }
-
-        console.log("fetchData this.timeRange:" + this.timeRange);
-        console.log("fetchData timeRange:" + timeRange);
 
         // Allowed Traffic
         const allowedTrafficResponse = await apiService.getAllowedTraffic(
@@ -623,7 +605,6 @@ export default {
         }));
         this.top10RequestedAppsInternet = top10RequestedAppsInternetData;
 
-        /////////////////////////////////////////////////////////////////////////////////
         // All Event Data
         const allEventDataResponse = await apiService.getAllEventData(timeRange);
         const allEventDataHits = allEventDataResponse.hits.hits;
@@ -641,7 +622,7 @@ export default {
             showDetailData: false, // Flag to control detail visibility
           };
         });
-        ///////////////////////////////////////////////////////////////////////////////////
+
         // Source IP Filter Options
         const filterSrcipOptionsResponse = await apiService.getFilterSrcipOptions(timeRange);
         const filterSrcipOptionsBuckets =
@@ -652,7 +633,6 @@ export default {
           label: bucket.key,
         }));
         this.srcIPOptions = srcIPOptionsData;
-        console.log("Source IP this.srcIPOptions:", this.srcIPOptions);
 
         // Destination IP Filter Options
         const filterDstipOptionsResponse = await apiService.getFilterDstipOptions(timeRange);
@@ -664,8 +644,24 @@ export default {
           label: bucket.key,
         }));
         this.dstIPOptions = dstIPOptionsData;
-        console.log("Destination IP this.dstIPOptions:", this.dstIPOptions);
-        ////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////
+        // Fetch total event count
+        const totalEventResponse = await apiService.getTotalEventNumbers();
+        const totalEventCount = totalEventResponse.aggregations.total_count.doc_count;
+
+        console.log("totalEventCount:" + totalEventCount);
+
+        // Fetch risky event count
+        const riskyEventResponse = await apiService.getRiskyEventNumbers();
+        const riskyEventCount = riskyEventResponse.count;
+
+        console.log("riskyEventCount:" + riskyEventCount);
+
+        // Calculate percentage
+        const rawPercentage = (riskyEventCount / totalEventCount) * 100;
+        this.riskyEventPercentage = Number(rawPercentage.toFixed(2));
+        ////////////////////////////////////////////////////////////////////////////////////////
+
       } catch (error) {
         console.error("Error fetching data from APIs:", error);
       }
@@ -796,7 +792,6 @@ export default {
       }
     },
   },
-  ////////////////////////////////////////////////////////////////////////
   async mounted() {
     this.i18n = this.$i18n;
     if (this.enableRTL) {
@@ -828,7 +823,6 @@ export default {
 
 .table-container {
   max-height: 500px;
-  /* Adjust the height as needed */
   overflow-y: auto;
 }
 </style>
