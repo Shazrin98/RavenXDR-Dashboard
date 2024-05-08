@@ -243,17 +243,46 @@
         </card>
       </div>
     </div>
-    <!-- //////////////////////////////////////////// -->
-    <!-- ///////////////////////////////////////////////// -->
+    <!-- ////////////////////////////////////////////////////////////////////////////// -->
     <div class="row">
-      <div class="col-lg-12 col-md-12">
+      <!-- /////////////////////////////////////////////////////////////////////// -->
+      <div class="col-lg-6 col-md-12">
         <card>
-          <!-- <gauge :title="'Risk Scale Meter'" :value="37" /> -->
           <gauge :title="'Risk Scale Meter'" :value="riskyEventPercentage" />
         </card>
       </div>
+      <!-- /////////////////////////////////////////////////////////////////// -->
+      <div class="col-lg-6 col-md-12" :class="{ 'text-right': isRTL }">
+        <card type="chart">
+          <template slot="header">
+            <h5 class="card-category">Endpoint Severity Numbers</h5>
+          </template>
+          <div class="chart-area">
+            <bar-chart style="height: 100%" chart-id="blue-bar-chart" :chart-data="blueBarChart.chartData"
+              :gradient-stops="blueBarChart.gradientStops" :extra-options="blueBarChart.extraOptions">
+            </bar-chart>
+          </div>
+        </card>
+      </div>
+      <!-- //////////////////////////////////////////////////////////////////////// -->
     </div>
-    <!-- //////////////////////////////////////////// -->
+    <!-- ///////////////////////////////////////////////////// -->
+    <div class="row">
+      <div class="col-lg-12 col-md-12" :class="{ 'text-right': isRTL }">
+        <card>
+          <template slot="header">
+            <h5 class="card-category text-info">
+              <i class="tim-icons icon-alert-circle-exc text-success"></i>
+              Endpoint Operation Count
+            </h5>
+            <h3 class="card-title">
+              <i class="tim-icons icon-alert-circle-exc text-success"></i>
+              {{ formatNumber(endpointOperationCount) }}
+            </h3>
+          </template>
+        </card>
+      </div>
+    </div>
     <!-- ///////////////////////////////////////////////// -->
     <div class="row">
       <div class="col-lg-12 col-md-12">
@@ -271,7 +300,6 @@
                 </option>
               </select>
             </div>
-
             <div class="dropdown">
               <input type="text" v-model="searchDstIP" placeholder="Search Destination IP">
               <select v-model="selectedDstIP" @change="applyIPFilters">
@@ -314,7 +342,7 @@
 <script>
 import LineChart from "@/components/Charts/LineChart";
 import BarChart from "@/components/Charts/BarChart";
-import Gauge from "@/components/Gauge/Gauge.vue";////////////////////////////
+import Gauge from "@/components/Gauge/Gauge.vue";
 import * as chartConfigs from "@/components/Charts/config";
 import TaskList from "./Dashboard/TaskList";
 import UserTable from "./Dashboard/UserTable";
@@ -334,8 +362,9 @@ export default {
   data() {
     return {
       //////////////////////////////////////////////////////////
-      riskyEventPercentage: 0,
+      endpointOperationCount: 0,
       /////////////////////////////////////////////////////////
+      riskyEventPercentage: 0,
       tableData: [],
       columns: ["timestamp", "dstip", "srcip", "actions"],
       selectedSrcIP: '',
@@ -378,6 +407,26 @@ export default {
         gradientColors: config.colors.primaryGradient,
         gradientStops: [1, 0.4, 0],
         categories: [],
+      },
+      blueBarChart: {
+        extraOptions: chartConfigs.barChartOptions,
+        chartData: {
+          labels: [],
+          datasets: [
+            {
+              label: "Severity Counts",
+              fill: true,
+              borderColor: config.colors.info,
+              borderWidth: 2,
+              borderDash: [],
+              borderDashOffset: 0.0,
+              backgroundColor: "#5a8dee", // Bar color
+              data: []
+            }
+          ]
+        },
+        gradientColors: config.colors.primaryGradient,
+        gradientStops: [1, 0.4, 0],
       },
     };
   },
@@ -644,22 +693,25 @@ export default {
           label: bucket.key,
         }));
         this.dstIPOptions = dstIPOptionsData;
-        ////////////////////////////////////////////////////////////////////////////////////////
-        // Fetch total event count
+
+        // Risky Event Percentage
         const totalEventResponse = await apiService.getTotalEventNumbers();
         const totalEventCount = totalEventResponse.aggregations.total_count.doc_count;
-
-        console.log("totalEventCount:" + totalEventCount);
-
-        // Fetch risky event count
+        console.log("totalEventCount:" + totalEventCount);///////////////////////////////
         const riskyEventResponse = await apiService.getRiskyEventNumbers();
         const riskyEventCount = riskyEventResponse.count;
-
-        console.log("riskyEventCount:" + riskyEventCount);
-
-        // Calculate percentage
+        console.log("riskyEventCount:" + riskyEventCount);//////////////////////////
         const rawPercentage = (riskyEventCount / totalEventCount) * 100;
         this.riskyEventPercentage = Number(rawPercentage.toFixed(2));
+
+        ////////////////////////////////////////////////////////////////////////////////////////
+        // Endpoint Operation Count
+        const endpointOperationCountResponse = await apiService.getEndpointOperationCount(timeRange);
+        this.endpointOperationCount =
+          endpointOperationCountResponse && endpointOperationCountResponse.count
+            ? endpointOperationCountResponse.count
+            : 0;
+        console.log("endpointOperationCount:", endpointOperationCountResponse.count);
         ////////////////////////////////////////////////////////////////////////////////////////
 
       } catch (error) {
