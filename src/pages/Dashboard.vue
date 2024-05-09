@@ -266,8 +266,7 @@
       </div>
       <!-- //////////////////////////////////////////////////////////////////////// -->
     </div>
-    <!-- ///////////////////////////////////////////////////// -->
-    <div class="row">
+    <!-- <div class="row">
       <div class="col-lg-12 col-md-12" :class="{ 'text-right': isRTL }">
         <card>
           <template slot="header">
@@ -282,8 +281,7 @@
           </template>
         </card>
       </div>
-    </div>
-    <!-- ///////////////////////////////////////////////// -->
+    </div> -->
     <div class="row">
       <div class="col-lg-12 col-md-12">
         <card class="card" :header-classes="{ 'text-right': isRTL }">
@@ -408,10 +406,11 @@ export default {
         gradientStops: [1, 0.4, 0],
         categories: [],
       },
+      //////////////////////////////////////////////////////////////////
       blueBarChart: {
         extraOptions: chartConfigs.barChartOptions,
         chartData: {
-          labels: [],
+          labels: ['INFO', 'High', 'Low', 'Informational', 'Medium'],
           datasets: [
             {
               label: "Severity Counts",
@@ -421,13 +420,14 @@ export default {
               borderDash: [],
               borderDashOffset: 0.0,
               backgroundColor: "#5a8dee", // Bar color
-              data: []
+              data: [0, 0, 0, 0, 0]
             }
           ]
         },
         gradientColors: config.colors.primaryGradient,
         gradientStops: [1, 0.4, 0],
       },
+      ///////////////////////////////////////////////////////////////////////
     };
   },
   computed: {
@@ -697,21 +697,49 @@ export default {
         // Risky Event Percentage
         const totalEventResponse = await apiService.getTotalEventNumbers();
         const totalEventCount = totalEventResponse.aggregations.total_count.doc_count;
-        console.log("totalEventCount:" + totalEventCount);///////////////////////////////
         const riskyEventResponse = await apiService.getRiskyEventNumbers();
         const riskyEventCount = riskyEventResponse.count;
-        console.log("riskyEventCount:" + riskyEventCount);//////////////////////////
         const rawPercentage = (riskyEventCount / totalEventCount) * 100;
         this.riskyEventPercentage = Number(rawPercentage.toFixed(2));
 
+        // // Endpoint Operation Count
+        // const endpointOperationCountResponse = await apiService.getEndpointOperationCount(timeRange);
+        // this.endpointOperationCount =
+        //   endpointOperationCountResponse && endpointOperationCountResponse.count
+        //     ? endpointOperationCountResponse.count
+        //     : 0;
+        // console.log("endpointOperationCount:", endpointOperationCountResponse.count);
+
         ////////////////////////////////////////////////////////////////////////////////////////
-        // Endpoint Operation Count
-        const endpointOperationCountResponse = await apiService.getEndpointOperationCount(timeRange);
-        this.endpointOperationCount =
-          endpointOperationCountResponse && endpointOperationCountResponse.count
-            ? endpointOperationCountResponse.count
-            : 0;
-        console.log("endpointOperationCount:", endpointOperationCountResponse.count);
+        // Endpoint Severity Numbers
+        const endpointSeverityNumbersResponse = await apiService.getEndpointSeverityNumbers(timeRange);
+        const endpointSeverityNumbersBuckets = endpointSeverityNumbersResponse.aggregations.severity_counts.buckets;
+
+        // Extract keys and counts from buckets
+        const labels = endpointSeverityNumbersBuckets.map(bucket => bucket.key);
+        const counts = endpointSeverityNumbersBuckets.map(bucket => bucket.doc_count);
+
+        console.log("endpointSeverityNumbersBuckets:", endpointSeverityNumbersBuckets);/////////////
+
+        // Create a new chart data object with non-reactive arrays
+        const newChartData = {
+          labels: [...labels],
+          datasets: [
+            {
+              label: "Severity Counts",
+              fill: true,
+              borderColor: config.colors.info,
+              borderWidth: 2,
+              borderDash: [],
+              borderDashOffset: 0.0,
+              backgroundColor: "#5a8dee", // Bar color
+              data: [...counts]
+            }
+          ]
+        };
+
+        // Assign the new chart data object to blueBarChart
+        this.blueBarChart.chartData = newChartData;
         ////////////////////////////////////////////////////////////////////////////////////////
 
       } catch (error) {

@@ -850,7 +850,6 @@ export const getRiskyEventNumbers = async (timeRange = {}) => {
     );
   }
 };
-////////////////////////////////////////////////////////////////////////////
 // endpointOperationCount
 export const getEndpointOperationCount = async (timeRange = {}) => {
   const url = "/raven*/_count";
@@ -864,7 +863,6 @@ export const getEndpointOperationCount = async (timeRange = {}) => {
       }
     }
   };
-  console.log("getEndpointOperationCount data:" + data);////////////
   try {
     const response = await api.post(url, data);
     return response.data;
