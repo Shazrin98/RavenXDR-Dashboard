@@ -12,6 +12,7 @@ const Typography = () => import(/* webpackChunkName: "common" */ "@/pages/Typogr
 const TableList = () => import(/* webpackChunkName: "common" */ "@/pages/TableList.vue");
 ////////////////////////////////////////////////////////////////
 const Events = () => import(/* webpackChunkName: "events" */"@/pages/Events.vue");
+const UserManagement = () => import(/* webpackChunkName: "userManagement" */"@/pages/UserManagement.vue");
 
 const routes = [
   {
@@ -19,6 +20,12 @@ const routes = [
     component: DashboardLayout,
     redirect: "/dashboard",
     children: [
+      ////////////////////////////////////////////////////
+      {
+        path: "user-management",
+        name: "user-management",
+        component: UserManagement
+      },
       {
         path: "events",
         name: "events",
@@ -29,6 +36,7 @@ const routes = [
         name: "dashboard",
         component: Dashboard
       },
+      //////////////////////////////////////////////////////////
       {
         path: "profile",
         name: "profile",
