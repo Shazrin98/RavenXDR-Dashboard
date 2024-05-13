@@ -255,7 +255,7 @@
       <div class="col-lg-6 col-md-12" :class="{ 'text-right': isRTL }">
         <card type="chart">
           <template slot="header">
-            <h5 class="card-category">Endpoint Severity Numbers</h5>
+            <h5 class="card-category">Endpoint Severity Counts</h5>
           </template>
           <div class="chart-area">
             <bar-chart style="height: 100%" chart-id="blue-bar-chart" :chart-data="blueBarChart.chartData"
@@ -732,8 +732,22 @@ export default {
               borderWidth: 2,
               borderDash: [],
               borderDashOffset: 0.0,
-              backgroundColor: "#5a8dee", // Bar color
-              data: [...counts]
+              data: [...counts],
+              backgroundColor: labels.map(label => {
+                switch (label.toLowerCase()) {
+                  case "info":
+                  case "informational":
+                    return "green";
+                  case "low":
+                  case "medium":
+                    return "yellow";
+                  case "high":
+                  case "critical":
+                    return "red";
+                  default:
+                    return "#5a8dee"; // Default color
+                }
+              })
             }
           ]
         };

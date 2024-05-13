@@ -198,7 +198,7 @@ export default {
           };
         }
 
-        // Emit event to parent component (Dashboard.vue) with selected time range
+        // Emit event to parent component with selected time range
         this.$root.$emit('timeRangeChanged', timeRange);
       } catch (error) {
         console.error('Error fetching data:', error);

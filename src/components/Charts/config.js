@@ -205,7 +205,7 @@ export let barChartOptions = {
       },
       ticks: {
         suggestedMin: 0,
-        suggestedMax: 20,
+        suggestedMax: 14,
         padding: 20,
         fontColor: "#9e9e9e"
       }

@@ -10,6 +10,8 @@ const Icons = () => import(/* webpackChunkName: "common" */ "@/pages/Icons.vue")
 const Maps = () => import(/* webpackChunkName: "common" */ "@/pages/Maps.vue");
 const Typography = () => import(/* webpackChunkName: "common" */ "@/pages/Typography.vue");
 const TableList = () => import(/* webpackChunkName: "common" */ "@/pages/TableList.vue");
+////////////////////////////////////////////////////////////////
+const Events = () => import(/* webpackChunkName: "events" */"@/pages/Events.vue");
 
 const routes = [
   {
@@ -17,6 +19,11 @@ const routes = [
     component: DashboardLayout,
     redirect: "/dashboard",
     children: [
+      {
+        path: "events",
+        name: "events",
+        component: Events
+      },
       {
         path: "dashboard",
         name: "dashboard",
