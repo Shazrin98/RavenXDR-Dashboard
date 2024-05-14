@@ -10,9 +10,11 @@ const Icons = () => import(/* webpackChunkName: "common" */ "@/pages/Icons.vue")
 const Maps = () => import(/* webpackChunkName: "common" */ "@/pages/Maps.vue");
 const Typography = () => import(/* webpackChunkName: "common" */ "@/pages/Typography.vue");
 const TableList = () => import(/* webpackChunkName: "common" */ "@/pages/TableList.vue");
-////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const Events = () => import(/* webpackChunkName: "events" */"@/pages/Events.vue");
 const UserManagement = () => import(/* webpackChunkName: "userManagement" */"@/pages/UserManagement.vue");
+const Reporting = () => import(/* webpackChunkName: "reporting" */"@/pages/Reporting.vue");
+const License = () => import(/* webpackChunkName: "license" */"@/pages/License.vue");
 
 const routes = [
   {
@@ -21,6 +23,16 @@ const routes = [
     redirect: "/dashboard",
     children: [
       ////////////////////////////////////////////////////
+      {
+        path: "license",
+        name: "license",
+        component: License
+      },
+      {
+        path: "reporting",
+        name: "reporting",
+        component: Reporting
+      },
       {
         path: "user-management",
         name: "user-management",
