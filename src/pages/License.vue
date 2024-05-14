@@ -120,7 +120,7 @@
     <base-button slot="footer" type="primary" fill>Save</base-button>
   </card>
        -->
-      <base-button slot="footer" type="primary" fill>Reset</base-button>
+      <base-button slot="footer" type="primary" fill>Confirm</base-button>
     </card>
   </div>
 </template>

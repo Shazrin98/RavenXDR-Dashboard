@@ -2,8 +2,14 @@
 <template>
   <div>
     <card>
-      <h5 slot="header" class="title">Edit User</h5>
+      <h5 slot="header" class="title">Create User</h5>
       <!-- ////////////////////////////////////////////////////// -->
+      <div class="row">
+        <div class="col-md-8 pr-md-12">
+          <base-input label="Full Name" placeholder="Full Name" :value="model.fullName">
+          </base-input>
+        </div>
+      </div>
       <div class="row">
         <div class="col-md-8 pr-md-12">
           <base-input label="Username" placeholder="Username" :value="model.username">
@@ -27,7 +33,7 @@
           </base-input>
         </div>
       </div> -->
-      <base-button slot="footer" type="primary" fill>Reset</base-button>
+      <base-button slot="footer" type="primary" fill>Create</base-button>
     </card>
   </div>
 </template>

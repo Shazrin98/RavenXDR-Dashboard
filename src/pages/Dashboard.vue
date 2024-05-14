@@ -39,6 +39,49 @@
       </div>
     </div>
     <div class="row">
+      <!-- /////////////////////////////////////////////////////////////////////// -->
+      <div class="col-lg-6 col-md-12">
+        <card>
+          <gauge :title="'Risk Scale Meter'" :value="riskyEventPercentage" />
+        </card>
+      </div>
+      <!-- /////////////////////////////////////////////////////////////////// -->
+      <div class="col-lg-6 col-md-12" :class="{ 'text-right': isRTL }">
+        <div class="row">
+          <div class="col-lg-12" :class="{ 'text-right': isRTL }">
+            <card>
+              <template slot="header">
+                <h5 class="card-category text-info">
+                  <i class="tim-icons icon-delivery-fast text-success"></i>
+                  {{ $t("dashboard.allowedTraffic") }}
+                </h5>
+                <h3 class="card-title">
+                  <i class="tim-icons icon-delivery-fast text-success"></i>
+                  {{ formatNumber(allowedTraffic) }}
+                </h3>
+              </template>
+            </card>
+          </div>
+          <div class="col-lg-12" :class="{ 'text-right': isRTL }">
+            <card>
+              <template slot="header">
+                <h5 class="card-category text-info">
+                  <i class="tim-icons icon-delivery-fast text-success"></i>
+                  {{ $t("dashboard.droppedTraffic") }}
+                </h5>
+                <h3 class="card-title">
+                  <i class="tim-icons icon-delivery-fast text-success"></i>
+                  {{ formatNumber(droppedTraffic) }}
+                </h3>
+              </template>
+            </card>
+          </div>
+        </div>
+      </div>
+      <!-- //////////////////////////////////////////////////////////////////////// -->
+    </div>
+    <!-- ////////////////////////////////////////////////////////////////////////// -->
+    <div class="row">
       <div class="col-lg-6" :class="{ 'text-right': isRTL }">
         <card>
           <template slot="header">
@@ -246,16 +289,10 @@
     <!-- ////////////////////////////////////////////////////////////////////////////// -->
     <div class="row">
       <!-- /////////////////////////////////////////////////////////////////////// -->
-      <div class="col-lg-6 col-md-12">
-        <card>
-          <gauge :title="'Risk Scale Meter'" :value="riskyEventPercentage" />
-        </card>
-      </div>
-      <!-- /////////////////////////////////////////////////////////////////// -->
-      <div class="col-lg-6 col-md-12" :class="{ 'text-right': isRTL }">
+      <div class="col-lg-12 col-md-12" :class="{ 'text-right': isRTL }">
         <card type="chart">
           <template slot="header">
-            <h5 class="card-category">Endpoint Severity Counts</h5>
+            <h5 class="card-category">Endpoint Severity</h5>
           </template>
           <div class="chart-area">
             <bar-chart style="height: 100%" chart-id="blue-bar-chart" :chart-data="blueBarChart.chartData"
@@ -319,47 +356,9 @@ export default {
       top10RequestedAppsGovNet: 0,
       top10RequestedAppsInternet: 0,
       selectedOption: "Allowed",
-      bigLineChart: {
-        allData: [],
-        activeIndex: 0,
-        chartData: {
-          datasets: [{}],
-          labels: [
-            "1 Week Ago",
-            "2 Weeks Ago",
-            "3 Weeks Ago",
-            "4 Weeks Ago",
-            "5 Weeks Ago",
-            "6 Weeks Ago",
-            "7 Weeks Ago",
-          ],
-        },
-        extraOptions: chartConfigs.purpleChartOptions,
-        gradientColors: config.colors.primaryGradient,
-        gradientStops: [1, 0.4, 0],
-        categories: [],
-      },
-      //////////////////////////////////////////////////////////////////
-      blueBarChart: {
-        extraOptions: chartConfigs.barChartOptions,
-        chartData: {
-          labels: ['INFO', 'High', 'Low', 'Informational', 'Medium'],
-          datasets: [
-            {
-              label: "Severity Counts",
-              fill: true,
-              borderColor: config.colors.info,
-              borderWidth: 2,
-              borderDash: [],
-              borderDashOffset: 0.0,
-              backgroundColor: "#5a8dee", // Bar color
-              data: [0, 0, 0, 0, 0]
-            }
-          ]
-        },
-        gradientColors: config.colors.primaryGradient,
-        gradientStops: [1, 0.4, 0],
-      },
+      ///////////////////////////////////////////////////////////////////
+      bigLineChart: this.initializeBigLineChart(),
+      blueBarChart: this.initializeBlueBarChart(),
       ///////////////////////////////////////////////////////////////////////
     };
   },
@@ -378,24 +377,71 @@ export default {
   async created() {
     this.$root.$on("timeRangeChanged", this.fetchData);
   },
-
-  destroyed() {
+  // destroyed() {
+  //   this.$root.$off("timeRangeChanged", this.fetchData);
+  // },
+  beforeDestroy() {
     this.$root.$off("timeRangeChanged", this.fetchData);
+    if (this.isRTL) {
+      this.i18n.locale = "en";
+      this.$rtl.disableRTL();
+    }
   },
   methods: {
     ////////////////////////////////////////////////////////////////////////////////
-    async fetchData(timeRange) {
+    initializeBigLineChart() {
+      return {
+        allData: [],
+        activeIndex: 0,
+        chartData: {
+          datasets: [{}],
+          labels: [
+            "1 Week Ago",
+            "2 Weeks Ago",
+            "3 Weeks Ago",
+            "4 Weeks Ago",
+            "5 Weeks Ago",
+            "6 Weeks Ago",
+            "7 Weeks Ago",
+          ],
+        },
+        extraOptions: chartConfigs.purpleChartOptions,
+        gradientColors: config.colors.primaryGradient,
+        gradientStops: [1, 0.4, 0],
+        categories: [],
+      };
+    },
+    initializeBlueBarChart() {
+      return {
+        extraOptions: chartConfigs.barChartOptions,
+        chartData: {
+          labels: ['INFO', 'High', 'Low', 'Informational', 'Medium'],
+          datasets: [
+            {
+              label: "Severity Counts",
+              fill: true,
+              borderColor: config.colors.info,
+              borderWidth: 0,
+              borderDash: [],
+              borderDashOffset: 0.0,
+              backgroundColor: "#5a8dee", // Bar color
+              data: [0, 0, 0, 0, 0]
+            }
+          ]
+        },
+        gradientColors: config.colors.primaryGradient,
+        gradientStops: [1, 0.4, 0],
+      };
+    },
+    ////////////////////////////////////////////////////////////////////////////////
+    async fetchData(timeRange = this.timeRange) {
+      this.timeRange = timeRange || {
+        gte: this.$route.query.gte,
+        lte: this.$route.query.lte,
+        format: "yyyy-MM-dd",
+      };
+
       try {
-        if (!timeRange) {
-          this.timeRange = {
-            gte: this.$route.query.gte,
-            lte: this.$route.query.lte,
-            format: "yyyy-MM-dd",
-          };
-          timeRange = this.timeRange;
-        } else {
-          this.timeRange = timeRange;
-        }
 
         // Allowed Traffic
         const allowedTrafficResponse = await apiService.getAllowedTraffic(
@@ -569,7 +615,7 @@ export default {
               label: "Severity Counts",
               fill: true,
               borderColor: config.colors.info,
-              borderWidth: 2,
+              borderWidth: 0,
               borderDash: [],
               borderDashOffset: 0.0,
               data: [...counts],

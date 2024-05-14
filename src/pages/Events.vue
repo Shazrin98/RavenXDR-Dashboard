@@ -1,13 +1,15 @@
 <template>
-    <div class="row">
-      <div class="col-lg-12 col-md-12">
-        <card class="card" :header-classes="{ 'text-right': isRTL }">
-          <h4 slot="header" class="card-title">
-            {{ $t("dashboard.eventsTable") }}
-          </h4>
-          <div class="filters">
-            <div class="dropdown">
-              <input type="text" v-model="searchSrcIP" placeholder="Search Source IP">
+  <div class="row">
+    <div class="col-lg-12 col-md-12">
+      <card class="card" :header-classes="{ 'text-right': isRTL }">
+        <h4 slot="header" class="card-title">
+          {{ $t("dashboard.eventsTable") }}
+        </h4>
+        <div class="filters">
+          <div class="dropdown d-flex align-items-center">
+            <input type="text" v-model="searchSrcIP" placeholder="Search Source IP"
+              class="form-control col-lg-3 col-md-6 mr-2 search-ip">
+            <div class="select-container">
               <select v-model="selectedSrcIP" @change="applyIPFilters">
                 <option value="" disabled selected>Choose Source IP</option>
                 <option v-for="option in filteredSrcIPOptions" :key="option.key" :value="option.value">{{ option.label
@@ -15,8 +17,11 @@
                 </option>
               </select>
             </div>
-            <div class="dropdown">
-              <input type="text" v-model="searchDstIP" placeholder="Search Destination IP">
+          </div>
+          <div class="dropdown d-flex align-items-center">
+            <input type="text" v-model="searchDstIP" placeholder="Search Destination IP"
+              class="form-control col-lg-3 col-md-6 mr-2 search-ip">
+            <div class="select-container">
               <select v-model="selectedDstIP" @change="applyIPFilters">
                 <option value="" disabled selected>Choose Destination IP</option>
                 <option v-for="option in filteredDstIPOptions" :key="option.key" :value="option.value">{{ option.label
@@ -24,34 +29,35 @@
                 </option>
               </select>
             </div>
-            <button @click="resetFilters">Reset Filters</button>
           </div>
-          <div class="table-container">
-            <base-table :data="tableData" :columns="columns">
-              <template slot="columns">
-                <th class="text-left">Timestamp</th>
-                <th class="text-left">Source IP</th>
-                <th class="text-left">Destination IP</th>
-                <th class="text-left">Details</th>
-              </template>
-              <template slot-scope="{ row }">
-                <td>{{ row.timestamp }}</td>
-                <td>{{ row.srcip }}</td>
-                <td>{{ row.dstip }}</td>
-                <td class="td-actions text-left">
-                  <base-button type="success" size="sm" icon @click="toggleDetailData(row)">
-                    <i class="tim-icons icon-zoom-split"></i>
-                  </base-button>
-                </td>
-                <div v-if="row.showDetailData" class="detail-data">
-                  <pre>{{ row.data }}</pre>
-                </div>
-              </template>
-            </base-table>
-          </div>
-        </card>
-      </div>
+          <button @click="resetFilters" class="red-button">Reset Filters</button>
+        </div>
+        <div class="table-container">
+          <base-table :data="tableData" :columns="columns">
+            <template slot="columns">
+              <th class="text-left">Timestamp</th>
+              <th class="text-left">Source IP</th>
+              <th class="text-left">Destination IP</th>
+              <th class="text-left">Details</th>
+            </template>
+            <template slot-scope="{ row }">
+              <td>{{ row.timestamp }}</td>
+              <td>{{ row.srcip }}</td>
+              <td>{{ row.dstip }}</td>
+              <td class="td-actions text-left">
+                <base-button type="success" size="sm" icon @click="toggleDetailData(row)">
+                  <i class="tim-icons icon-zoom-split"></i>
+                </base-button>
+              </td>
+              <div v-if="row.showDetailData" class="detail-data">
+                <pre>{{ row.data }}</pre>
+              </div>
+            </template>
+          </base-table>
+        </div>
+      </card>
     </div>
+  </div>
   </div>
 </template>
 <script>
@@ -253,4 +259,34 @@ export default {
   max-height: 500px;
   overflow-y: auto;
 }
+
+.search-ip {
+  color: white;
+  background-color: white;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin: 5px;
+}
+
+.red-button {
+  color: black;
+  background-color: red;
+  border: 2px solid red;
+  border-radius: 5px;
+  padding: 2px 20px;
+  font-size: 10px;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.select-container {
+  display: flex;
+  align-items: center;
+}
+
+.select-container select {
+  width: 200px;
+}
+
 </style>
