@@ -261,7 +261,7 @@ export default {
 }
 
 .search-ip {
-  color: white;
+  color: black;
   background-color: white;
   padding: 5px;
   border-radius: 5px;

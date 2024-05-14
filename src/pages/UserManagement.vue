@@ -33,6 +33,13 @@
           </base-input>
         </div>
       </div> -->
+
+      <!-- 
+        PUT A TABLE OF EXISTING USERS
+
+        COLUMNS FOR "fullname, username, email, RESET Password Button"
+       -->
+       
       <base-button slot="footer" type="primary" fill>Create</base-button>
     </card>
   </div>
