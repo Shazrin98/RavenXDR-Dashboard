@@ -873,7 +873,6 @@ export const getEndpointOperationCount = async (timeRange = {}) => {
     );
   }
 };
-/////////////////////////////////////////////////////////////////////////////////
 // endpointSeverityNumbers
 export const getEndpointSeverityNumbers = async (timeRange = {}) => {
   const url = "/raven*/_search?pretty";
@@ -890,7 +889,6 @@ export const getEndpointSeverityNumbers = async (timeRange = {}) => {
       }
     }
   };
-  console.log("getEndpointSeverityNumbers data:" + data);////////////
   try {
     const response = await api.post(url, data);
     return response.data;

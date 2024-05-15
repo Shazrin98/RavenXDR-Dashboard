@@ -35,7 +35,7 @@
               <input slot="header" v-model="searchQuery" type="text" class="form-control" id="inlineFormInputGroup"
                 placeholder="SEARCH">
             </modal> -->
-
+<!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
             <div>
               <!-- Dropdown for predefined time ranges -->
               <select v-model="selectedTimeRange" @change="handleTimeRangeChange">
@@ -80,6 +80,7 @@
                 <a href="#" class="nav-item dropdown-item">Log out</a>
               </li>
             </base-dropdown>
+            <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
           </ul>
         </div>
       </collapse-transition>

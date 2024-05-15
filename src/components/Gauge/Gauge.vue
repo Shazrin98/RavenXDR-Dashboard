@@ -22,7 +22,6 @@ export default {
                 needleValue: this.value,
                 needleColor: "orange", // Bright orange needle color
                 arcColors: ["green", "yellow", "red"], // Green, yellow, and red arc colors
-                // arcColors: ["darkgreen", "darkgoldenrod", "darkred"], // Darker shades of green, yellow, and red arc colors
                 arcDelimiters: [10, 30], // Arc delimiter values
                 rangeLabel: ["0%", "100%"],
             },
@@ -66,4 +65,5 @@ export default {
     margin-top: 10px;
     /* Adjust as needed */
 }
+
 </style>

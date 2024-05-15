@@ -267,6 +267,7 @@ export default {
   border-radius: 5px;
   border: 1px solid #ccc;
   margin: 5px;
+  font-family: arial;
 }
 
 .red-button {
@@ -287,6 +288,10 @@ export default {
 
 .select-container select {
   width: 200px;
+  background-color: white;
+  font-family: arial;
+  border-radius: 5px;
+  color: grey;
 }
 
 </style>
