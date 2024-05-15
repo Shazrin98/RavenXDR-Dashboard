@@ -2,26 +2,51 @@
   <div>
     <!-- ///////////////////////////////////////////////////////////////////////////////////////// -->
     <div class="row">
-      <card>
-        <div>
-          <select v-model="selectedTimeRange" @change="handleTimeRangeChange">
-            <option value="" disabled selected>Choose a time range</option>
-            <option value="5m">Last 5 minutes</option>
-            <option value="10m">Last 10 minutes</option>
-            <option value="30m">Last 30 minutes</option>
-            <option value="1h">Last 1 hour</option>
-            <option value="1d">Last 1 day</option>
-            <option value="7d">Last 7 days</option>
-          </select>
-        </div>
+      <div class="col-lg-8">
+        <card>
+          <div class="row">
+            <div>
+              <select v-model="selectedTimeRange" @change="handleTimeRangeChange">
+                <option value="" disabled selected>Choose a time range</option>
+                <option value="5m">Last 5 minutes</option>
+                <option value="10m">Last 10 minutes</option>
+                <option value="30m">Last 30 minutes</option>
+                <option value="1h">Last 1 hour</option>
+                <option value="1d">Last 1 day</option>
+                <option value="7d">Last 7 days</option>
+              </select>
+            </div>
 
-        <div>
-          <datepicker v-model="customStartDate" :placeholder="customStartDatePlaceholder"
-            @input="handleCustomStartDateChange"></datepicker>
-          <datepicker v-model="customEndDate" :placeholder="customEndDatePlaceholder"
-            @input="handleCustomEndDateChange"></datepicker>
-        </div>
-      </card>
+            <div>
+              <datepicker v-model="customStartDate" :placeholder="customStartDatePlaceholder"
+                @input="handleCustomStartDateChange"></datepicker>
+              </div>
+              <div>
+              <datepicker v-model="customEndDate" :placeholder="customEndDatePlaceholder"
+                @input="handleCustomEndDateChange"></datepicker>
+            </div>
+            
+            <div>
+              <base-button type="success" size="sm" icon>
+                    <i class="tim-icons icon-zoom-split"></i>
+                  </base-button>
+            </div>
+          </div>
+          <div class="row">
+            <button @click="resetFilters" class="red-button">Reset Filters</button>
+          </div>
+        </card>
+      </div>
+      <div class="col-lg-4">
+        <card>
+          <p class="text-success">REFRESH</p>
+          <!-- 
+            WHAT TO PUT HERE:
+            REFRESH Rate TICKBOX on the left and REFRESH Rate DROPDOWN OPTIONS on the right.
+            For the dropdown options, "10 seconds" and "1 minute" is needed for now
+          -->
+        </card>
+      </div>
     </div>
     <!-- //////////////////////////////////////////////////////////////////////////////////// -->
     <div class="row">
@@ -311,6 +336,7 @@ import * as apiService from "@/services/api.service";
 //////////////////////////////////////////////////////////////////////////////
 import Datepicker from 'vuejs-datepicker'; // Import the Datepicker component
 import { format } from 'date-fns';
+import VueTimepicker from 'vue-time-picker';
 
 export default {
   components: {
@@ -318,6 +344,7 @@ export default {
     BarChart,
     Gauge,
     Datepicker,
+    VueTimepicker,
   },
   data() {
     return {
@@ -371,6 +398,13 @@ export default {
   },
   methods: {
     ///////////////////////////////////////////////////////////////////////
+    resetFilters() {
+      this.selectedTimeRange = '',
+      this.customStartDate = null,
+      this.customEndDate = null,
+      this.fetchData(this.selectedTimeRange);
+    },
+    ////////////////////////////////////////////////////////////////////////
     handleTimeRangeChange() {
       const selectedTimeRange = this.selectedTimeRange;
       this.selectedTimeRange = selectedTimeRange;

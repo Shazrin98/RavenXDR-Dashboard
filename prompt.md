@@ -6,7 +6,7 @@ npm run serve
 
 
 ## WHAT TO INSTALL
-nom install
+npm install
 npm install axios
 npm install vue-datepicker
 npm install vue-gauge

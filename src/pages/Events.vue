@@ -2,63 +2,44 @@
 <template>
   <div>
     <div class="row">
-      <card>
-        <div>
-          <select v-model="selectedTimeRange" @change="handleTimeRangeChange">
-            <option value="" disabled selected>Choose a time range</option>
-            <option value="5m">Last 5 minutes</option>
-            <option value="10m">Last 10 minutes</option>
-            <option value="30m">Last 30 minutes</option>
-            <option value="1h">Last 1 hour</option>
-            <option value="1d">Last 1 day</option>
-            <option value="7d">Last 7 days</option>
-          </select>
-        </div>
-
-        <div>
-          <datepicker v-model="customStartDate" :placeholder="customStartDatePlaceholder"
-            @input="handleCustomStartDateChange"></datepicker>
-          <datepicker v-model="customEndDate" :placeholder="customEndDatePlaceholder"
-            @input="handleCustomEndDateChange"></datepicker>
-        </div>
-      </card>
-    </div>
-
-    <!-- ///////////////////////////////////////////////////////////////////// -->
-
-    <div class="row">
       <div class="col-lg-12 col-md-12">
         <card class="card" :header-classes="{ 'text-right': isRTL }">
           <h4 slot="header" class="card-title">
             {{ $t("dashboard.eventsTable") }}
           </h4>
-          <div class="filters">
-            <div class="dropdown d-flex align-items-center">
-              <input type="text" v-model="searchSrcIP" placeholder="Search Source IP"
-                class="form-control col-lg-3 col-md-6 mr-2 search-ip">
-              <div class="select-container">
-                <select v-model="selectedSrcIP" @change="applyIPFilters">
-                  <option value="" disabled selected>Choose Source IP</option>
-                  <option v-for="option in filteredSrcIPOptions" :key="option.key" :value="option.value">{{ option.label
-                    }}
-                  </option>
-                </select>
-              </div>
-            </div>
-            <div class="dropdown d-flex align-items-center">
-              <input type="text" v-model="searchDstIP" placeholder="Search Destination IP"
-                class="form-control col-lg-3 col-md-6 mr-2 search-ip">
-              <div class="select-container">
-                <select v-model="selectedDstIP" @change="applyIPFilters">
-                  <option value="" disabled selected>Choose Destination IP</option>
-                  <option v-for="option in filteredDstIPOptions" :key="option.key" :value="option.value">{{ option.label
-                    }}
-                  </option>
-                </select>
-              </div>
-            </div>
-            <button @click="resetFilters" class="red-button">Reset Filters</button>
+          <!-- ////////////////////////////////////////////////////////////// -->
+          <div class="row">
+            <!-- ////////////////////////////////////////////////////////// -->
+            
+              <input type="text" v-model="searchSrcIP" placeholder="Source IP" class="col-lg-2 search-ip">
+            
+              <input type="text" v-model="searchDstIP" placeholder="Destination IP"
+                class="col-lg-2 search-ip">
+
+              <select class="col-lg-2 search-timerange" v-model="selectedTimeRange" @change="handleTimeRangeChange">
+                <option value="" disabled selected>Time Range</option>
+                <option value="5m">Last 5 minutes</option>
+                <option value="10m">Last 10 minutes</option>
+                <option value="30m">Last 30 minutes</option>
+                <option value="1h">Last 1 hour</option>
+                <option value="1d">Last 1 day</option>
+                <option value="7d">Last 7 days</option>
+              </select>
+
+            <datepicker class="col-lg-2 datepicker-style" v-model="customStartDate" placeholder="Start Date"
+              @input="handleCustomStartDateChange"></datepicker>
+            <datepicker class="col-lg-2 datepicker-style" v-model="customEndDate" placeholder="End Date"
+              @input="handleCustomEndDateChange"></datepicker>
+
+
+            <!-- ////////////////////////////////////////////////// -->
+            <base-button @click="applyIPFilters" type="info" icon><i class="tim-icons icon-zoom-split"></i></base-button>
+            <!-- ///////////////////////////////////////////////// -->
           </div>
+          <div class="row">
+            <button @click="resetFilters" class="reset-button">Reset Filters</button>
+          </div>
+          <!-- ////////////////////////////////////////////////////////////// -->
           <div class="table-container">
             <base-table :data="tableData" :columns="columns">
               <template slot="columns">
@@ -127,16 +108,6 @@ export default {
   },
   computed: {
     ////////////////////////////////////////////////////////////////////////////
-    filteredSrcIPOptions() {
-      return this.srcIPOptions.filter(option =>
-        option.label.toLowerCase().includes(this.searchSrcIP.toLowerCase())
-      );
-    },
-    filteredDstIPOptions() {
-      return this.dstIPOptions.filter(option =>
-        option.label.toLowerCase().includes(this.searchDstIP.toLowerCase())
-      );
-    },
     enableRTL() {
       return this.$route.query.enableRTL;
     },
@@ -219,25 +190,29 @@ export default {
       row.showDetailData = !row.showDetailData;
     },
     resetFilters() {
+      this.selectedTimeRange = '',
+        this.customStartDate = null;
+      this.customEndDate = null;
       this.selectedSrcIP = '';
       this.selectedDstIP = '';
       this.searchSrcIP = '';
       this.searchDstIP = '';
-      this.applyIPFilters();
+      this.timeRange = '',
+        this.applyIPFilters();
     },
     ///////////////////////////////////////////////////////////////////
     async applyIPFilters() {
       try {
-        const selectedSrcIP = this.selectedSrcIP;
-        const selectedDstIP = this.selectedDstIP;
+        const searchSrcIP = this.searchSrcIP.trim().toLowerCase();
+        const searchDstIP = this.searchDstIP.trim().toLowerCase();
         const timeRange = this.timeRange || {
           gte: this.$route.query.gte,
           lte: this.$route.query.lte,
           format: "yyyy-MM-dd",
         };
         const filteredEventDataResponse = await apiService.getFilteredEventData(
-          selectedSrcIP,
-          selectedDstIP,
+          searchSrcIP,
+          searchDstIP,
           timeRange
         );
         this.tableData = filteredEventDataResponse.hits.hits.map((hit) => {
@@ -286,27 +261,6 @@ export default {
           };
         });
 
-        // Source IP Filter Options
-        const filterSrcipOptionsResponse = await apiService.getFilterSrcipOptions(timeRange);
-        const filterSrcipOptionsBuckets =
-          filterSrcipOptionsResponse.aggregations.unique_source_ips.buckets;
-        const srcIPOptionsData = filterSrcipOptionsBuckets.map((bucket) => ({
-          key: bucket.key,
-          value: bucket.key,
-          label: bucket.key,
-        }));
-        this.srcIPOptions = srcIPOptionsData;
-
-        // Destination IP Filter Options
-        const filterDstipOptionsResponse = await apiService.getFilterDstipOptions(timeRange);
-        const filterDstipOptionsBuckets =
-          filterDstipOptionsResponse.aggregations.unique_destination_ips.buckets; // Corrected
-        const dstIPOptionsData = filterDstipOptionsBuckets.map((bucket) => ({
-          key: bucket.key,
-          value: bucket.key,
-          label: bucket.key,
-        }));
-        this.dstIPOptions = dstIPOptionsData;
         ////////////////////////////////////////////////////////////////////////////////////////
 
       } catch (error) {
@@ -366,29 +320,69 @@ export default {
   border: 1px solid #ccc;
   margin: 5px;
   font-family: arial;
+  height: 40px; 
+  line-height: 40px; 
 }
 
-.red-button {
+.search-timerange {
   color: black;
-  background-color: red;
-  border: 2px solid red;
+  background-color: white;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin: 5px;
+  font-family: arial;
+  height: 40px; 
+  line-height: 40px; 
+}
+
+.datepicker-style {
+  height: 40px; 
+  line-height: 40px; 
+  margin: 0px;
+  flex: 1; 
+  height: 40px;
+  line-height: 40px;
+  padding: 0 10px;
+  font-family: Arial;
+  border: 1px solid #ccc;
+  border-top-right-radius: 0; /* Adjust border radius for datepicker */
+  border-bottom-right-radius: 0;
+}
+
+.base-button {
+  height: 40px; 
+  line-height: 40px; 
+  margin: 5px;
+  padding: 0 20px;
+  cursor: pointer;
+}
+
+.select {
+  width: calc(100% - 40px); 
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 0 10px; 
+}
+
+.base-button {
+  border: none;
+  border-radius: 5px;
+  padding: 0 20px;
+  cursor: pointer;
+}
+
+.reset-button {
+  color: black;
+  background-color: grey;
+  border: 2px solid grey;
   border-radius: 5px;
   padding: 2px 20px;
-  font-size: 10px;
+  font-size: 14px;
   cursor: pointer;
   margin: 5px;
+  height: 40px; 
+  width: 130px; 
 }
 
-.select-container {
-  display: flex;
-  align-items: center;
-}
-
-.select-container select {
-  width: 200px;
-  background-color: white;
-  font-family: arial;
-  border-radius: 5px;
-  color: grey;
-}
 </style>
