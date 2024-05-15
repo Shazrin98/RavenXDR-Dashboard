@@ -35,28 +35,6 @@
               <input slot="header" v-model="searchQuery" type="text" class="form-control" id="inlineFormInputGroup"
                 placeholder="SEARCH">
             </modal> -->
-<!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
-            <div>
-              <!-- Dropdown for predefined time ranges -->
-              <select v-model="selectedTimeRange" @change="handleTimeRangeChange">
-                <option value="" disabled selected>Choose a time range</option>
-                <option value="5m">Last 5 minutes</option>
-                <option value="10m">Last 10 minutes</option>
-                <option value="30m">Last 30 minutes</option>
-                <option value="1h">Last 1 hour</option>
-                <option value="1d">Last 1 day</option>
-                <option value="7d">Last 7 days</option>
-              </select>
-            </div>
-
-            <div>
-              <!-- Start date picker for custom date range -->
-              <datepicker v-model="customStartDate" :placeholder="customStartDatePlaceholder"
-                @input="handleCustomStartDateChange"></datepicker>
-              <!-- End date picker for custom date range -->
-              <datepicker v-model="customEndDate" :placeholder="customEndDatePlaceholder"
-                @input="handleCustomEndDateChange"></datepicker>
-            </div>
 
             <base-dropdown tag="li" :menu-on-right="!$rtl.isRTL" title-tag="a" class="nav-item"
               menu-classes="dropdown-navbar">
@@ -80,7 +58,6 @@
                 <a href="#" class="nav-item dropdown-item">Log out</a>
               </li>
             </base-dropdown>
-            <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
           </ul>
         </div>
       </collapse-transition>
@@ -90,14 +67,11 @@
 <script>
 import { CollapseTransition } from 'vue2-transitions';
 import Modal from '@/components/Modal';
-import { format } from 'date-fns';
-import Datepicker from 'vuejs-datepicker'; // Import the Datepicker component
 
 export default {
   components: {
-    Datepicker,
     CollapseTransition,
-    Modal
+    Modal,
   },
   computed: {
     routeName() {
@@ -108,77 +82,19 @@ export default {
       return this.$rtl.isRTL;
     }
   },
+
   data() {
     return {
-      selectedTimeRange: '',
-      customStartDate: null,
-      customEndDate: null,
-      customStartDatePlaceholder: 'Choose a START date',
-      customEndDatePlaceholder: 'Choose an END date',
-      //////////////////////////////////
       activeNotifications: false,
       showMenu: false,
       searchModalVisible: false,
       searchQuery: ''
     };
   },
+
   mounted() {
-    // Fetch data based on default time range when component is mounted
-    this.fetchData();
   },
   methods: {
-    handleTimeRangeChange() {
-      const selectedTimeRange = this.selectedTimeRange;
-      this.selectedTimeRange = selectedTimeRange;
-      this.customStartDate = null;
-      this.customEndDate = null;
-      this.fetchData();
-    },
-    handleCustomStartDateChange() {
-      const selectedStartDate = this.customStartDate;
-      const formattedStartDate = format(selectedStartDate, 'yyyy-MM-dd');
-      this.customStartDate = formattedStartDate;
-      this.selectedTimeRange = '';
-      this.fetchData();
-
-    },
-    handleCustomEndDateChange() {
-      const selectedEndDate = this.customEndDate;
-      const formattedEndDate = format(selectedEndDate, 'yyyy-MM-dd');
-      this.customEndDate = formattedEndDate;
-      this.selectedTimeRange = '';
-      this.fetchData();
-    },
-
-    async fetchData() {
-      try {
-        let timeRange;
-        if (this.selectedTimeRange !== '') {
-          // Use predefined time range
-          const timeRangeMap = {
-            '5m': { gte: 'now-5m/m', lte: 'now/m' },
-            '10m': { gte: 'now-10m/m', lte: 'now/m' },
-            '30m': { gte: 'now-30m/m', lte: 'now/m' },
-            '1h': { gte: 'now-1h/h', lte: 'now/h' },
-            '1d': { gte: 'now-1d/d', lte: 'now/d' },
-            '7d': { gte: 'now-7d/d', lte: 'now/d' },
-          };
-          timeRange = timeRangeMap[this.selectedTimeRange];
-        } else {
-          // Use custom date range if selected
-          timeRange = {
-            gte: this.customStartDate,
-            lte: this.customEndDate,
-            format: 'yyyy-MM-dd',
-          };
-        }
-
-        // Emit event to parent component with selected time range
-        this.$root.$emit('timeRangeChanged', timeRange);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    },
 
     capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);

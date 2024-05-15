@@ -1,63 +1,90 @@
+<!-- ////////////////////////////////////////////////////////////////////////// -->
 <template>
-  <div class="row">
-    <div class="col-lg-12 col-md-12">
-      <card class="card" :header-classes="{ 'text-right': isRTL }">
-        <h4 slot="header" class="card-title">
-          {{ $t("dashboard.eventsTable") }}
-        </h4>
-        <div class="filters">
-          <div class="dropdown d-flex align-items-center">
-            <input type="text" v-model="searchSrcIP" placeholder="Search Source IP"
-              class="form-control col-lg-3 col-md-6 mr-2 search-ip">
-            <div class="select-container">
-              <select v-model="selectedSrcIP" @change="applyIPFilters">
-                <option value="" disabled selected>Choose Source IP</option>
-                <option v-for="option in filteredSrcIPOptions" :key="option.key" :value="option.value">{{ option.label
-                  }}
-                </option>
-              </select>
-            </div>
-          </div>
-          <div class="dropdown d-flex align-items-center">
-            <input type="text" v-model="searchDstIP" placeholder="Search Destination IP"
-              class="form-control col-lg-3 col-md-6 mr-2 search-ip">
-            <div class="select-container">
-              <select v-model="selectedDstIP" @change="applyIPFilters">
-                <option value="" disabled selected>Choose Destination IP</option>
-                <option v-for="option in filteredDstIPOptions" :key="option.key" :value="option.value">{{ option.label
-                  }}
-                </option>
-              </select>
-            </div>
-          </div>
-          <button @click="resetFilters" class="red-button">Reset Filters</button>
+  <div>
+    <div class="row">
+      <card>
+        <div>
+          <select v-model="selectedTimeRange" @change="handleTimeRangeChange">
+            <option value="" disabled selected>Choose a time range</option>
+            <option value="5m">Last 5 minutes</option>
+            <option value="10m">Last 10 minutes</option>
+            <option value="30m">Last 30 minutes</option>
+            <option value="1h">Last 1 hour</option>
+            <option value="1d">Last 1 day</option>
+            <option value="7d">Last 7 days</option>
+          </select>
         </div>
-        <div class="table-container">
-          <base-table :data="tableData" :columns="columns">
-            <template slot="columns">
-              <th class="text-left">Timestamp</th>
-              <th class="text-left">Source IP</th>
-              <th class="text-left">Destination IP</th>
-              <th class="text-left">Details</th>
-            </template>
-            <template slot-scope="{ row }">
-              <td>{{ row.timestamp }}</td>
-              <td>{{ row.srcip }}</td>
-              <td>{{ row.dstip }}</td>
-              <td class="td-actions text-left">
-                <base-button type="success" size="sm" icon @click="toggleDetailData(row)">
-                  <i class="tim-icons icon-zoom-split"></i>
-                </base-button>
-              </td>
-              <div v-if="row.showDetailData" class="detail-data">
-                <pre>{{ row.data }}</pre>
-              </div>
-            </template>
-          </base-table>
+
+        <div>
+          <datepicker v-model="customStartDate" :placeholder="customStartDatePlaceholder"
+            @input="handleCustomStartDateChange"></datepicker>
+          <datepicker v-model="customEndDate" :placeholder="customEndDatePlaceholder"
+            @input="handleCustomEndDateChange"></datepicker>
         </div>
       </card>
     </div>
-  </div>
+
+    <!-- ///////////////////////////////////////////////////////////////////// -->
+
+    <div class="row">
+      <div class="col-lg-12 col-md-12">
+        <card class="card" :header-classes="{ 'text-right': isRTL }">
+          <h4 slot="header" class="card-title">
+            {{ $t("dashboard.eventsTable") }}
+          </h4>
+          <div class="filters">
+            <div class="dropdown d-flex align-items-center">
+              <input type="text" v-model="searchSrcIP" placeholder="Search Source IP"
+                class="form-control col-lg-3 col-md-6 mr-2 search-ip">
+              <div class="select-container">
+                <select v-model="selectedSrcIP" @change="applyIPFilters">
+                  <option value="" disabled selected>Choose Source IP</option>
+                  <option v-for="option in filteredSrcIPOptions" :key="option.key" :value="option.value">{{ option.label
+                    }}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="dropdown d-flex align-items-center">
+              <input type="text" v-model="searchDstIP" placeholder="Search Destination IP"
+                class="form-control col-lg-3 col-md-6 mr-2 search-ip">
+              <div class="select-container">
+                <select v-model="selectedDstIP" @change="applyIPFilters">
+                  <option value="" disabled selected>Choose Destination IP</option>
+                  <option v-for="option in filteredDstIPOptions" :key="option.key" :value="option.value">{{ option.label
+                    }}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <button @click="resetFilters" class="red-button">Reset Filters</button>
+          </div>
+          <div class="table-container">
+            <base-table :data="tableData" :columns="columns">
+              <template slot="columns">
+                <th class="text-left">Timestamp</th>
+                <th class="text-left">Source IP</th>
+                <th class="text-left">Destination IP</th>
+                <th class="text-left">Details</th>
+              </template>
+              <template slot-scope="{ row }">
+                <td>{{ row.timestamp }}</td>
+                <td>{{ row.srcip }}</td>
+                <td>{{ row.dstip }}</td>
+                <td class="td-actions text-left">
+                  <base-button type="success" size="sm" icon @click="toggleDetailData(row)">
+                    <i class="tim-icons icon-zoom-split"></i>
+                  </base-button>
+                </td>
+                <div v-if="row.showDetailData" class="detail-data">
+                  <pre>{{ row.data }}</pre>
+                </div>
+              </template>
+            </base-table>
+          </div>
+        </card>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -66,15 +93,26 @@ import UserTable from "./Dashboard/UserTable";
 import config from "@/config";
 import * as apiService from "@/services/api.service";
 import { BaseTable } from "@/components";
+//////////////////////////////////////////////////
+import Datepicker from 'vuejs-datepicker'; // Import the Datepicker component
+import { format } from 'date-fns';
 
 export default {
   components: {
     TaskList,
     UserTable,
     BaseTable,
+    Datepicker,
   },
   data() {
     return {
+      ////////////////////////////////////////////////
+      selectedTimeRange: '',
+      customStartDate: null,
+      customEndDate: null,
+      customStartDatePlaceholder: 'Choose a START date',
+      customEndDatePlaceholder: 'Choose an END date',
+      ////////////////////////////////////////////////
       tableData: [],
       columns: ["timestamp", "dstip", "srcip", "actions"],
       selectedSrcIP: '',
@@ -109,11 +147,73 @@ export default {
   async created() {
     this.$root.$on("timeRangeChanged", this.fetchData);
   },
-
-  destroyed() {
+  beforeDestroy() {
     this.$root.$off("timeRangeChanged", this.fetchData);
+    if (this.isRTL) {
+      this.i18n.locale = "en";
+      this.$rtl.disableRTL();
+    }
   },
   methods: {
+    ///////////////////////////////////////////////////////////////////////
+    handleTimeRangeChange() {
+      const selectedTimeRange = this.selectedTimeRange;
+      this.selectedTimeRange = selectedTimeRange;
+      this.customStartDate = null;
+      this.customEndDate = null;
+      this.fetchTimeDateData();
+      console.log("handleTimeRangeChange this.selectedTimeRange:", this.selectedTimeRange);
+    },
+    handleCustomStartDateChange() {
+      const selectedStartDate = this.customStartDate;
+      const formattedStartDate = format(selectedStartDate, 'yyyy-MM-dd');
+      this.customStartDate = formattedStartDate;
+      this.selectedTimeRange = '';
+      this.fetchTimeDateData();
+      console.log("handleCustomStartDateChange this.customStartDate:", this.customStartDate);
+
+    },
+    handleCustomEndDateChange() {
+      const selectedEndDate = this.customEndDate;
+      const formattedEndDate = format(selectedEndDate, 'yyyy-MM-dd');
+      this.customEndDate = formattedEndDate;
+      this.selectedTimeRange = '';
+      this.fetchTimeDateData();
+      console.log("handleCustomEndDateChange this.customEndDate:", this.customEndDate);
+    },
+    async fetchTimeDateData() {
+      try {
+        let timeRange;
+        if (this.selectedTimeRange !== '') {
+          // Use predefined time range
+          const timeRangeMap = {
+            '5m': { gte: 'now-5m/m', lte: 'now/m' },
+            '10m': { gte: 'now-10m/m', lte: 'now/m' },
+            '30m': { gte: 'now-30m/m', lte: 'now/m' },
+            '1h': { gte: 'now-1h/h', lte: 'now/h' },
+            '1d': { gte: 'now-1d/d', lte: 'now/d' },
+            '7d': { gte: 'now-7d/d', lte: 'now/d' },
+          };
+          timeRange = timeRangeMap[this.selectedTimeRange];
+        } else {
+          // Use custom date range if selected
+          timeRange = {
+            gte: this.customStartDate,
+            lte: this.customEndDate,
+            format: 'yyyy-MM-dd',
+          };
+        }
+
+        this.fetchData(timeRange);
+
+        console.log("fetchTimeDateData timeRange:", timeRange);
+
+
+      } catch (error) {
+        console.error('Error fetching TimeDate data:', error);
+      }
+    },
+    /////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
     toggleDetailData(row) {
       row.showDetailData = !row.showDetailData;
@@ -125,6 +225,7 @@ export default {
       this.searchDstIP = '';
       this.applyIPFilters();
     },
+    ///////////////////////////////////////////////////////////////////
     async applyIPFilters() {
       try {
         const selectedSrcIP = this.selectedSrcIP;
@@ -158,18 +259,14 @@ export default {
       }
     },
     //////////////////////////////////////////////////////////////////
-    async fetchData(timeRange) {
+    async fetchData(timeRange = this.timeRange) {
+      this.timeRange = timeRange || {
+        gte: this.$route.query.gte,
+        lte: this.$route.query.lte,
+        format: "yyyy-MM-dd",
+      };
+
       try {
-        if (!timeRange) {
-          this.timeRange = {
-            gte: this.$route.query.gte,
-            lte: this.$route.query.lte,
-            format: "yyyy-MM-dd",
-          };
-          timeRange = this.timeRange;
-        } else {
-          this.timeRange = timeRange;
-        }
 
         // All Event Data
         const allEventDataResponse = await apiService.getAllEventData(timeRange);
@@ -216,16 +313,16 @@ export default {
         console.error("Error fetching data from APIs:", error);
       }
     },
+    ////////////////////////////////////////////////////////////////////////////
     formatNumber(number) {
-      if (Number.isInteger(number)) {
-        return number.toLocaleString();
-      } else {
-        return number.toLocaleString(undefined, {
+      return Number.isInteger(number)
+        ? number.toLocaleString()
+        : number.toLocaleString(undefined, {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         });
-      }
     },
+    ////////////////////////////////////////////////////////////////////////////
   },
   async mounted() {
     this.i18n = this.$i18n;
@@ -233,6 +330,7 @@ export default {
       this.i18n.locale = "ar";
       this.$rtl.enableRTL();
     }
+    await this.fetchTimeDateData();///////////////////////////////
   },
   beforeDestroy() {
     if (this.$rtl.isRTL) {
@@ -293,5 +391,4 @@ export default {
   border-radius: 5px;
   color: grey;
 }
-
 </style>

@@ -1,5 +1,29 @@
 <template>
   <div>
+    <!-- ///////////////////////////////////////////////////////////////////////////////////////// -->
+    <div class="row">
+      <card>
+        <div>
+          <select v-model="selectedTimeRange" @change="handleTimeRangeChange">
+            <option value="" disabled selected>Choose a time range</option>
+            <option value="5m">Last 5 minutes</option>
+            <option value="10m">Last 10 minutes</option>
+            <option value="30m">Last 30 minutes</option>
+            <option value="1h">Last 1 hour</option>
+            <option value="1d">Last 1 day</option>
+            <option value="7d">Last 7 days</option>
+          </select>
+        </div>
+
+        <div>
+          <datepicker v-model="customStartDate" :placeholder="customStartDatePlaceholder"
+            @input="handleCustomStartDateChange"></datepicker>
+          <datepicker v-model="customEndDate" :placeholder="customEndDatePlaceholder"
+            @input="handleCustomEndDateChange"></datepicker>
+        </div>
+      </card>
+    </div>
+    <!-- //////////////////////////////////////////////////////////////////////////////////// -->
     <div class="row">
       <div class="col-12">
         <card type="chart">
@@ -38,6 +62,7 @@
         </card>
       </div>
     </div>
+    <!-- ////////////////////////////////////////////////////////////////////// -->
     <div class="row">
       <!-- /////////////////////////////////////////////////////////////////////// -->
       <div class="col-lg-6 col-md-12">
@@ -273,6 +298,7 @@
       </div>
       <!-- //////////////////////////////////////////////////////////////////////// -->
     </div>
+    <!-- ////////////////////////////////////////////////////////////////////////////// -->
   </div>
 </template>
 <script>
@@ -282,16 +308,26 @@ import Gauge from "@/components/Gauge/Gauge.vue";
 import * as chartConfigs from "@/components/Charts/config";
 import config from "@/config";
 import * as apiService from "@/services/api.service";
+//////////////////////////////////////////////////////////////////////////////
 import Datepicker from 'vuejs-datepicker'; // Import the Datepicker component
+import { format } from 'date-fns';
 
 export default {
   components: {
     LineChart,
     BarChart,
     Gauge,
+    Datepicker,
   },
   data() {
     return {
+      ////////////////////////////////////////////////
+      selectedTimeRange: '',
+      customStartDate: null,
+      customEndDate: null,
+      customStartDatePlaceholder: 'Choose a START date',
+      customEndDatePlaceholder: 'Choose an END date',
+      ////////////////////////////////////////////////
       riskyEventPercentage: 0,
       timeRange: {},
       allowedTraffic: 0,
@@ -334,6 +370,65 @@ export default {
     }
   },
   methods: {
+    ///////////////////////////////////////////////////////////////////////
+    handleTimeRangeChange() {
+      const selectedTimeRange = this.selectedTimeRange;
+      this.selectedTimeRange = selectedTimeRange;
+      this.customStartDate = null;
+      this.customEndDate = null;
+      this.fetchTimeDateData();
+      console.log("handleTimeRangeChange this.selectedTimeRange:", this.selectedTimeRange);
+    },
+    handleCustomStartDateChange() {
+      const selectedStartDate = this.customStartDate;
+      const formattedStartDate = format(selectedStartDate, 'yyyy-MM-dd');
+      this.customStartDate = formattedStartDate;
+      this.selectedTimeRange = '';
+      this.fetchTimeDateData();
+      console.log("handleCustomStartDateChange this.customStartDate:", this.customStartDate);
+
+    },
+    handleCustomEndDateChange() {
+      const selectedEndDate = this.customEndDate;
+      const formattedEndDate = format(selectedEndDate, 'yyyy-MM-dd');
+      this.customEndDate = formattedEndDate;
+      this.selectedTimeRange = '';
+      this.fetchTimeDateData();
+      console.log("handleCustomEndDateChange this.customEndDate:", this.customEndDate);
+    },
+    async fetchTimeDateData() {
+      try {
+        let timeRange;
+        if (this.selectedTimeRange !== '') {
+          // Use predefined time range
+          const timeRangeMap = {
+            '5m': { gte: 'now-5m/m', lte: 'now/m' },
+            '10m': { gte: 'now-10m/m', lte: 'now/m' },
+            '30m': { gte: 'now-30m/m', lte: 'now/m' },
+            '1h': { gte: 'now-1h/h', lte: 'now/h' },
+            '1d': { gte: 'now-1d/d', lte: 'now/d' },
+            '7d': { gte: 'now-7d/d', lte: 'now/d' },
+          };
+          timeRange = timeRangeMap[this.selectedTimeRange];
+        } else {
+          // Use custom date range if selected
+          timeRange = {
+            gte: this.customStartDate,
+            lte: this.customEndDate,
+            format: 'yyyy-MM-dd',
+          };
+        }
+
+        this.fetchData(timeRange);
+
+        console.log("fetchTimeDateData timeRange:", timeRange);
+
+
+      } catch (error) {
+        console.error('Error fetching TimeDate data:', error);
+      }
+    },
+    //////////////////////////////////////////////////////////////////////////////
     initializeBigLineChart() {
       return {
         allData: [],
@@ -542,9 +637,9 @@ export default {
       return Number.isInteger(number)
         ? number.toLocaleString()
         : number.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          });
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
     },
   },
   async mounted() {
@@ -554,6 +649,7 @@ export default {
       this.$rtl.enableRTL();
     }
     await this.initBigChart(this.selectedOption);
+    await this.fetchTimeDateData();/////////////////////////////////////////////////////////////////////
   },
   beforeDestroy() {
     if (this.$rtl.isRTL) {
