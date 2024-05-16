@@ -26,11 +26,12 @@
                 class="datepicker-style"></datepicker>
             </div>
 
-            <div>
+            <!-- <div>
               <base-button type="success" icon size="md" class="search-button">
                 <i class="tim-icons icon-zoom-split"></i>
               </base-button>
-            </div>
+            </div> -->
+            
           </div>
           <div class="row">
             <button @click="resetFilters" class="reset-button">Reset Filters</button>

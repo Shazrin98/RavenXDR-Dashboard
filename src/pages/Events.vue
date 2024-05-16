@@ -13,9 +13,7 @@
             <div class="col-lg-10 d-flex flex-column">
               <div class="d-flex">
                 <input type="text" v-model="searchSrcIP" placeholder="Source IP" class="col-lg-4 search-ip">
-
                 <input type="text" v-model="searchDstIP" placeholder="Destination IP" class="col-lg-4 search-ip">
-
                 <select class="col-lg-4 search-timerange" v-model="selectedTimeRange" @change="handleTimeRangeChange">
                   <option value="" disabled selected>Time Range</option>
                   <option value="5m">Last 5 minutes</option>
@@ -27,19 +25,14 @@
                 </select>
               </div>
               <div class="d-flex">
-                
-                  <datepicker v-model="customStartDate" placeholder="Start Date"
-                    @input="handleCustomStartDateChange" class="mr-2 datepicker-style"></datepicker>
-                
-                
-                  <datepicker v-model="customEndDate" placeholder="End Date"
-                    @input="handleCustomEndDateChange" class="datepicker-style"></datepicker>
-                
+                <datepicker v-model="customStartDate" placeholder="Start Date" @input="handleCustomStartDateChange" class="mr-2 datepicker-style">
+                </datepicker>
+                <datepicker v-model="customEndDate" placeholder="End Date" @input="handleCustomEndDateChange" class="datepicker-style"></datepicker>
               </div>
             </div>
             <div class="col-lg-2 d-flex">
               <!-- ////////////////////////////////////////////////// -->
-              <base-button @click="applyIPFilters" type="info" icon size="lg" class="search-button"><i
+              <base-button @click="applyFilters" type="info" icon size="lg" class="search-button"><i
                   class="tim-icons icon-zoom-split"></i></base-button>
               <!-- ///////////////////////////////////////////////// -->
             </div>
@@ -99,9 +92,6 @@ export default {
       selectedTimeRange: '',
       customStartDate: null,
       customEndDate: null,
-      customStartDatePlaceholder: 'Choose a START date',
-      customEndDatePlaceholder: 'Choose an END date',
-      ////////////////////////////////////////////////
       tableData: [],
       columns: ["timestamp", "dstip", "srcip", "actions"],
       selectedSrcIP: '',
@@ -111,7 +101,6 @@ export default {
       searchSrcIP: '',
       searchDstIP: '',
       timeRange: {},
-      ///////////////////////////////////////////////////////////////////////
     };
   },
   computed: {
@@ -123,16 +112,6 @@ export default {
       return this.$rtl.isRTL;
     },
   },
-  async created() {
-    this.$root.$on("timeRangeChanged", this.fetchData);
-  },
-  beforeDestroy() {
-    this.$root.$off("timeRangeChanged", this.fetchData);
-    if (this.isRTL) {
-      this.i18n.locale = "en";
-      this.$rtl.disableRTL();
-    }
-  },
   methods: {
     ///////////////////////////////////////////////////////////////////////
     handleTimeRangeChange() {
@@ -140,31 +119,27 @@ export default {
       this.selectedTimeRange = selectedTimeRange;
       this.customStartDate = null;
       this.customEndDate = null;
-      this.fetchTimeDateData();
       console.log("handleTimeRangeChange this.selectedTimeRange:", this.selectedTimeRange);
     },
     handleCustomStartDateChange() {
       const selectedStartDate = this.customStartDate;
-      const formattedStartDate = format(selectedStartDate, 'yyyy-MM-dd');
-      this.customStartDate = formattedStartDate;
+      this.customStartDate = this.formatDate(selectedStartDate);
       this.selectedTimeRange = '';
-      this.fetchTimeDateData();
       console.log("handleCustomStartDateChange this.customStartDate:", this.customStartDate);
 
     },
     handleCustomEndDateChange() {
       const selectedEndDate = this.customEndDate;
-      const formattedEndDate = format(selectedEndDate, 'yyyy-MM-dd');
-      this.customEndDate = formattedEndDate;
+      this.customEndDate = this.formatDate(selectedEndDate);
       this.selectedTimeRange = '';
-      this.fetchTimeDateData();
       console.log("handleCustomEndDateChange this.customEndDate:", this.customEndDate);
     },
-    async fetchTimeDateData() {
+    async applyFilters() {
       try {
+        const searchSrcIP = this.searchSrcIP.trim().toLowerCase();
+        const searchDstIP = this.searchDstIP.trim().toLowerCase();
         let timeRange;
         if (this.selectedTimeRange !== '') {
-          // Use predefined time range
           const timeRangeMap = {
             '5m': { gte: 'now-5m/m', lte: 'now/m' },
             '10m': { gte: 'now-10m/m', lte: 'now/m' },
@@ -175,25 +150,17 @@ export default {
           };
           timeRange = timeRangeMap[this.selectedTimeRange];
         } else {
-          // Use custom date range if selected
           timeRange = {
             gte: this.customStartDate,
             lte: this.customEndDate,
             format: 'yyyy-MM-dd',
           };
         }
-
-        this.fetchData(timeRange);
-
-        console.log("fetchTimeDateData timeRange:", timeRange);
-
-
+        await this.fetchData({ searchSrcIP, searchDstIP, timeRange });
       } catch (error) {
-        console.error('Error fetching TimeDate data:', error);
+        console.error("Error applying filters:", error);
       }
     },
-    /////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////
     toggleDetailData(row) {
       row.showDetailData = !row.showDetailData;
     },
@@ -208,21 +175,26 @@ export default {
       this.timeRange = '',
         this.applyIPFilters();
     },
-    ///////////////////////////////////////////////////////////////////
-    async applyIPFilters() {
+    async fetchAllEventData() {
       try {
-        const searchSrcIP = this.searchSrcIP.trim().toLowerCase();
-        const searchDstIP = this.searchDstIP.trim().toLowerCase();
-        const timeRange = this.timeRange || {
-          gte: this.$route.query.gte,
-          lte: this.$route.query.lte,
-          format: "yyyy-MM-dd",
-        };
-        const filteredEventDataResponse = await apiService.getFilteredEventData(
-          searchSrcIP,
-          searchDstIP,
-          timeRange
-        );
+        await this.fetchData({ searchSrcIP: '', searchDstIP: '', timeRange: null });
+      } catch (error) {
+        console.error("Error fetching all event data:", error);
+      }
+    },
+    async fetchData({ searchSrcIP = '', searchDstIP = '', timeRange }) {
+      this.timeRange = timeRange || {
+        gte: this.$route.query.gte,
+        lte: this.$route.query.lte,
+        format: "yyyy-MM-dd",
+      };
+
+      try {
+        const responses = await Promise.all([
+          apiService.getFilteredEventData(searchSrcIP, searchDstIP, this.timeRange),
+        ]);
+        const filteredEventDataResponse = responses[0];
+
         this.tableData = filteredEventDataResponse.hits.hits.map((hit) => {
           const timestamp = hit._source.timestamp;
           const srcip = hit._source.data.src || hit._source.data.srcip || hit._source.data.SrcIP;
@@ -238,44 +210,9 @@ export default {
           };
         });
       } catch (error) {
-        console.error("Error applying IP filters:", error);
-      }
-    },
-    //////////////////////////////////////////////////////////////////
-    async fetchData(timeRange = this.timeRange) {
-      this.timeRange = timeRange || {
-        gte: this.$route.query.gte,
-        lte: this.$route.query.lte,
-        format: "yyyy-MM-dd",
-      };
-
-      try {
-
-        // All Event Data
-        const allEventDataResponse = await apiService.getAllEventData(timeRange);
-        const allEventDataHits = allEventDataResponse.hits.hits;
-        this.tableData = allEventDataHits.map((hit) => {
-          const timestamp = hit._source.timestamp;
-          const srcip = hit._source.data.src || hit._source.data.srcip || hit._source.data.SrcIP;
-          const dstip = hit._source.data.dst || hit._source.data.dstip || hit._source.data.DstIP;
-          const data = hit._source.data;
-          return {
-            data: data,
-            timestamp: timestamp,
-            dstip: dstip,
-            srcip: srcip,
-            actions: null, // Placeholder for action button data
-            showDetailData: false, // Flag to control detail visibility
-          };
-        });
-
-        ////////////////////////////////////////////////////////////////////////////////////////
-
-      } catch (error) {
         console.error("Error fetching data from APIs:", error);
       }
     },
-    ////////////////////////////////////////////////////////////////////////////
     formatNumber(number) {
       return Number.isInteger(number)
         ? number.toLocaleString()
@@ -284,7 +221,9 @@ export default {
           maximumFractionDigits: 2,
         });
     },
-    ////////////////////////////////////////////////////////////////////////////
+    formatDate(date) {
+      return date ? date.toISOString().split('T')[0] : null;
+    },
   },
   async mounted() {
     this.i18n = this.$i18n;
@@ -292,7 +231,8 @@ export default {
       this.i18n.locale = "ar";
       this.$rtl.enableRTL();
     }
-    await this.fetchTimeDateData();///////////////////////////////
+
+    this.fetchAllEventData();
   },
   beforeDestroy() {
     if (this.$rtl.isRTL) {
@@ -347,7 +287,7 @@ export default {
 .datepicker-style {
   height: 40px;
   line-height: 40px;
-  margin:5px;
+  margin: 5px;
   font-family: Arial;
 }
 
@@ -394,5 +334,4 @@ export default {
 .mt-2 {
   margin-top: 10px;
 }
-
 </style>
