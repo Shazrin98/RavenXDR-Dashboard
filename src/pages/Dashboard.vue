@@ -7,7 +7,7 @@
           <div class="row">
             <div>
               <select v-model="selectedTimeRange" @change="handleTimeRangeChange">
-                <option value="" disabled selected>Choose a time range</option>
+                <option value="" disabled selected>Time Range</option>
                 <option value="5m">Last 5 minutes</option>
                 <option value="10m">Last 10 minutes</option>
                 <option value="30m">Last 30 minutes</option>
@@ -18,11 +18,11 @@
             </div>
 
             <div>
-              <datepicker v-model="customStartDate" :placeholder="customStartDatePlaceholder"
+              <datepicker v-model="customStartDate" placeholder="Start Date"
                 @input="handleCustomStartDateChange"></datepicker>
               </div>
               <div>
-              <datepicker v-model="customEndDate" :placeholder="customEndDatePlaceholder"
+              <datepicker v-model="customEndDate" placeholder="End Date"
                 @input="handleCustomEndDateChange"></datepicker>
             </div>
             

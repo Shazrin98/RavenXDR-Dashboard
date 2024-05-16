@@ -8,33 +8,41 @@
             {{ $t("dashboard.eventsTable") }}
           </h4>
           <!-- ////////////////////////////////////////////////////////////// -->
-          <div class="row">
+          <div class="row align-items-center">
             <!-- ////////////////////////////////////////////////////////// -->
-            
-              <input type="text" v-model="searchSrcIP" placeholder="Source IP" class="col-lg-2 search-ip">
-            
-              <input type="text" v-model="searchDstIP" placeholder="Destination IP"
-                class="col-lg-2 search-ip">
+            <div class="col-lg-10 d-flex flex-column">
+              <div class="d-flex">
+                <input type="text" v-model="searchSrcIP" placeholder="Source IP" class="col-lg-4 search-ip">
 
-              <select class="col-lg-2 search-timerange" v-model="selectedTimeRange" @change="handleTimeRangeChange">
-                <option value="" disabled selected>Time Range</option>
-                <option value="5m">Last 5 minutes</option>
-                <option value="10m">Last 10 minutes</option>
-                <option value="30m">Last 30 minutes</option>
-                <option value="1h">Last 1 hour</option>
-                <option value="1d">Last 1 day</option>
-                <option value="7d">Last 7 days</option>
-              </select>
+                <input type="text" v-model="searchDstIP" placeholder="Destination IP" class="col-lg-4 search-ip">
 
-            <datepicker class="col-lg-2 datepicker-style" v-model="customStartDate" placeholder="Start Date"
-              @input="handleCustomStartDateChange"></datepicker>
-            <datepicker class="col-lg-2 datepicker-style" v-model="customEndDate" placeholder="End Date"
-              @input="handleCustomEndDateChange"></datepicker>
-
-
-            <!-- ////////////////////////////////////////////////// -->
-            <base-button @click="applyIPFilters" type="info" icon><i class="tim-icons icon-zoom-split"></i></base-button>
-            <!-- ///////////////////////////////////////////////// -->
+                <select class="col-lg-4 search-timerange" v-model="selectedTimeRange" @change="handleTimeRangeChange">
+                  <option value="" disabled selected>Time Range</option>
+                  <option value="5m">Last 5 minutes</option>
+                  <option value="10m">Last 10 minutes</option>
+                  <option value="30m">Last 30 minutes</option>
+                  <option value="1h">Last 1 hour</option>
+                  <option value="1d">Last 1 day</option>
+                  <option value="7d">Last 7 days</option>
+                </select>
+              </div>
+              <div class="d-flex">
+                
+                  <datepicker v-model="customStartDate" placeholder="Start Date"
+                    @input="handleCustomStartDateChange" class="mr-2 datepicker-style"></datepicker>
+                
+                
+                  <datepicker v-model="customEndDate" placeholder="End Date"
+                    @input="handleCustomEndDateChange" class="datepicker-style"></datepicker>
+                
+              </div>
+            </div>
+            <div class="col-lg-2 d-flex">
+              <!-- ////////////////////////////////////////////////// -->
+              <base-button @click="applyIPFilters" type="info" icon size="lg" class="search-button"><i
+                  class="tim-icons icon-zoom-split"></i></base-button>
+              <!-- ///////////////////////////////////////////////// -->
+            </div>
           </div>
           <div class="row">
             <button @click="resetFilters" class="reset-button">Reset Filters</button>
@@ -320,8 +328,8 @@ export default {
   border: 1px solid #ccc;
   margin: 5px;
   font-family: arial;
-  height: 40px; 
-  line-height: 40px; 
+  height: 40px;
+  line-height: 40px;
 }
 
 .search-timerange {
@@ -332,44 +340,34 @@ export default {
   border: 1px solid #ccc;
   margin: 5px;
   font-family: arial;
-  height: 40px; 
-  line-height: 40px; 
+  height: 40px;
+  line-height: 40px;
 }
 
 .datepicker-style {
-  height: 40px; 
-  line-height: 40px; 
-  margin: 0px;
-  flex: 1; 
   height: 40px;
   line-height: 40px;
-  padding: 0 10px;
+  margin:5px;
+  line-height: 40px;
   font-family: Arial;
-  border: 1px solid #ccc;
-  border-top-right-radius: 0; /* Adjust border radius for datepicker */
-  border-bottom-right-radius: 0;
-}
-
-.base-button {
-  height: 40px; 
-  line-height: 40px; 
-  margin: 5px;
-  padding: 0 20px;
-  cursor: pointer;
 }
 
 .select {
-  width: calc(100% - 40px); 
+  width: calc(100% - 40px);
   border: 1px solid #ccc;
   border-radius: 5px;
-  padding: 0 10px; 
+  padding: 0 10px;
 }
 
-.base-button {
-  border: none;
-  border-radius: 5px;
-  padding: 0 20px;
+.search-button {
+  margin-left: 30px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  cursor: pointer;
+  color: white;
 }
 
 .reset-button {
@@ -381,8 +379,21 @@ export default {
   font-size: 14px;
   cursor: pointer;
   margin: 5px;
-  height: 40px; 
-  width: 130px; 
+  margin-left: 20px;
+  height: 40px;
+  width: 130px;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.mr-2 {
+  margin-right: 10px;
+}
+
+.mt-2 {
+  margin-top: 10px;
 }
 
 </style>
