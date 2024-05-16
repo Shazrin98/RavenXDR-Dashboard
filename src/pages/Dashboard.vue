@@ -6,7 +6,7 @@
         <card>
           <div class="row">
             <div>
-              <select v-model="selectedTimeRange" @change="handleTimeRangeChange">
+              <select v-model="selectedTimeRange" @change="handleTimeRangeChange" class="search-timerange">
                 <option value="" disabled selected>Time Range</option>
                 <option value="5m">Last 5 minutes</option>
                 <option value="10m">Last 10 minutes</option>
@@ -18,33 +18,40 @@
             </div>
 
             <div>
-              <datepicker v-model="customStartDate" placeholder="Start Date"
-                @input="handleCustomStartDateChange"></datepicker>
-              </div>
-              <div>
-              <datepicker v-model="customEndDate" placeholder="End Date"
-                @input="handleCustomEndDateChange"></datepicker>
+              <datepicker v-model="customStartDate" placeholder="Start Date" @input="handleCustomStartDateChange"
+                class="datepicker-style"></datepicker>
             </div>
-            
             <div>
-              <base-button type="success" size="sm" icon>
-                    <i class="tim-icons icon-zoom-split"></i>
-                  </base-button>
+              <datepicker v-model="customEndDate" placeholder="End Date" @input="handleCustomEndDateChange"
+                class="datepicker-style"></datepicker>
+            </div>
+
+            <div>
+              <base-button type="success" icon size="md" class="search-button">
+                <i class="tim-icons icon-zoom-split"></i>
+              </base-button>
             </div>
           </div>
           <div class="row">
-            <button @click="resetFilters" class="red-button">Reset Filters</button>
+            <button @click="resetFilters" class="reset-button">Reset Filters</button>
           </div>
         </card>
       </div>
       <div class="col-lg-4">
         <card>
-          <p class="text-success">REFRESH</p>
-          <!-- 
-            WHAT TO PUT HERE:
-            REFRESH Rate TICKBOX on the left and REFRESH Rate DROPDOWN OPTIONS on the right.
-            For the dropdown options, "10 seconds" and "1 minute" is needed for now
-          -->
+          <p class="text-success">Refresh Switch</p>
+          <div class="row-refresh">
+            <div>
+              <input type="checkbox" v-model="autoRefresh" id="autoRefresh" class="refresh-checkbox">
+            </div>
+            <div>
+              <select v-model="refreshRate" class="refresh-dropdown">
+                <option value="" disabled selected>Choose Refresh Rate</option>
+                <option value="10000">Every 10 seconds</option>
+                <option value="60000"> Every 1 minute</option>
+              </select>
+            </div>
+          </div>
         </card>
       </div>
     </div>
@@ -348,6 +355,8 @@ export default {
   },
   data() {
     return {
+      autoRefresh: false,
+      refreshRate: 0,
       ////////////////////////////////////////////////
       selectedTimeRange: '',
       customStartDate: null,
@@ -400,9 +409,9 @@ export default {
     ///////////////////////////////////////////////////////////////////////
     resetFilters() {
       this.selectedTimeRange = '',
-      this.customStartDate = null,
-      this.customEndDate = null,
-      this.fetchData(this.selectedTimeRange);
+        this.customStartDate = null,
+        this.customEndDate = null,
+        this.fetchData(this.selectedTimeRange);
     },
     ////////////////////////////////////////////////////////////////////////
     handleTimeRangeChange() {
@@ -693,6 +702,69 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
 @import "~@fortawesome/fontawesome-free/css/all.css";
+
+.datepicker-style {
+  height: 40px;
+  line-height: 40px;
+  /* margin-top: 5px; */
+  margin-left: 5px;
+  font-family: Arial;
+}
+
+.search-timerange {
+  color: black;
+  background-color: white;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-left: 10px;
+  /* margin-top: 5px; */
+  font-family: arial;
+  height: 45px;
+  line-height: 40px;
+  width: 170px
+}
+
+.reset-button {
+  color: black;
+  background-color: grey;
+  border: 2px solid grey;
+  border-radius: 5px;
+  padding: 2px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 5px;
+  margin-left: 10px;
+  height: 40px;
+  width: 150px;
+}
+
+.search-button {
+  margin-top: 5px;
+  margin-left: 30px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  cursor: pointer;
+  color: white;
+}
+
+.row-refresh {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+}
+
+.refresh-checkbox {
+  border-radius: 5px;
+}
+
+.refresh-dropdown {
+  margin-left: 5px;
+  border-radius: 5px;
+}
 </style>

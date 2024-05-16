@@ -302,7 +302,7 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
 @import "~@fortawesome/fontawesome-free/css/all.css";
 
 .detail-data {
@@ -348,7 +348,6 @@ export default {
   height: 40px;
   line-height: 40px;
   margin:5px;
-  line-height: 40px;
   font-family: Arial;
 }
 
