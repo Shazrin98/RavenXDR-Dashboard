@@ -37,6 +37,7 @@
           </div>
         </card>
       </div>
+      <!-- //////////////////////////////////////////////////// -->
       <div class="col-lg-4">
         <card>
           <p class="text-success">Refresh Switch</p>
@@ -46,14 +47,16 @@
             </div>
             <div>
               <select v-model="refreshRate" class="refresh-dropdown">
-                <option value="" disabled selected>Choose Refresh Rate</option>
+                <option value="" disabled selected>Refresh Rate</option>
+                <option value="5000">Every 5 seconds</option>
                 <option value="10000">Every 10 seconds</option>
-                <option value="60000"> Every 1 minute</option>
+                <option value="15000">Every 15 seconds</option>
               </select>
             </div>
           </div>
         </card>
       </div>
+      <!-- //////////////////////////////////////////////////// -->
     </div>
     <!-- //////////////////////////////////////////////////////////////////////////////////// -->
     <div class="row">
@@ -315,7 +318,6 @@
     </div>
     <!-- ////////////////////////////////////////////////////////////////////////////// -->
     <div class="row">
-      <!-- /////////////////////////////////////////////////////////////////////// -->
       <div class="col-lg-12 col-md-12" :class="{ 'text-right': isRTL }">
         <card type="chart">
           <template slot="header">
@@ -328,7 +330,6 @@
           </div>
         </card>
       </div>
-      <!-- //////////////////////////////////////////////////////////////////////// -->
     </div>
     <!-- ////////////////////////////////////////////////////////////////////////////// -->
   </div>
@@ -355,15 +356,16 @@ export default {
   },
   data() {
     return {
+      //////////////////////////////////////////////
       autoRefresh: false,
-      refreshRate: 0,
+      refreshRate: null,
+      refreshInterval: null,
       ////////////////////////////////////////////////
       selectedTimeRange: '',
       customStartDate: null,
       customEndDate: null,
       customStartDatePlaceholder: 'Choose a START date',
       customEndDatePlaceholder: 'Choose an END date',
-      ////////////////////////////////////////////////
       riskyEventPercentage: 0,
       timeRange: {},
       allowedTraffic: 0,
@@ -405,7 +407,47 @@ export default {
       this.$rtl.disableRTL();
     }
   },
+  ///////////////////////////////////////////////////////////
+  watch: {
+    autoRefresh(newVal, oldVal) {
+      if (newVal && this.refreshRate) {
+        this.startAutoRefresh();
+      } else if (!newVal) {
+        this.stopAutoRefresh();
+      }
+    },
+    refreshRate(newVal) {
+      if (this.autoRefresh && newVal) {
+        this.stopAutoRefresh();
+        this.startAutoRefresh();
+      }
+    },
+  },
+  ///////////////////////////////////////////////////////////
   methods: {
+    ///////////////////////////////////////////////////////////////////////
+    startAutoRefresh() {
+      if (this.refreshInterval) {
+        clearInterval(this.refreshInterval);
+      }
+      const timeRange = this.timeRange;
+
+      console.log("startAutoRefresh timeRange:", timeRange);
+
+      this.refreshInterval = setInterval(() => {
+        this.fetchData(timeRange);
+      }, this.refreshRate);
+
+      console.log("startAutoRefresh this.refreshInterval:", this.refreshInterval);
+    },
+    stopAutoRefresh() {
+      if (this.refreshInterval) {
+        clearInterval(this.refreshInterval);
+        this.refreshInterval = null;
+
+        console.log("stopAutoRefresh this.refreshInterval:", this.refreshInterval);
+      }
+    },
     ///////////////////////////////////////////////////////////////////////
     resetFilters() {
       this.selectedTimeRange = '',
@@ -413,7 +455,6 @@ export default {
         this.customEndDate = null,
         this.fetchData(this.selectedTimeRange);
     },
-    ////////////////////////////////////////////////////////////////////////
     handleTimeRangeChange() {
       const selectedTimeRange = this.selectedTimeRange;
       this.selectedTimeRange = selectedTimeRange;
