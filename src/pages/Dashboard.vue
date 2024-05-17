@@ -26,22 +26,20 @@
                 class="datepicker-style"></datepicker>
             </div>
 
-            <!-- <div>
-              <base-button type="success" icon size="md" class="search-button">
-                <i class="tim-icons icon-zoom-split"></i>
+            <div>
+              <base-button type="success" icon @click="resetFilters" class="reset-button">
+                <i class="tim-icons icon-refresh-02"></i>
               </base-button>
-            </div> -->
-            
-          </div>
-          <div class="row">
-            <button @click="resetFilters" class="reset-button">Reset Filters</button>
+            </div>
           </div>
         </card>
       </div>
       <!-- //////////////////////////////////////////////////// -->
       <div class="col-lg-4">
         <card>
-          <p class="text-success">Refresh Switch</p>
+          <div class="row-refresh">
+            <p class="text-success refresh-text">Refresh Rate</p>
+          </div>
           <div class="row-refresh">
             <div>
               <input type="checkbox" v-model="autoRefresh" id="autoRefresh" class="refresh-checkbox">
@@ -408,8 +406,8 @@ export default {
       this.$rtl.disableRTL();
     }
   },
-  ///////////////////////////////////////////////////////////
   watch: {
+    /////////////////////////////////////////////////////////////
     autoRefresh(newVal, oldVal) {
       if (newVal && this.refreshRate) {
         this.startAutoRefresh();
@@ -424,7 +422,6 @@ export default {
       }
     },
   },
-  ///////////////////////////////////////////////////////////
   methods: {
     ///////////////////////////////////////////////////////////////////////
     startAutoRefresh() {
@@ -449,7 +446,6 @@ export default {
         console.log("stopAutoRefresh this.refreshInterval:", this.refreshInterval);
       }
     },
-    ///////////////////////////////////////////////////////////////////////
     resetFilters() {
       this.selectedTimeRange = '',
         this.customStartDate = null,
@@ -513,7 +509,6 @@ export default {
         console.error('Error fetching TimeDate data:', error);
       }
     },
-    //////////////////////////////////////////////////////////////////////////////
     initializeBigLineChart() {
       return {
         allData: [],
@@ -734,7 +729,7 @@ export default {
       this.$rtl.enableRTL();
     }
     await this.initBigChart(this.selectedOption);
-    await this.fetchTimeDateData();/////////////////////////////////////////////////////////////////////
+    await this.fetchTimeDateData();
   },
   beforeDestroy() {
     if (this.$rtl.isRTL) {
@@ -750,7 +745,7 @@ export default {
 .datepicker-style {
   height: 40px;
   line-height: 40px;
-  /* margin-top: 5px; */
+  margin-top: 13px;
   margin-left: 5px;
   font-family: Arial;
 }
@@ -759,17 +754,17 @@ export default {
   color: black;
   background-color: white;
   padding: 5px;
-  border-radius: 5px;
+  /* border-radius: 5px; */
   border: 1px solid #ccc;
-  margin-left: 10px;
-  /* margin-top: 5px; */
+  margin-left: 30px;
+  margin-top: 13px;
   font-family: arial;
   height: 45px;
   line-height: 40px;
   width: 170px
 }
 
-.reset-button {
+/* .reset-button {
   color: black;
   background-color: grey;
   border: 2px solid grey;
@@ -781,11 +776,12 @@ export default {
   margin-left: 10px;
   height: 40px;
   width: 150px;
-}
+} */
 
-.search-button {
-  margin-top: 5px;
-  margin-left: 30px;
+.reset-button {
+  margin-top: 16px;
+  margin-left: 20px;
+  margin-bottom: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -798,15 +794,22 @@ export default {
 .row-refresh {
   display: flex;
   align-items: center;
-  justify-content: left;
+  /* justify-content: center; */
 }
 
 .refresh-checkbox {
+  margin-top: 5px;
   border-radius: 5px;
+  height: 20px;
+  width: 20px;
 }
 
 .refresh-dropdown {
   margin-left: 5px;
   border-radius: 5px;
+}
+
+.refresh-text {
+  font-size: 18px
 }
 </style>

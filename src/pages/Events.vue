@@ -12,9 +12,9 @@
             <!-- ////////////////////////////////////////////////////////// -->
             <div class="col-lg-10 d-flex flex-column">
               <div class="d-flex">
-                <input type="text" v-model="searchSrcIP" placeholder="Source IP" class="col-lg-4 search-ip">
-                <input type="text" v-model="searchDstIP" placeholder="Destination IP" class="col-lg-4 search-ip">
-                <select class="col-lg-4 search-timerange" v-model="selectedTimeRange" @change="handleTimeRangeChange">
+                <input type="text" v-model="searchSrcIP" placeholder="Source IP" class="search-ip">
+                <input type="text" v-model="searchDstIP" placeholder="Destination IP" class="search-ip">
+                <select class="search-timerange" v-model="selectedTimeRange" @change="handleTimeRangeChange">
                   <option value="" disabled selected>Time Range</option>
                   <option value="5m">Last 5 minutes</option>
                   <option value="10m">Last 10 minutes</option>
@@ -23,16 +23,15 @@
                   <option value="1d">Last 1 day</option>
                   <option value="7d">Last 7 days</option>
                 </select>
-              </div>
-              <div class="d-flex">
-                <datepicker v-model="customStartDate" placeholder="Start Date" @input="handleCustomStartDateChange" class="mr-2 datepicker-style">
+
+                <datepicker v-model="customStartDate" placeholder="Start Date" @input="handleCustomStartDateChange" class="datepicker-style">
                 </datepicker>
                 <datepicker v-model="customEndDate" placeholder="End Date" @input="handleCustomEndDateChange" class="datepicker-style"></datepicker>
               </div>
             </div>
             <div class="col-lg-2 d-flex">
               <!-- ////////////////////////////////////////////////// -->
-              <base-button @click="applyFilters" type="info" icon size="lg" class="search-button"><i
+              <base-button @click="applyFilters" type="info" class="search-button"><i
                   class="tim-icons icon-zoom-split"></i></base-button>
               <!-- ///////////////////////////////////////////////// -->
             </div>
@@ -264,11 +263,11 @@ export default {
   color: black;
   background-color: white;
   padding: 5px;
-  border-radius: 5px;
+  /* border-radius: 5px; */
   border: 1px solid #ccc;
   margin: 5px;
   font-family: arial;
-  height: 40px;
+  height: 45px;
   line-height: 40px;
 }
 
@@ -276,11 +275,11 @@ export default {
   color: black;
   background-color: white;
   padding: 5px;
-  border-radius: 5px;
+  /* border-radius: 5px; */
   border: 1px solid #ccc;
   margin: 5px;
   font-family: arial;
-  height: 40px;
+  height: 45px;
   line-height: 40px;
 }
 
@@ -289,6 +288,7 @@ export default {
   line-height: 40px;
   margin: 5px;
   font-family: Arial;
+  /* width: 150px; */
 }
 
 .select {
@@ -299,14 +299,16 @@ export default {
 }
 
 .search-button {
-  margin-left: 30px;
+  margin-left: 60px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 5px;
+  border-radius: 50px;
   cursor: pointer;
   color: white;
+  height: 45px;
+  /* width: 30px; */
 }
 
 .reset-button {
@@ -327,11 +329,4 @@ export default {
   display: flex;
 }
 
-.mr-2 {
-  margin-right: 10px;
-}
-
-.mt-2 {
-  margin-top: 10px;
-}
 </style>

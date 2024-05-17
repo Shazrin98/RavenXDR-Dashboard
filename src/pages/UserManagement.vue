@@ -39,16 +39,74 @@
 
         COLUMNS FOR "fullname, username, email, RESET Password Button"
        -->
-       
+
       <base-button slot="footer" type="primary" fill>Create</base-button>
+    </card>
+    <card>
+      <!-- ////////////////////////////////////////////////////////////////////////// -->
+      <div class="table-container">
+        <base-table :data="tableData" :columns="columns">
+          <template v-slot:columns>
+            <th class="text-left">Full Name</th>
+            <th class="text-left">Username</th>
+            <th class="text-left">Email</th>
+            <th class="text-left">Actions</th>
+          </template>
+          <template v-slot:default="{ row }">
+              <td>{{ row.fullname }}</td>
+              <td>{{ row.username }}</td>
+              <td>{{ row.email }}</td>
+              <td class="td-actions text-left">
+                <base-button type="success" size="sm" icon @click="toggleDetailData(row)">
+                  <i class="tim-icons icon-zoom-split"></i>
+                </base-button>
+              </td>
+            <div v-if="row.showDetailData" class="detail-data">
+              <pre>{{ row.actions }}</pre>
+            </div>
+          </template>
+        </base-table>
+      </div>
+      <!-- ////////////////////////////////////////////////////////////////////////// -->
     </card>
   </div>
 </template>
 <script>
+import TaskList from "./Dashboard/TaskList";
+import UserTable from "./Dashboard/UserTable";
+import config from "@/config";
+import * as apiService from "@/services/api.service";
+import { BaseTable } from "@/components";
+
 export default {
   /////////////////////////////////////
   data() {
     return {
+      ////////////////////////////////////////////////
+      selectedTimeRange: '',
+      customStartDate: null,
+      customEndDate: null,
+      tableData: [
+        {
+          id: 1,
+          fullname: "Dakota Rice",
+          username: "Dakota",
+          email: "DakotaRice@email.com",
+          showDetailData: false, // Add this field to manage detail view state
+          actions: "Some action data"
+        },
+        {
+          id: 2,
+          fullname: "Minerva Hooper",
+          username: "Minerva",
+          email: "MinervaHooper@email.com",
+          showDetailData: false, // Add this field to manage detail view state
+          actions: "Some action data"
+        }
+      ],
+      columns: ["Full Name", "Username", "Email", "Actions"],
+      timeRange: {},
+      ////////////////////////////////////////////////////////////
       model: {
         company: 'Creative Code Inc.',
         email: 'mike@email.com',
@@ -62,7 +120,12 @@ export default {
         about: 'Lamborghini Mercy, Your chick she so thirsty, I\'m in that two seat Lambo.'
       },
     }
-  }
+  },
+  methods: {
+    toggleDetailData(row) {
+      row.showDetailData = !row.showDetailData;
+    }
+  },
 }
 </script>
 <style></style>
