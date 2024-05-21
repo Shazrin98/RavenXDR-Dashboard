@@ -4,6 +4,9 @@
     <div class="row">
       <div class="col-lg-8">
         <card>
+          <div class="row-filter">
+            <p class="text-success filter-text">Time Filters</p>
+          </div>
           <div class="row">
             <div>
               <select v-model="selectedTimeRange" @change="handleTimeRangeChange" class="search-timerange">
@@ -41,12 +44,13 @@
             <p class="text-success refresh-text">Refresh Rate</p>
           </div>
           <div class="row-refresh">
-            <div>
+            <!-- <div>
               <input type="checkbox" v-model="autoRefresh" id="autoRefresh" class="refresh-checkbox">
-            </div>
+            </div> -->
             <div>
               <select v-model="refreshRate" class="refresh-dropdown">
                 <option value="" disabled selected>Refresh Rate</option>
+                <option value="">No Refresh Rate</option>
                 <option value="5000">Every 5 seconds</option>
                 <option value="10000">Every 10 seconds</option>
                 <option value="15000">Every 15 seconds</option>
@@ -150,7 +154,7 @@
             </h5>
             <ul class="list-group list-group-flush">
               <li v-for="severityData in droppedTrafficSeverityGovNet" :key="severityData.key">
-                {{ severityData.key }}:
+                {{ capitalizeFirstLetter(severityData.key) }}:
                 {{ formatNumber(severityData.docCount) }}
               </li>
             </ul>
@@ -166,7 +170,7 @@
             </h5>
             <ul class="list-group list-group-flush">
               <li v-for="severityData in droppedTrafficSeverityInternet" :key="severityData.key">
-                {{ severityData.key }}:
+                {{ capitalizeFirstLetter(severityData.key) }}:
                 {{ formatNumber(severityData.docCount) }}
               </li>
             </ul>
@@ -408,17 +412,20 @@ export default {
   },
   watch: {
     /////////////////////////////////////////////////////////////
-    autoRefresh(newVal, oldVal) {
-      if (newVal && this.refreshRate) {
-        this.startAutoRefresh();
-      } else if (!newVal) {
-        this.stopAutoRefresh();
-      }
-    },
+    // autoRefresh(newVal, oldVal) {
+    //   if (newVal && this.refreshRate) {
+    //     this.startAutoRefresh();
+    //   } else if (!newVal) {
+    //     this.stopAutoRefresh();
+    //   }
+    // },
     refreshRate(newVal) {
-      if (this.autoRefresh && newVal) {
+      // if (this.autoRefresh && newVal) {
+      if (newVal !== "") {
         this.stopAutoRefresh();
         this.startAutoRefresh();
+      } else {
+        this.stopAutoRefresh();
       }
     },
   },
@@ -721,6 +728,11 @@ export default {
           maximumFractionDigits: 2,
         });
     },
+    ///////////////////////////////////////////////////////////////////////////////////////
+    capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    },
+    ///////////////////////////////////////////////////////////////////////////////////////
   },
   async mounted() {
     this.i18n = this.$i18n;
@@ -745,9 +757,10 @@ export default {
 .datepicker-style {
   height: 40px;
   line-height: 40px;
-  margin-top: 13px;
-  margin-left: 5px;
+  /* margin-top: 13px; */
+  margin-left: 15px;
   font-family: Arial;
+  margin-top: 5px;
 }
 
 .search-timerange {
@@ -756,32 +769,18 @@ export default {
   padding: 5px;
   /* border-radius: 5px; */
   border: 1px solid #ccc;
-  margin-left: 30px;
-  margin-top: 13px;
+  margin-left: 15px;
+  margin-top: 5px;
   font-family: arial;
   height: 45px;
   line-height: 40px;
   width: 170px
 }
 
-/* .reset-button {
-  color: black;
-  background-color: grey;
-  border: 2px solid grey;
-  border-radius: 5px;
-  padding: 2px 20px;
-  font-size: 14px;
-  cursor: pointer;
-  margin-top: 5px;
-  margin-left: 10px;
-  height: 40px;
-  width: 150px;
-} */
-
 .reset-button {
-  margin-top: 16px;
-  margin-left: 20px;
-  margin-bottom: 8px;
+  margin-top: 10px;
+  margin-left: 25px;
+  /* margin-bottom: 0px; */
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -797,6 +796,12 @@ export default {
   /* justify-content: center; */
 }
 
+.row-filter {
+  margin-left: 0px;
+  display: flex;
+  align-items: center;
+}
+
 .refresh-checkbox {
   margin-top: 5px;
   border-radius: 5px;
@@ -805,11 +810,17 @@ export default {
 }
 
 .refresh-dropdown {
-  margin-left: 5px;
+  margin-left: 0px;
   border-radius: 5px;
+  margin-bottom: 18px;
+  margin-top: 10px;
 }
 
 .refresh-text {
+  font-size: 18px
+}
+
+.filter-text {
   font-size: 18px
 }
 </style>
