@@ -1,4 +1,7 @@
 import { BaseInput, Card, BaseDropdown, BaseButton, BaseCheckbox } from "../components/index";
+///////////////////////////////////////////////////
+import Vue from 'vue';
+import VueApexCharts from 'vue-apexcharts';
 /**
  * You can register global components here and use them as a plugin in your main Vue instance
  */
@@ -10,6 +13,8 @@ const GlobalComponents = {
     Vue.component(BaseDropdown.name, BaseDropdown);
     Vue.component(BaseButton.name, BaseButton);
     Vue.component(BaseCheckbox.name, BaseCheckbox);
+    ///////////////////////////////////////////////////////////////////////////
+    Vue.component('apexchart', VueApexCharts);
   }
 };
 

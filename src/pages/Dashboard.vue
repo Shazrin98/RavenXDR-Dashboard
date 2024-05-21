@@ -179,7 +179,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-lg-6" :class="{ 'text-right': isRTL }">
+      <div class="col-lg-12" :class="{ 'text-right': isRTL }">
         <card>
           <template slot="header">
             <h5 class="card-category text-info">
@@ -191,6 +191,11 @@
                 {{ countryData.key }}: {{ formatNumber(countryData.docCount) }}
               </li>
             </ul>
+            <!-- ///////////////////////////////////////////////////////////////////////////////// -->
+            <div id="chart">
+              <apexchart type="bar" height="350" :options="chartOptions" :series="series"></apexchart>
+            </div>
+            <!-- ////////////////////////////////////////////////////////////////////////////////// -->
           </template>
         </card>
       </div>
@@ -345,9 +350,11 @@ import * as chartConfigs from "@/components/Charts/config";
 import config from "@/config";
 import * as apiService from "@/services/api.service";
 //////////////////////////////////////////////////////////////////////////////
-import Datepicker from 'vuejs-datepicker'; // Import the Datepicker component
+import Datepicker from 'vuejs-datepicker';
 import { format } from 'date-fns';
 import VueTimepicker from 'vue-time-picker';
+//////////////////////////////////////////////////////////////////////////////
+import VueApexCharts from 'vue-apexcharts';
 
 export default {
   components: {
@@ -355,7 +362,10 @@ export default {
     BarChart,
     Gauge,
     Datepicker,
+    //////////////////////////////////////
     VueTimepicker,
+    //////////////////////////////////////
+    apexchart: VueApexCharts,
   },
   data() {
     return {
@@ -363,7 +373,6 @@ export default {
       autoRefresh: false,
       refreshRate: null,
       refreshInterval: null,
-      ////////////////////////////////////////////////
       selectedTimeRange: '',
       customStartDate: null,
       customEndDate: null,
@@ -375,7 +384,8 @@ export default {
       droppedTraffic: 0,
       droppedTrafficSeverityGovNet: 0,
       droppedTrafficSeverityInternet: 0,
-      top5CountryTrafficAllowed: 0,
+      // top5CountryTrafficAllowed: 0,
+      top5CountryTrafficAllowed: [],//////////////////////////
       top5CountryTrafficBlocked: 0,
       vpnUsersConnected: 0,
       successfulReceivedEmail: 0,
@@ -387,6 +397,37 @@ export default {
       selectedOption: "Allowed",
       bigLineChart: this.initializeBigLineChart(),
       blueBarChart: this.initializeBlueBarChart(),
+      ///////////////////////////////////////////////////////////////////
+      // Add these properties for the bar chart
+      series: [],
+      chartOptions: {
+        chart: {
+          type: 'bar',
+          height: 200,
+        },
+        plotOptions: {
+          bar: {
+            borderRadius: 4,
+            horizontal: true,
+          },
+        },
+        dataLabels: {
+          enabled: false,
+        },
+        xaxis: {
+          categories: [],
+        },
+        yaxis: {
+          title: {
+            text: 'Countries'
+          }
+        },
+        title: {
+          text: 'Top 5 Country Traffic Allowed',
+          align: 'left'
+        }
+      },
+      ///////////////////////////////////////////////////
     };
   },
   computed: {
@@ -582,8 +623,8 @@ export default {
           apiService.getTop10AppsUsedInternally(this.timeRange),
           apiService.getTop10RequestedAppsGovNet(this.timeRange),
           apiService.getTop10RequestedAppsInternet(this.timeRange),
-          apiService.getTotalEventNumbers(),
-          apiService.getRiskyEventNumbers(),
+          apiService.getTotalEventNumbers(this.timeRange),
+          apiService.getRiskyEventNumbers(this.timeRange),
           apiService.getEndpointSeverityNumbers(this.timeRange)
         ]);
 
@@ -595,6 +636,9 @@ export default {
         this.droppedTrafficSeverityGovNet = this.extractBuckets(responses[5], 'top_attacks');
         this.droppedTrafficSeverityInternet = this.extractBuckets(responses[6], 'top_attacks');
         this.top5CountryTrafficAllowed = this.extractBuckets(responses[7], 'top_countries');
+        ///////////////
+        console.log("this.top5CountryTrafficAllowed:", this.top5CountryTrafficAllowed);///////////////////
+        ///////////////
         this.top5CountryTrafficBlocked = this.extractBuckets(responses[8], 'top_countries');
         this.vpnUsersConnected = this.extractBuckets(responses[9], 'top_users');
         this.top10AppsUsedInternally = this.extractBuckets(responses[10], 'top_websites');
@@ -606,10 +650,34 @@ export default {
         this.riskyEventPercentage = Number(((riskyEventCount / totalEventCount) * 100).toFixed(2));
 
         this.updateBlueBarChart(responses[15].aggregations.severity_counts.buckets);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Update the chart data
+        this.updateChartData();
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
       } catch (error) {
         console.error("Error fetching data from APIs:", error);
       }
     },
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    updateChartData() {
+      const categories = this.top5CountryTrafficAllowed.map((country) => country.key);
+      console.log("updateChartData categories:", categories);
+      const data = this.top5CountryTrafficAllowed.map((country) => country.docCount);
+      console.log("updateChartData data:", data);
+
+
+      this.chartOptions = {
+        ...this.chartOptions,
+        xaxis: {
+          categories: categories,
+          title: {
+            text: 'Traffic Count'
+          }
+        }
+      };
+      this.series = [{ data }];
+    },
+    //////////////////////////////////////////////////////////////////////////////////////////////////
     extractBuckets(response, aggregationKey) {
       return response.aggregations[aggregationKey]?.buckets.map((bucket) => ({
         key: bucket.key,

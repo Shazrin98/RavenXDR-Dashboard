@@ -450,6 +450,7 @@ export const getDroppedTrafficSeverityGovNet = async (timeRange = {}) => {
         must: [
           { prefix: { "data.srcip": "10." } },
           { range: { "@timestamp": timeRange } },
+          { terms: { "data.apprisk": ["low", "medium", "high"] } }
         ],
       },
     },
@@ -481,6 +482,7 @@ export const getDroppedTrafficSeverityInternet = async (timeRange = {}) => {
       bool: {
         must_not: [{ prefix: { "data.srcip": "10." } }],
         filter: { range: { "@timestamp": timeRange } },
+        must: [{ terms: { "data.apprisk": ["low", "medium", "high"] } }],
       },
     },
     aggs: {
@@ -713,9 +715,7 @@ export const getAllEventData = async (timeRange = {}) => {
     return response.data;
   } catch (error) {
     console.error("Error fetching allEventData:", error);
-    throw new Error(
-      `Failed to fetch allEventData data: ${error.message}`
-    );
+    throw new Error(`Failed to fetch allEventData data: ${error.message}`);
   }
 };
 // filterSrcipOptions
@@ -730,7 +730,7 @@ export const getFilterSrcipOptions = async (timeRange = {}) => {
       unique_source_ips: {
         terms: {
           field: "data.srcip",
-          size: 1000,////////////
+          size: 1000, ////////////
         },
       },
     },
@@ -757,7 +757,7 @@ export const getFilterDstipOptions = async (timeRange = {}) => {
       unique_destination_ips: {
         terms: {
           field: "data.dstip",
-          size: 1000,/////////////
+          size: 1000, /////////////
         },
       },
     },
@@ -773,32 +773,32 @@ export const getFilterDstipOptions = async (timeRange = {}) => {
   }
 };
 // filteredEventData
-export const getFilteredEventData = async (selectedSrcIP, selectedDstIP, timeRange = {}) => {
+export const getFilteredEventData = async (
+  selectedSrcIP,
+  selectedDstIP,
+  timeRange = {}
+) => {
   const url = "/raven*/_search?pretty";
   const query = {
     size: 100, // Increase size to fetch more hits
     query: {
       bool: {
-        must: [
-          { range: { "@timestamp": timeRange } },
-        ],
+        must: [{ range: { "@timestamp": timeRange } }],
       },
     },
   };
   if (selectedSrcIP) {
-    query.query.bool.must.push({ match: { "data.srcip": selectedSrcIP }});
+    query.query.bool.must.push({ match: { "data.srcip": selectedSrcIP } });
   }
   if (selectedDstIP) {
-    query.query.bool.must.push({ match: { "data.dstip": selectedDstIP }});
+    query.query.bool.must.push({ match: { "data.dstip": selectedDstIP } });
   }
   try {
     const response = await api.post(url, query);
     return response.data;
   } catch (error) {
     console.error("Error fetching filteredEventData:", error);
-    throw new Error(
-      `Failed to fetch filteredEventData data: ${error.message}`
-    );
+    throw new Error(`Failed to fetch filteredEventData data: ${error.message}`);
   }
 };
 // totalEventNumbers
@@ -812,7 +812,7 @@ export const getTotalEventNumbers = async (timeRange = {}) => {
     aggs: {
       total_count: {
         filter: {
-          exists: { "field": "data.apprisk" }
+          exists: { field: "data.apprisk" },
         },
       },
     },
@@ -822,9 +822,7 @@ export const getTotalEventNumbers = async (timeRange = {}) => {
     return response.data;
   } catch (error) {
     console.error("Error fetching allEventData:", error);
-    throw new Error(
-      `Failed to fetch allEventData data: ${error.message}`
-    );
+    throw new Error(`Failed to fetch allEventData data: ${error.message}`);
   }
 };
 // riskyEventNumbers
@@ -834,7 +832,7 @@ export const getRiskyEventNumbers = async (timeRange = {}) => {
     query: {
       bool: {
         must: [
-          { terms: { "data.apprisk": [ "high", "critical" ] } },
+          { terms: { "data.apprisk": ["high", "critical"] } },
           { range: { "@timestamp": timeRange } },
         ],
       },
@@ -857,11 +855,13 @@ export const getEndpointOperationCount = async (timeRange = {}) => {
     query: {
       bool: {
         must: [
-          { wildcard: { "data.event.OperationName": "quarantined_file_update" } },
-          { range: { "@timestamp": timeRange } }
-        ]
-      }
-    }
+          {
+            wildcard: { "data.event.OperationName": "quarantined_file_update" },
+          },
+          { range: { "@timestamp": timeRange } },
+        ],
+      },
+    },
   };
   try {
     const response = await api.post(url, data);
@@ -884,10 +884,10 @@ export const getEndpointSeverityNumbers = async (timeRange = {}) => {
     aggs: {
       severity_counts: {
         terms: {
-          field: "data.event.SeverityName"
-        }
-      }
-    }
+          field: "data.event.SeverityName",
+        },
+      },
+    },
   };
   try {
     const response = await api.post(url, data);
