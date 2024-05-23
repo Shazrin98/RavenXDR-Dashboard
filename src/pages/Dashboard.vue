@@ -158,6 +158,12 @@
                 {{ formatNumber(severityData.docCount) }}
               </li>
             </ul>
+            <!-- /////////////////////////////////////////////////////////////////// -->
+            <!-- <div id="chart-severity">
+              <apexchart type="bar" height="200" :options="droppedTrafficSeverityGovNetChartOptions"
+                :series="droppedTrafficSeverityGovNetSeries"></apexchart>
+            </div> -->
+            <!-- //////////////////////////////////////////////////////////////////// -->
           </template>
         </card>
       </div>
@@ -179,7 +185,8 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-lg-12" :class="{ 'text-right': isRTL }">
+      <!-- <div class="col-lg-12" :class="{ 'text-right': isRTL }"> -->
+      <div class="col-lg-6" :class="{ 'text-right': isRTL }">
         <card>
           <template slot="header">
             <h5 class="card-category text-info">
@@ -188,13 +195,16 @@
             </h5>
             <ul class="list-group list-group-flush">
               <li v-for="countryData in top5CountryTrafficAllowed" :key="countryData.key">
+                <country-flag :country="getCountryCode(countryData.key)" svg class="country-flag" />
                 {{ countryData.key }}: {{ formatNumber(countryData.docCount) }}
               </li>
             </ul>
             <!-- ///////////////////////////////////////////////////////////////////////////////// -->
-            <div id="chart">
-              <apexchart type="bar" height="350" :options="chartOptions" :series="series"></apexchart>
-            </div>
+            <!-- <div id="chart-country">
+              <apexchart type="bar" height="200" :options="top5CountryTrafficAllowedChartOptions"
+                :series="top5CountryTrafficAllowedSeries">
+              </apexchart>
+            </div> -->
             <!-- ////////////////////////////////////////////////////////////////////////////////// -->
           </template>
         </card>
@@ -208,6 +218,7 @@
             </h5>
             <ul class="list-group list-group-flush">
               <li v-for="countryData in top5CountryTrafficBlocked" :key="countryData.key">
+                <country-flag :country="getCountryCode(countryData.key)" svg class="country-flag" />
                 {{ countryData.key }}: {{ formatNumber(countryData.docCount) }}
               </li>
             </ul>
@@ -352,9 +363,12 @@ import * as apiService from "@/services/api.service";
 //////////////////////////////////////////////////////////////////////////////
 import Datepicker from 'vuejs-datepicker';
 import { format } from 'date-fns';
-import VueTimepicker from 'vue-time-picker';
-//////////////////////////////////////////////////////////////////////////////
 import VueApexCharts from 'vue-apexcharts';
+///////////////////////////////////////////////////////////////////////////////
+import VueTimepicker from 'vue-time-picker';
+import CountryFlag from 'vue-country-flag';
+import { countryCodes } from '@/utils/countryCodes'; // Adjust the path as needed
+//////////////////////////////////////////////////////////////////////////////
 
 export default {
   components: {
@@ -362,10 +376,11 @@ export default {
     BarChart,
     Gauge,
     Datepicker,
+    apexchart: VueApexCharts,
     //////////////////////////////////////
     VueTimepicker,
+    CountryFlag,
     //////////////////////////////////////
-    apexchart: VueApexCharts,
   },
   data() {
     return {
@@ -382,11 +397,13 @@ export default {
       timeRange: {},
       allowedTraffic: 0,
       droppedTraffic: 0,
-      droppedTrafficSeverityGovNet: 0,
+      // droppedTrafficSeverityGovNet: 0,
+      droppedTrafficSeverityGovNet: [],/////////////////////////
       droppedTrafficSeverityInternet: 0,
       // top5CountryTrafficAllowed: 0,
       top5CountryTrafficAllowed: [],//////////////////////////
-      top5CountryTrafficBlocked: 0,
+      // top5CountryTrafficBlocked: 0,
+      top5CountryTrafficBlocked: [],/////////////////////////
       vpnUsersConnected: 0,
       successfulReceivedEmail: 0,
       quarantinedReceivedEmail: 0,
@@ -398,9 +415,40 @@ export default {
       bigLineChart: this.initializeBigLineChart(),
       blueBarChart: this.initializeBlueBarChart(),
       ///////////////////////////////////////////////////////////////////
-      // Add these properties for the bar chart
-      series: [],
-      chartOptions: {
+      droppedTrafficSeverityGovNetSeries: [],
+      droppedTrafficSeverityGovNetChartOptions: {
+        chart: {
+          type: 'bar',
+          height: 350,
+        },
+        plotOptions: {
+          bar: {
+            borderRadius: 4,
+            horizontal: true,
+          },
+        },
+        dataLabels: {
+          enabled: false,
+        },
+        xaxis: {
+          categories: [],
+          title: {
+            text: 'Traffic Count',
+          },
+        },
+        yaxis: {
+          title: {
+            text: 'Severity Levels',
+          },
+        },
+        title: {
+          text: 'Dropped Traffic Severity (GovNet)',
+          align: 'left',
+        },
+      },
+      /////////////////////////////////////////////////////////
+      top5CountryTrafficAllowedSeries: [],
+      top5CountryTrafficAllowedChartOptions: {
         chart: {
           type: 'bar',
           height: 200,
@@ -460,6 +508,7 @@ export default {
     //     this.stopAutoRefresh();
     //   }
     // },
+    /////////////////////////////////////////////////////////////////
     refreshRate(newVal) {
       // if (this.autoRefresh && newVal) {
       if (newVal !== "") {
@@ -525,11 +574,15 @@ export default {
       this.fetchTimeDateData();
       console.log("handleCustomEndDateChange this.customEndDate:", this.customEndDate);
     },
+    //////////////////////////////////////////////////////////////////////////////////////
+    getCountryCode(countryName) {
+      return countryCodes[countryName] || '';
+    },
+    /////////////////////////////////////////////////////////////////////////////////////
     async fetchTimeDateData() {
       try {
         let timeRange;
         if (this.selectedTimeRange !== '') {
-          // Use predefined time range
           const timeRangeMap = {
             '5m': { gte: 'now-5m/m', lte: 'now/m' },
             '10m': { gte: 'now-10m/m', lte: 'now/m' },
@@ -540,7 +593,6 @@ export default {
           };
           timeRange = timeRangeMap[this.selectedTimeRange];
         } else {
-          // Use custom date range if selected
           timeRange = {
             gte: this.customStartDate,
             lte: this.customEndDate,
@@ -592,7 +644,7 @@ export default {
               borderWidth: 0,
               borderDash: [],
               borderDashOffset: 0.0,
-              backgroundColor: "#5a8dee", // Bar color
+              backgroundColor: "#5a8dee",
               data: [0, 0, 0, 0, 0]
             }
           ]
@@ -636,10 +688,8 @@ export default {
         this.droppedTrafficSeverityGovNet = this.extractBuckets(responses[5], 'top_attacks');
         this.droppedTrafficSeverityInternet = this.extractBuckets(responses[6], 'top_attacks');
         this.top5CountryTrafficAllowed = this.extractBuckets(responses[7], 'top_countries');
-        ///////////////
-        console.log("this.top5CountryTrafficAllowed:", this.top5CountryTrafficAllowed);///////////////////
-        ///////////////
         this.top5CountryTrafficBlocked = this.extractBuckets(responses[8], 'top_countries');
+        console.log("this.top5CountryTrafficBlocked", this.top5CountryTrafficBlocked);//////////////
         this.vpnUsersConnected = this.extractBuckets(responses[9], 'top_users');
         this.top10AppsUsedInternally = this.extractBuckets(responses[10], 'top_websites');
         this.top10RequestedAppsGovNet = this.extractBuckets(responses[11], 'top_websites');
@@ -651,23 +701,34 @@ export default {
 
         this.updateBlueBarChart(responses[15].aggregations.severity_counts.buckets);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Update the chart data
-        this.updateChartData();
+        // this.updateDroppedTrafficSeverityGovNetChartData();
+        // this.updateTop5CountryTrafficAllowedChartData();
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
       } catch (error) {
         console.error("Error fetching data from APIs:", error);
       }
     },
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    updateChartData() {
-      const categories = this.top5CountryTrafficAllowed.map((country) => country.key);
-      console.log("updateChartData categories:", categories);
+    updateDroppedTrafficSeverityGovNetChartData() {
+      // const categories = this.droppedTrafficSeverityGovNet.map((severity) => severity.key);
+      const categories = this.droppedTrafficSeverityGovNet.map((severity) => `${severity.key} (${severity.docCount})`);
+      const data = this.droppedTrafficSeverityGovNet.map((severity) => severity.docCount);
+
+      this.droppedTrafficSeverityGovNetChartOptions = {
+        ...this.droppedTrafficSeverityGovNetChartOptions,
+        xaxis: {
+          categories: categories,
+        },
+      };
+      this.droppedTrafficSeverityGovNetSeries = [{ data }];
+    },
+    updateTop5CountryTrafficAllowedChartData() {
+      // const categories = this.top5CountryTrafficAllowed.map((country) => country.key);
+      const categories = this.top5CountryTrafficAllowed.map((country) => `${country.key} (${country.docCount})`);
       const data = this.top5CountryTrafficAllowed.map((country) => country.docCount);
-      console.log("updateChartData data:", data);
 
-
-      this.chartOptions = {
-        ...this.chartOptions,
+      this.top5CountryTrafficAllowedChartOptions = {
+        ...this.top5CountryTrafficAllowedChartOptions,
         xaxis: {
           categories: categories,
           title: {
@@ -675,7 +736,7 @@ export default {
           }
         }
       };
-      this.series = [{ data }];
+      this.top5CountryTrafficAllowedSeries = [{ data }];
     },
     //////////////////////////////////////////////////////////////////////////////////////////////////
     extractBuckets(response, aggregationKey) {
@@ -890,5 +951,9 @@ export default {
 
 .filter-text {
   font-size: 18px
+}
+
+.country-flag {
+  margin-right: 8px;
 }
 </style>

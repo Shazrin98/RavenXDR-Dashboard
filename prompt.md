@@ -9,6 +9,7 @@ npm run serve
 ## WHAT TO INSTALL
 npm install axios vue-datepicker vue-gauge
 npm install apexcharts vue-apexcharts
+npm install vue-country-flag
 
 
 ##
