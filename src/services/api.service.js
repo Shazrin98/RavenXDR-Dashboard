@@ -646,6 +646,7 @@ export const getTop10RequestedAppsGovNet = async (timeRange = {}) => {
         must: [
           { match: { "decoder.name": "Barracuda_custom" } },
           { range: { "@timestamp": timeRange } },
+          { prefix: { "data.srcip": "10." } },
         ],
       },
     },
@@ -675,7 +676,9 @@ export const getTop10RequestedAppsInternet = async (timeRange = {}) => {
     size: 0,
     query: {
       bool: {
-        must_not: [{ wildcard: { "data.src": "10.*" } }],
+        must_not: [
+          { prefix: { "data.src": "10.*" } }
+        ],
         must: [
           { match: { "decoder.name": "Barracuda_custom" } },
           { range: { "@timestamp": timeRange } },

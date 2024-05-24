@@ -44,9 +44,6 @@
             <p class="text-success refresh-text">Refresh Rate</p>
           </div>
           <div class="row-refresh">
-            <!-- <div>
-              <input type="checkbox" v-model="autoRefresh" id="autoRefresh" class="refresh-checkbox">
-            </div> -->
             <div>
               <select v-model="refreshRate" class="refresh-dropdown">
                 <option value="" disabled selected>Refresh Rate</option>
@@ -78,7 +75,7 @@
                 </h2>
               </div>
               <div class="col-sm-6">
-                <div class="btn-group btn-group-toggle" :class="isRTL ? 'float-left' : 'float-right'"
+                <!-- <div class="btn-group btn-group-toggle" :class="isRTL ? 'float-left' : 'float-right'"
                   data-toggle="buttons">
                   <label v-for="(option, index) in bigLineChartCategories" :key="option"
                     class="btn btn-sm btn-primary btn-simple" :class="{ active: selectedOption === option }"
@@ -87,15 +84,18 @@
                       :checked="selectedOption === option" />
                     {{ option }}
                   </label>
-                </div>
+                </div> -->
               </div>
             </div>
           </template>
           <div class="chart-area">
-            <line-chart style="height: 100%" ref="bigChart" chart-id="big-line-chart"
+            <!-- <line-chart style="height: 100%" ref="bigChart" chart-id="big-line-chart"
               :chart-data="bigLineChart.chartData" :gradient-colors="bigLineChart.gradientColors"
               :gradient-stops="bigLineChart.gradientStops" :extra-options="bigLineChart.extraOptions">
-            </line-chart>
+            </line-chart> -->
+            <!-- ///////////////////////////////////////////////////////////////////////////////////////////// -->
+            <apexchart type="line" height="200" :options="bigLineChartOptions" :series="bigLineChartSeries"></apexchart>
+            <!-- ////////////////////////////////////////////////////////////////////////////////////////////// -->
           </div>
         </card>
       </div>
@@ -150,7 +150,7 @@
           <template slot="header">
             <h5 class="card-category text-info">
               <i class="tim-icons icon-delivery-fast text-success"></i>
-              {{ $t("dashboard.droppedTrafficSeverityGovNet") }}
+              Traffic Severity By GovNet Source
             </h5>
             <ul class="list-group list-group-flush">
               <li v-for="severityData in droppedTrafficSeverityGovNet" :key="severityData.key">
@@ -159,10 +159,6 @@
               </li>
             </ul>
             <!-- /////////////////////////////////////////////////////////////////// -->
-            <!-- <div id="chart-severity">
-              <apexchart type="bar" height="200" :options="droppedTrafficSeverityGovNetChartOptions"
-                :series="droppedTrafficSeverityGovNetSeries"></apexchart>
-            </div> -->
             <!-- //////////////////////////////////////////////////////////////////// -->
           </template>
         </card>
@@ -172,7 +168,7 @@
           <template slot="header">
             <h5 class="card-category text-info">
               <i class="tim-icons icon-delivery-fast text-success"></i>
-              {{ $t("dashboard.droppedTrafficSeverityInternet") }}
+              Traffic Severity By Internet Source
             </h5>
             <ul class="list-group list-group-flush">
               <li v-for="severityData in droppedTrafficSeverityInternet" :key="severityData.key">
@@ -194,17 +190,12 @@
               {{ $t("dashboard.top5CountryTrafficAllowed") }}
             </h5>
             <ul class="list-group list-group-flush">
-              <li v-for="countryData in top5CountryTrafficAllowed" :key="countryData.key">
+              <li v-for="countryData in top5CountryTrafficAllowed" :key="countryData.key" class="country-list">
                 <country-flag :country="getCountryCode(countryData.key)" svg class="country-flag" />
                 {{ countryData.key }}: {{ formatNumber(countryData.docCount) }}
               </li>
             </ul>
             <!-- ///////////////////////////////////////////////////////////////////////////////// -->
-            <!-- <div id="chart-country">
-              <apexchart type="bar" height="200" :options="top5CountryTrafficAllowedChartOptions"
-                :series="top5CountryTrafficAllowedSeries">
-              </apexchart>
-            </div> -->
             <!-- ////////////////////////////////////////////////////////////////////////////////// -->
           </template>
         </card>
@@ -364,6 +355,7 @@ import * as apiService from "@/services/api.service";
 import Datepicker from 'vuejs-datepicker';
 import { format } from 'date-fns';
 import VueApexCharts from 'vue-apexcharts';
+import ApexCharts from 'apexcharts';
 ///////////////////////////////////////////////////////////////////////////////
 import VueTimepicker from 'vue-time-picker';
 import CountryFlag from 'vue-country-flag';
@@ -397,13 +389,13 @@ export default {
       timeRange: {},
       allowedTraffic: 0,
       droppedTraffic: 0,
-      // droppedTrafficSeverityGovNet: 0,
-      droppedTrafficSeverityGovNet: [],/////////////////////////
+      droppedTrafficSeverityGovNet: 0,
+      // droppedTrafficSeverityGovNet: [],/////////////////////////
       droppedTrafficSeverityInternet: 0,
-      // top5CountryTrafficAllowed: 0,
-      top5CountryTrafficAllowed: [],//////////////////////////
-      // top5CountryTrafficBlocked: 0,
-      top5CountryTrafficBlocked: [],/////////////////////////
+      top5CountryTrafficAllowed: 0,
+      // top5CountryTrafficAllowed: [],//////////////////////////
+      top5CountryTrafficBlocked: 0,
+      // top5CountryTrafficBlocked: [],/////////////////////////
       vpnUsersConnected: 0,
       successfulReceivedEmail: 0,
       quarantinedReceivedEmail: 0,
@@ -412,6 +404,37 @@ export default {
       top10RequestedAppsGovNet: 0,
       top10RequestedAppsInternet: 0,
       selectedOption: "Allowed",
+      ////////////////////////////////////////////////////////////////////
+      bigLineChartSeries: [],
+      bigLineChartOptions: {
+        chart: {
+          height: 350,
+          type: 'line',
+        },
+        dataLabels: {
+          enabled: false,
+        },
+        stroke: {
+          curve: 'smooth',
+        },
+        xaxis: {
+          categories: [
+            "1 Week Ago",
+            "2 Weeks Ago",
+            "3 Weeks Ago",
+            "4 Weeks Ago",
+            "5 Weeks Ago",
+            "6 Weeks Ago",
+            "7 Weeks Ago"
+          ],
+        },
+        tooltip: {
+          x: {
+            format: 'dd/MM/yy HH:mm',
+          },
+        },
+      },
+      ///////////////////////////////////////////////////////////////
       bigLineChart: this.initializeBigLineChart(),
       blueBarChart: this.initializeBlueBarChart(),
       ///////////////////////////////////////////////////////////////////
@@ -500,17 +523,8 @@ export default {
     }
   },
   watch: {
-    /////////////////////////////////////////////////////////////
-    // autoRefresh(newVal, oldVal) {
-    //   if (newVal && this.refreshRate) {
-    //     this.startAutoRefresh();
-    //   } else if (!newVal) {
-    //     this.stopAutoRefresh();
-    //   }
-    // },
     /////////////////////////////////////////////////////////////////
     refreshRate(newVal) {
-      // if (this.autoRefresh && newVal) {
       if (newVal !== "") {
         this.stopAutoRefresh();
         this.startAutoRefresh();
@@ -609,6 +623,8 @@ export default {
         console.error('Error fetching TimeDate data:', error);
       }
     },
+    ///////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
     initializeBigLineChart() {
       return {
         allData: [],
@@ -701,43 +717,12 @@ export default {
 
         this.updateBlueBarChart(responses[15].aggregations.severity_counts.buckets);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // this.updateDroppedTrafficSeverityGovNetChartData();
-        // this.updateTop5CountryTrafficAllowedChartData();
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
       } catch (error) {
         console.error("Error fetching data from APIs:", error);
       }
     },
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    updateDroppedTrafficSeverityGovNetChartData() {
-      // const categories = this.droppedTrafficSeverityGovNet.map((severity) => severity.key);
-      const categories = this.droppedTrafficSeverityGovNet.map((severity) => `${severity.key} (${severity.docCount})`);
-      const data = this.droppedTrafficSeverityGovNet.map((severity) => severity.docCount);
-
-      this.droppedTrafficSeverityGovNetChartOptions = {
-        ...this.droppedTrafficSeverityGovNetChartOptions,
-        xaxis: {
-          categories: categories,
-        },
-      };
-      this.droppedTrafficSeverityGovNetSeries = [{ data }];
-    },
-    updateTop5CountryTrafficAllowedChartData() {
-      // const categories = this.top5CountryTrafficAllowed.map((country) => country.key);
-      const categories = this.top5CountryTrafficAllowed.map((country) => `${country.key} (${country.docCount})`);
-      const data = this.top5CountryTrafficAllowed.map((country) => country.docCount);
-
-      this.top5CountryTrafficAllowedChartOptions = {
-        ...this.top5CountryTrafficAllowedChartOptions,
-        xaxis: {
-          categories: categories,
-          title: {
-            text: 'Traffic Count'
-          }
-        }
-      };
-      this.top5CountryTrafficAllowedSeries = [{ data }];
-    },
     //////////////////////////////////////////////////////////////////////////////////////////////////
     extractBuckets(response, aggregationKey) {
       return response.aggregations[aggregationKey]?.buckets.map((bucket) => ({
@@ -780,75 +765,141 @@ export default {
         ]
       };
     },
-    async fetchDataForWeek(weekNumber, selectedOption) {
+    //////////////////////////////////////////////////////////////////////////////////////
+    // async fetchDataForWeek(weekNumber, selectedOption) {
+    //   try {
+    //     const [allowedTrafficResponse, droppedTrafficResponse] = await Promise.all([
+    //       apiService[`getAllowedTrafficWeek${weekNumber}`](),
+    //       apiService[`getDroppedTrafficWeek${weekNumber}`]()
+    //     ]);
+
+    //     const weekTraffic = selectedOption === "Allowed" ? allowedTrafficResponse.count : droppedTrafficResponse.count;
+
+    //     return { weekTraffic };
+    //   } catch (error) {
+    //     console.error(`Failed to fetch traffic data for week ${weekNumber}:`, error);
+    //     throw new Error(`Failed to fetch traffic data for week ${weekNumber}: ${error.message}`);
+    //   }
+    // },
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    async fetchDataForWeek(weekNumber) {
       try {
         const [allowedTrafficResponse, droppedTrafficResponse] = await Promise.all([
           apiService[`getAllowedTrafficWeek${weekNumber}`](),
           apiService[`getDroppedTrafficWeek${weekNumber}`]()
         ]);
 
-        const weekTraffic = selectedOption === "Allowed" ? allowedTrafficResponse.count : droppedTrafficResponse.count;
+        const allowedTraffic = allowedTrafficResponse.count;
+        const blockedTraffic = droppedTrafficResponse.count;
 
-        return { weekTraffic };
+        return { allowedTraffic, blockedTraffic };
       } catch (error) {
         console.error(`Failed to fetch traffic data for week ${weekNumber}:`, error);
         throw new Error(`Failed to fetch traffic data for week ${weekNumber}: ${error.message}`);
       }
     },
-    async initBigChart(selectedOption) {
-      let index = 1;
-      const weekNumber = index;
-
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    async initBigChart() {
       try {
         const promises = [];
-        let chartData = {
-          datasets: [],
-          labels: [
-            "1 Week Ago",
-            "2 Weeks Ago",
-            "3 Weeks Ago",
-            "4 Weeks Ago",
-            "5 Weeks Ago",
-            "6 Weeks Ago",
-            "7 Weeks Ago",
-          ],
-        };
-
         for (let i = 1; i <= 7; i++) {
-          promises.push(this.fetchDataForWeek(i, selectedOption));
+          promises.push(this.fetchDataForWeek(i));
         }
 
         const results = await Promise.all(promises);
-        const trafficData = results.map(result => result.weekTraffic);
+        const allowedData = results.map(result => result.allowedTraffic);
+        const blockedData = results.map(result => result.blockedTraffic);
 
-        const dataset = {
-          data: trafficData,
-          fill: true,
-          borderColor: selectedOption === "Allowed" ? config.colors.primary : config.colors.danger,
-          borderWidth: 2,
-          borderDash: [],
-          borderDashOffset: 0.0,
-          pointBackgroundColor: selectedOption === "Allowed" ? config.colors.primary : config.colors.danger,
-          pointBorderColor: "rgba(255,255,255,0)",
-          pointHoverBackgroundColor: selectedOption === "Allowed" ? config.colors.primary : config.colors.danger,
-          pointBorderWidth: 20,
-          pointHoverRadius: 4,
-          pointHoverBorderWidth: 15,
-          pointRadius: 4,
-        };
-
-        chartData.datasets.push(dataset);
-        this.$refs.bigChart.updateGradients(chartData);
-        this.bigLineChart.chartData = chartData;
-        this.bigLineChart.activeIndex = index;
-        this.selectedOption = selectedOption;
+        this.bigLineChartSeries = [
+          {
+            name: 'Allowed',
+            data: allowedData,
+            fill: true,
+            borderColor: config.colors.primary,
+            borderWidth: 2,
+            pointBackgroundColor: config.colors.primary,
+            pointBorderColor: "rgba(255,255,255,0)",
+            pointHoverBackgroundColor: config.colors.primary,
+            pointBorderWidth: 20,
+            pointHoverRadius: 4,
+            pointHoverBorderWidth: 15,
+            pointRadius: 4,
+          },
+          {
+            name: 'Blocked',
+            data: blockedData,
+            fill: true,
+            borderColor: config.colors.danger,
+            borderWidth: 2,
+            pointBackgroundColor: config.colors.danger,
+            pointBorderColor: "rgba(255,255,255,0)",
+            pointHoverBackgroundColor: config.colors.danger,
+            pointBorderWidth: 20,
+            pointHoverRadius: 4,
+            pointHoverBorderWidth: 15,
+            pointRadius: 4,
+          },
+        ];
       } catch (error) {
-        console.error(
-          `Error initializing chart for week ${weekNumber}:`,
-          error
-        );
+        console.error('Error initializing chart:', error);
       }
     },
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    // async initBigChart(selectedOption) {
+    //   let index = 1;
+    //   const weekNumber = index;
+
+    //   try {
+    //     const promises = [];
+    //     let chartData = {
+    //       datasets: [],
+    //       labels: [
+    //         "1 Week Ago",
+    //         "2 Weeks Ago",
+    //         "3 Weeks Ago",
+    //         "4 Weeks Ago",
+    //         "5 Weeks Ago",
+    //         "6 Weeks Ago",
+    //         "7 Weeks Ago",
+    //       ],
+    //     };
+
+    //     for (let i = 1; i <= 7; i++) {
+    //       promises.push(this.fetchDataForWeek(i, selectedOption));
+    //     }
+
+    //     const results = await Promise.all(promises);
+    //     const trafficData = results.map(result => result.weekTraffic);
+
+    //     const dataset = {
+    //       data: trafficData,
+    //       fill: true,
+    //       borderColor: selectedOption === "Allowed" ? config.colors.primary : config.colors.danger,
+    //       borderWidth: 2,
+    //       borderDash: [],
+    //       borderDashOffset: 0.0,
+    //       pointBackgroundColor: selectedOption === "Allowed" ? config.colors.primary : config.colors.danger,
+    //       pointBorderColor: "rgba(255,255,255,0)",
+    //       pointHoverBackgroundColor: selectedOption === "Allowed" ? config.colors.primary : config.colors.danger,
+    //       pointBorderWidth: 20,
+    //       pointHoverRadius: 4,
+    //       pointHoverBorderWidth: 15,
+    //       pointRadius: 4,
+    //     };
+
+    //     chartData.datasets.push(dataset);
+    //     this.$refs.bigChart.updateGradients(chartData);
+    //     this.bigLineChart.chartData = chartData;
+    //     this.bigLineChart.activeIndex = index;
+    //     this.selectedOption = selectedOption;
+    //   } catch (error) {
+    //     console.error(
+    //       `Error initializing chart for week ${weekNumber}:`,
+    //       error
+    //     );
+    //   }
+    // },
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     formatNumber(number) {
       return Number.isInteger(number)
         ? number.toLocaleString()
@@ -869,7 +920,8 @@ export default {
       this.i18n.locale = "ar";
       this.$rtl.enableRTL();
     }
-    await this.initBigChart(this.selectedOption);
+    // await this.initBigChart(this.selectedOption);
+    await this.initBigChart();
     await this.fetchTimeDateData();
   },
   beforeDestroy() {
@@ -954,6 +1006,9 @@ export default {
 }
 
 .country-flag {
-  margin-right: 8px;
 }
+
+.country-list {
+}
+
 </style>
