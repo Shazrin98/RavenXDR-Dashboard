@@ -88,13 +88,14 @@
               </div>
             </div>
           </template>
-          <div class="chart-area">
+          <div class="double-line-chart-area">
             <!-- <line-chart style="height: 100%" ref="bigChart" chart-id="big-line-chart"
               :chart-data="bigLineChart.chartData" :gradient-colors="bigLineChart.gradientColors"
               :gradient-stops="bigLineChart.gradientStops" :extra-options="bigLineChart.extraOptions">
             </line-chart> -->
             <!-- ///////////////////////////////////////////////////////////////////////////////////////////// -->
-            <apexchart type="line" height="200" :options="bigLineChartOptions" :series="bigLineChartSeries"></apexchart>
+            <apexchart type="line" height="300" :options="bigLineChartOptions" :series="bigLineChartSeries"
+              class="double-line-chart"></apexchart>
             <!-- ////////////////////////////////////////////////////////////////////////////////////////////// -->
           </div>
         </card>
@@ -333,7 +334,7 @@
           <template slot="header">
             <h5 class="card-category">Endpoint Severity</h5>
           </template>
-          <div class="chart-area">
+          <div class="bar-chart-area">
             <bar-chart style="height: 100%" chart-id="blue-bar-chart" :chart-data="blueBarChart.chartData"
               :gradient-stops="blueBarChart.gradientStops" :extra-options="blueBarChart.extraOptions">
             </bar-chart>
@@ -1005,10 +1006,16 @@ export default {
   font-size: 18px
 }
 
-.country-flag {
+.double-line-chart-area {
+  width: 100%;
 }
 
-.country-list {
+.bar-chart-area {
+  height: 300px;
+  width: 100%;
 }
 
+.country-flag {}
+
+.country-list {}
 </style>
