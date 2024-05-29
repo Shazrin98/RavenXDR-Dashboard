@@ -75,7 +75,7 @@
             </div>
           </template>
           <div class="double-line-chart-area">
-            <apexchart type="line" height="300" :options="bigLineChartOptions" :series="bigLineChartSeries"
+            <apexchart type="line" height="350" :options="bigLineChartOptions" :series="bigLineChartSeries"
               class="double-line-chart"></apexchart>
           </div>
         </card>
@@ -498,10 +498,13 @@ export default {
         tooltip: {
           y: {
             formatter: (value) => {
-              return value.toLocaleString(undefined, {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2,
-              });
+              if (value !== undefined) {
+                return value.toLocaleString(undefined, {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 2,
+                });
+              }
+              return '';
             },
           },
           x: {
@@ -737,23 +740,19 @@ export default {
     },
     /////////////////////////////////////////////////////////////////////////////////////////
     async updateDroppedTrafficSeverityGovNetChartData() {
-      // Map severity data to series data for pie chart
       this.droppedTrafficSeverityGovNetSeries = this.droppedTrafficSeverityGovNet.map(data => data.docCount);
-      // Update chart options with updated series data
       this.droppedTrafficSeverityGovNetChartOptions = {
         ...this.droppedTrafficSeverityGovNetChartOptions,
         labels: this.droppedTrafficSeverityGovNet.map(data => this.capitalizeFirstLetter(data.key)),
-        colors: this.droppedTrafficSeverityGovNet.map(data => this.severityColorMap[data.key]), // Set colors
+        colors: this.droppedTrafficSeverityGovNet.map(data => this.severityColorMap[data.key]),
       };
     },
     async updateDroppedTrafficSeverityInternetChartData() {
-      // Map severity data to series data for donut chart
       this.droppedTrafficSeverityInternetSeries = this.droppedTrafficSeverityInternet.map(data => data.docCount);
-      // Update chart options with updated series data
       this.droppedTrafficSeverityInternetChartOptions = {
         ...this.droppedTrafficSeverityInternetChartOptions,
         labels: this.droppedTrafficSeverityInternet.map(data => this.capitalizeFirstLetter(data.key)),
-        colors: this.droppedTrafficSeverityInternet.map(data => this.severityColorMap[data.key]), // Set colors
+        colors: this.droppedTrafficSeverityInternet.map(data => this.severityColorMap[data.key]),
       };
     },
     //////////////////////////////////////////////////////////////////////////////////////////////////
