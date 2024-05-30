@@ -169,6 +169,7 @@
     <div class="row">
       <!-- <div class="col-lg-12" :class="{ 'text-right': isRTL }"> -->
       <div class="col-lg-6" :class="{ 'text-right': isRTL }">
+        <!-- ///////////////////////////////////////// -->
         <card>
           <template slot="header">
             <h5 class="card-category text-info">
@@ -181,10 +182,17 @@
                 {{ countryData.key }}: {{ formatNumber(countryData.docCount) }}
               </li>
             </ul>
+            <div class="donut-chart-area">
+              <apexchart type="donut" :options="top5CountryTrafficAllowedChartOptions"
+                :series="top5CountryTrafficAllowedSeries"></apexchart>
+              <!-- ///////////////////////////////////////////////////////////////////////////// -->
+            </div>
           </template>
         </card>
+        <!-- ///////////////////////////////////////// -->
       </div>
       <div class="col-lg-6" :class="{ 'text-right': isRTL }">
+        <!-- ///////////////////////////////////////// -->
         <card>
           <template slot="header">
             <h5 class="card-category text-info">
@@ -197,8 +205,14 @@
                 {{ countryData.key }}: {{ formatNumber(countryData.docCount) }}
               </li>
             </ul>
+            <div class="donut-chart-area">
+              <apexchart type="donut" :options="top5CountryTrafficBlockedChartOptions"
+                :series="top5CountryTrafficBlockedSeries"></apexchart>
+              <!-- ///////////////////////////////////////////////////////////////////////////// -->
+            </div>
           </template>
         </card>
+        <!-- ///////////////////////////////////////// -->
       </div>
     </div>
     <div class="row">
@@ -370,8 +384,8 @@ export default {
       droppedTraffic: 0,
       // droppedTrafficSeverityGovNet: 0,
       // droppedTrafficSeverityInternet: 0,
-      top5CountryTrafficAllowed: 0,
-      top5CountryTrafficBlocked: 0,
+      // top5CountryTrafficAllowed: 0,
+      // top5CountryTrafficBlocked: 0,
       vpnUsersConnected: 0,
       successfulReceivedEmail: 0,
       quarantinedReceivedEmail: 0,
@@ -383,7 +397,7 @@ export default {
       ////////////////////////////////////////////////////////////////////
       severityColorMap: {
         low: '#33cc33',   // Green
-        medium: '#ff9933', // Orange
+        medium: '#e6e600', // Yellow
         high: '#ff3300',   // Red
       },
       droppedTrafficSeverityGovNet: [],
@@ -443,6 +457,61 @@ export default {
         }]
       },
       ///////////////////////////////////////////////////////////////////
+      top5CountryTrafficAllowed: [],
+      top5CountryTrafficAllowedSeries: [],
+      top5CountryTrafficAllowedChartOptions: {
+        chart: {
+          width: 380,
+          type: 'donut',
+        },
+        labels: [],
+        legend: {
+          position: 'bottom',
+          formatter: (seriesName, opts) => {
+            const color = opts.w.globals.colors[opts.seriesIndex];
+            return `<span style="color: ${color}">${seriesName}</span>`;
+          },
+        },
+        responsive: [{
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 200
+            },
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }]
+      },
+      top5CountryTrafficBlocked: [],
+      top5CountryTrafficBlockedSeries: [],
+      top5CountryTrafficBlockedChartOptions: {
+        chart: {
+          width: 380,
+          type: 'donut',
+        },
+        labels: [],
+        legend: {
+          position: 'bottom',
+          formatter: (seriesName, opts) => {
+            const color = opts.w.globals.colors[opts.seriesIndex];
+            return `<span style="color: ${color}">${seriesName}</span>`;
+          },
+        },
+        responsive: [{
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 200
+            },
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }]
+      },
+      ////////////////////////////////////////////////////////////////////
       bigLineChartSeries: [
         {
           name: 'Allowed',
@@ -731,8 +800,11 @@ export default {
         this.riskyEventPercentage = Number(((riskyEventCount / totalEventCount) * 100).toFixed(2));
 
         this.updateBlueBarChart(responses[15].aggregations.severity_counts.buckets);
-        this.updateDroppedTrafficSeverityGovNetChartData();////////////////////
-        this.updateDroppedTrafficSeverityInternetChartData();////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        this.updateDroppedTrafficSeverityGovNetChartData();
+        this.updateDroppedTrafficSeverityInternetChartData();
+        this.updateTop5CountryTrafficAllowedChartData();
+        this.updateTop5CountryTrafficBlockedChartData();
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
       } catch (error) {
         console.error("Error fetching data from APIs:", error);
@@ -753,6 +825,20 @@ export default {
         ...this.droppedTrafficSeverityInternetChartOptions,
         labels: this.droppedTrafficSeverityInternet.map(data => this.capitalizeFirstLetter(data.key)),
         colors: this.droppedTrafficSeverityInternet.map(data => this.severityColorMap[data.key]),
+      };
+    },
+    updateTop5CountryTrafficAllowedChartData() {
+      this.top5CountryTrafficAllowedSeries = this.top5CountryTrafficAllowed.map(data => data.docCount);
+      this.top5CountryTrafficAllowedChartOptions = {
+        ...this.top5CountryTrafficAllowedChartOptions,
+        labels: this.top5CountryTrafficAllowed.map(data => this.capitalizeFirstLetter(data.key))
+      };
+    },
+    updateTop5CountryTrafficBlockedChartData() {
+      this.top5CountryTrafficBlockedSeries = this.top5CountryTrafficBlocked.map(data => data.docCount);
+      this.top5CountryTrafficBlockedChartOptions = {
+        ...this.top5CountryTrafficBlockedChartOptions,
+        labels: this.top5CountryTrafficBlocked.map(data => this.capitalizeFirstLetter(data.key))
       };
     },
     //////////////////////////////////////////////////////////////////////////////////////////////////
