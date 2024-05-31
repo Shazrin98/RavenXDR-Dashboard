@@ -355,10 +355,11 @@ import * as apiService from "@/services/api.service";
 import Datepicker from 'vuejs-datepicker';
 import { format } from 'date-fns';
 import VueApexCharts from 'vue-apexcharts';
-///////////////////////////////////////////////////////////////////////////////
-import VueTimepicker from 'vue-time-picker';
 import CountryFlag from 'vue-country-flag';
-import { countryCodes } from '@/utils/countryCodes'; // Adjust the path as needed
+import { countryCodes } from '@/utils/countryCodes';
+///////////////////////////////////////////////////////////////////////////////
+// import VueTimepicker from 'vue-time-picker';
+// import { capitalizeFirstLetter, formatNumber, formatDate } from '@/utils/helpers';
 //////////////////////////////////////////////////////////////////////////////
 
 export default {
@@ -368,9 +369,9 @@ export default {
     Gauge,
     Datepicker,
     apexchart: VueApexCharts,
-    //////////////////////////////////////
-    VueTimepicker,
     CountryFlag,
+    //////////////////////////////////////
+    // VueTimepicker,
     //////////////////////////////////////
   },
   data() {
