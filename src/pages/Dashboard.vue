@@ -228,6 +228,11 @@
               {{ vpnUserData.key }}: {{ formatNumber(vpnUserData.docCount) }}
             </li>
           </ul>
+          <div class="bar-chart-area">
+            <apexchart type="bar" :options="vpnUsersConnectedChartOptions" :series="vpnUsersConnectedSeries">
+            </apexchart>
+            <!-- ///////////////////////////////////////////////////////////////////////////// -->
+          </div>
         </card>
       </div>
     </div>
@@ -386,7 +391,7 @@ export default {
       // droppedTrafficSeverityInternet: 0,
       // top5CountryTrafficAllowed: 0,
       // top5CountryTrafficBlocked: 0,
-      vpnUsersConnected: 0,
+      // vpnUsersConnected: 0,
       successfulReceivedEmail: 0,
       quarantinedReceivedEmail: 0,
       failedReceivedEmail: 0,
@@ -512,6 +517,71 @@ export default {
         }]
       },
       ////////////////////////////////////////////////////////////////////
+      vpnUsersConnected: [],
+      vpnUsersConnectedSeries: [],
+      vpnUsersConnectedChartOptions: {
+        chart: {
+          type: 'bar',
+          height: 350,
+          toolbar: {
+            show: false
+          },
+        },
+        plotOptions: {
+          bar: {
+            borderRadius: 4,
+            borderRadiusApplication: 'end',
+            horizontal: true,
+          }
+        },
+        dataLabels: {
+          enabled: false
+        },
+        xaxis: {
+          categories: [],
+          labels: {
+            style: {
+              colors: '#ffffff', // White color for x-axis labels
+              fontSize: '12px'
+            }
+          },
+          title: {
+            style: {
+              color: '#ffffff', // White color for x-axis title
+              fontSize: '14px'
+            }
+          }
+        },
+        yaxis: {
+          labels: {
+            style: {
+              colors: '#ffffff', // White color for y-axis labels
+              fontSize: '12px'
+            }
+          },
+          title: {
+            style: {
+              color: '#ffffff', // White color for y-axis title
+              fontSize: '14px'
+            }
+          }
+        },
+        tooltip: {
+          y: {
+            formatter: function (val, opts) {
+              return opts.w.globals.labels[opts.dataPointIndex] + ": " + val;
+            }
+          },
+          style: {
+            fontSize: '12px',
+            fontFamily: undefined
+          },
+        },
+        grid: {
+          borderColor: '#f1f1f1'
+        },
+      },
+      //////////////////////////////////////////////////////////////
       bigLineChartSeries: [
         {
           name: 'Allowed',
@@ -754,6 +824,7 @@ export default {
         gradientStops: [1, 0.4, 0],
       };
     },
+    ////////////////////////////////////////////////////////////////////////////
     async fetchData(timeRange = this.timeRange) {
       this.timeRange = timeRange || {
         gte: this.$route.query.gte,
@@ -805,12 +876,20 @@ export default {
         this.updateDroppedTrafficSeverityInternetChartData();
         this.updateTop5CountryTrafficAllowedChartData();
         this.updateTop5CountryTrafficBlockedChartData();
+        this.updateVpnUsersConnectedChartData();
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
       } catch (error) {
         console.error("Error fetching data from APIs:", error);
       }
     },
-    /////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+    extractBuckets(response, aggregationKey) {
+      return response.aggregations[aggregationKey]?.buckets.map((bucket) => ({
+        key: bucket.key,
+        docCount: bucket.doc_count,
+      })) || [];
+    },
+    /////////////////////////////////////////////////////////////////////////
     async updateDroppedTrafficSeverityGovNetChartData() {
       this.droppedTrafficSeverityGovNetSeries = this.droppedTrafficSeverityGovNet.map(data => data.docCount);
       this.droppedTrafficSeverityGovNetChartOptions = {
@@ -841,13 +920,18 @@ export default {
         labels: this.top5CountryTrafficBlocked.map(data => this.capitalizeFirstLetter(data.key))
       };
     },
-    //////////////////////////////////////////////////////////////////////////////////////////////////
-    extractBuckets(response, aggregationKey) {
-      return response.aggregations[aggregationKey]?.buckets.map((bucket) => ({
-        key: bucket.key,
-        docCount: bucket.doc_count,
-      })) || [];
+    updateVpnUsersConnectedChartData() {
+      this.vpnUsersConnectedSeries = [{
+        data: this.vpnUsersConnected.map(data => data.docCount)
+      }];
+      this.vpnUsersConnectedChartOptions = {
+        ...this.vpnUsersConnectedChartOptions,
+        xaxis: {
+          categories: this.vpnUsersConnected.map(data => this.capitalizeFirstLetter(data.key))
+        }
+      };
     },
+    //////////////////////////////////////////////////////////////////////////////////////////////
     updateBlueBarChart(buckets) {
       const labels = buckets.map(bucket => bucket.key);
       const counts = buckets.map(bucket => bucket.doc_count);
@@ -1052,10 +1136,10 @@ export default {
   width: 100%;
 }
 
-.bar-chart-area {
+/* .bar-chart-area {
   height: 300px;
   width: 100%;
-}
+} */
 
 .country-flag {}
 
