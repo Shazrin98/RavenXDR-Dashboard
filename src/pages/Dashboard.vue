@@ -61,7 +61,7 @@
           <template slot="header">
             <div class="row">
               <div class="col-sm-6" :class="isRTL ? 'text-right' : 'text-left'">
-                <h5 class="card-category">
+                <h5 class="">
                   {{ $t("dashboard.totalCombination") }}
                   Traffic
                 </h5>
@@ -92,7 +92,7 @@
           <div class="col-lg-12" :class="{ 'text-right': isRTL }">
             <card>
               <template slot="header">
-                <h5 class="card-category text-info">
+                <h5 class=" text-info">
                   <i class="tim-icons icon-delivery-fast text-success"></i>
                   {{ $t("dashboard.allowedTraffic") }}
                 </h5>
@@ -106,7 +106,7 @@
           <div class="col-lg-12" :class="{ 'text-right': isRTL }">
             <card>
               <template slot="header">
-                <h5 class="card-category text-info">
+                <h5 class=" text-info">
                   <i class="tim-icons icon-delivery-fast text-success"></i>
                   {{ $t("dashboard.droppedTraffic") }}
                 </h5>
@@ -122,14 +122,14 @@
       <!-- //////////////////////////////////////////////////////////////////////// -->
     </div>
     <!-- //////////////////////////////////////////////////////////////////////////////////// -->
-    <div class="row">
-      <div class="col-lg-6" :class="{ 'text-right': isRTL }">
+    <div class="row d-flex">
+      <div class="col-lg-6 card-container" :class="{ 'text-right': isRTL }">
         <card>
           <template slot="header">
-            <h5 class="card-category text-info">
+            <h4 class=" text-info">
               <i class="tim-icons icon-delivery-fast text-success"></i>
               Traffic Severity By GovNet Source
-            </h5>
+            </h4>
             <ul class="list-group list-group-flush">
               <li v-for="severityData in droppedTrafficSeverityGovNet" :key="severityData.key">
                 {{ capitalizeFirstLetter(severityData.key) }}:
@@ -144,13 +144,13 @@
           </template>
         </card>
       </div>
-      <div class="col-lg-6" :class="{ 'text-right': isRTL }">
+      <div class="col-lg-6 card-container" :class="{ 'text-right': isRTL }">
         <card>
           <template slot="header">
-            <h5 class="card-category text-info">
+            <h4 class="text-info">
               <i class="tim-icons icon-delivery-fast text-success"></i>
               Traffic Severity By Internet Source
-            </h5>
+            </h4>
             <ul class="list-group list-group-flush">
               <li v-for="severityData in droppedTrafficSeverityInternet" :key="severityData.key">
                 {{ capitalizeFirstLetter(severityData.key) }}:
@@ -172,10 +172,10 @@
         <!-- ///////////////////////////////////////// -->
         <card>
           <template slot="header">
-            <h5 class="card-category text-info">
+            <h4 class=" text-info">
               <i class="tim-icons icon-globe-2 text-success"></i>
               {{ $t("dashboard.top5CountryTrafficAllowed") }}
-            </h5>
+            </h4>
             <ul class="list-group list-group-flush">
               <li v-for="countryData in top5CountryTrafficAllowed" :key="countryData.key" class="country-list">
                 <country-flag :country="getCountryCode(countryData.key)" svg class="country-flag" />
@@ -195,10 +195,10 @@
         <!-- ///////////////////////////////////////// -->
         <card>
           <template slot="header">
-            <h5 class="card-category text-info">
+            <h4 class=" text-info">
               <i class="tim-icons icon-globe-2 text-success"></i>
               {{ $t("dashboard.top5CountryTrafficBlocked") }}
-            </h5>
+            </h4>
             <ul class="list-group list-group-flush">
               <li v-for="countryData in top5CountryTrafficBlocked" :key="countryData.key">
                 <country-flag :country="getCountryCode(countryData.key)" svg class="country-flag" />
@@ -215,13 +215,14 @@
         <!-- ///////////////////////////////////////// -->
       </div>
     </div>
+    <!-- ///////////////////////////////////////////////////////// -->
     <div class="row">
       <div class="col-lg-12" :class="{ 'text-right': isRTL }">
         <card>
-          <h5 class="card-category text-info">
+          <h4 class=" text-info">
             <i class="tim-icons icon-single-02 text-success"></i>
             {{ $t("dashboard.vpnUsersConnected") }}
-          </h5>
+          </h4>
           <ul class="list-group list-group-flush list-unstyled">
             <li v-for="vpnUserData in vpnUsersConnected" :key="vpnUserData.key">
               <i class="tim-icons icon-single-02 text-success"></i>
@@ -240,7 +241,7 @@
       <div class="col-lg-4" :class="{ 'text-right': isRTL }">
         <card style="width: 20rem">
           <template slot="header">
-            <h5 class="card-category text-info">
+            <h5 class=" text-info">
               <i class="tim-icons icon-email-85 text-success"></i>
               {{ $t("dashboard.successfulReceivedEmail") }}
             </h5>
@@ -254,7 +255,7 @@
       <div class="col-lg-4" :class="{ 'text-right': isRTL }">
         <card style="width: 20rem">
           <template slot="header">
-            <h5 class="card-category text-info">
+            <h5 class=" text-info">
               <i class="tim-icons icon-email-85 text-success"></i>
               {{ $t("dashboard.quarantinedReceivedEmail") }}
             </h5>
@@ -268,7 +269,7 @@
       <div class="col-lg-4" :class="{ 'text-right': isRTL }">
         <card style="width: 20rem">
           <template slot="header">
-            <h5 class="card-category text-info">
+            <h5 class=" text-info">
               <i class="tim-icons icon-email-85 text-success"></i>
               {{ $t("dashboard.failedReceivedEmail") }}
             </h5>
@@ -284,10 +285,10 @@
       <div class="col-lg-12" :class="{ 'text-right': isRTL }">
         <card>
           <template slot="header">
-            <h5 class="card-category text-info">
+            <h4 class=" text-info">
               <i class="tim-icons icon-app text-success"></i>
               {{ $t("dashboard.top10AppsUsedInternally") }}
-            </h5>
+            </h4>
             <ul class="list-group list-group-flush">
               <li v-for="appData in top10AppsUsedInternally" :key="appData.key">
                 {{ appData.key }}: {{ formatNumber(appData.docCount) }}
@@ -301,10 +302,10 @@
       <div class="col-lg-6" :class="{ 'text-right': isRTL }">
         <card>
           <template slot="header">
-            <h5 class="card-category text-info">
+            <h4 class=" text-info">
               <i class="tim-icons icon-app text-success"></i>
               {{ $t("dashboard.top10RequestedAppsGovNet") }}
-            </h5>
+            </h4>
             <ul class="list-group list-group-flush">
               <li v-for="appData in top10RequestedAppsGovNet" :key="appData.key">
                 {{ appData.key }}: {{ formatNumber(appData.docCount) }}
@@ -316,10 +317,10 @@
       <div class="col-lg-6" :class="{ 'text-right': isRTL }">
         <card>
           <template slot="header">
-            <h5 class="card-category text-info">
+            <h4 class=" text-info">
               <i class="tim-icons icon-app text-success"></i>
               {{ $t("dashboard.top10RequestedAppsInternet") }}
-            </h5>
+            </h4>
             <ul class="list-group list-group-flush">
               <li v-for="appData in top10RequestedAppsInternet" :key="appData.key">
                 {{ appData.key }}: {{ formatNumber(appData.docCount) }}
@@ -333,7 +334,10 @@
       <div class="col-lg-12 col-md-12" :class="{ 'text-right': isRTL }">
         <card type="chart">
           <template slot="header">
-            <h5 class="card-category">Endpoint Severity</h5>
+            <h4 class="text-info">
+              <i class="tim-icons icon-chart-bar-32 text-success"></i>
+              Endpoint Severity
+            </h4>
           </template>
           <div class="bar-chart-area">
             <bar-chart style="height: 100%" chart-id="blue-bar-chart" :chart-data="blueBarChart.chartData"
@@ -525,7 +529,7 @@ export default {
           type: 'bar',
           height: 350,
           toolbar: {
-            show: false
+            show: true
           },
         },
         plotOptions: {
@@ -536,7 +540,13 @@ export default {
           }
         },
         dataLabels: {
-          enabled: false
+          enabled: true,
+          // style: {
+          //   fontSize: '12px',
+          // },
+          // title: {
+          //   text: '',
+          // },
         },
         xaxis: {
           categories: [],
@@ -568,9 +578,13 @@ export default {
           }
         },
         tooltip: {
+          enabled: false,
           y: {
             formatter: function (val, opts) {
-              return opts.w.globals.labels[opts.dataPointIndex] + ": " + val;
+              console.log('val', val); // Log the tooltip data for inspection
+              console.log('opts', opts); // Log the tooltip data for inspection
+              // return opts.w.globals.labels[opts.dataPointIndex] + ": " + val;
+              return " : " + val;
             }
           },
           style: {
@@ -1111,18 +1125,20 @@ export default {
   align-items: center;
 }
 
-.refresh-checkbox {
+/* .refresh-checkbox {
   margin-top: 5px;
   border-radius: 5px;
   height: 20px;
   width: 20px;
-}
+} */
 
 .refresh-dropdown {
   margin-left: 0px;
-  border-radius: 5px;
-  margin-bottom: 18px;
-  margin-top: 10px;
+  /* border-radius: 5px; */
+  margin-bottom: 2px;
+  margin-top: 5px;
+  height: 45px;
+  width: 200px
 }
 
 .refresh-text {
@@ -1135,6 +1151,11 @@ export default {
 
 .double-line-chart-area {
   width: 100%;
+}
+
+.card-container {
+  flex-grow: 1;
+  /* height: 300px; */
 }
 
 /* .bar-chart-area {
