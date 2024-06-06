@@ -90,12 +90,12 @@
       <div class="col-lg-6 col-md-12" :class="{ 'text-right': isRTL }">
         <div class="row">
           <div class="col-lg-12" :class="{ 'text-right': isRTL }">
-            <card>
+            <card class="traffic-counts-card">
               <template slot="header">
-                <h5 class=" text-info">
+                <h4 class=" text-info">
                   <i class="tim-icons icon-delivery-fast text-success"></i>
-                  {{ $t("dashboard.allowedTraffic") }}
-                </h5>
+                  Allowed Traffic
+                </h4>
                 <h3 class="card-title">
                   <i class="tim-icons icon-delivery-fast text-success"></i>
                   {{ formatNumber(allowedTraffic) }}
@@ -104,12 +104,12 @@
             </card>
           </div>
           <div class="col-lg-12" :class="{ 'text-right': isRTL }">
-            <card>
+            <card class="traffic-counts-card">
               <template slot="header">
-                <h5 class=" text-info">
+                <h4 class=" text-info">
                   <i class="tim-icons icon-delivery-fast text-success"></i>
-                  {{ $t("dashboard.droppedTraffic") }}
-                </h5>
+                  Dropped Traffic
+                </h4>
                 <h3 class="card-title">
                   <i class="tim-icons icon-delivery-fast text-success"></i>
                   {{ formatNumber(droppedTraffic) }}
@@ -123,8 +123,8 @@
     </div>
     <!-- //////////////////////////////////////////////////////////////////////////////////// -->
     <div class="row d-flex">
-      <div class="col-lg-6 card-container" :class="{ 'text-right': isRTL }">
-        <card>
+      <div class="col-lg-6" :class="{ 'text-right': isRTL }">
+        <card class="traffic-severity-card">
           <template slot="header">
             <h4 class=" text-info">
               <i class="tim-icons icon-delivery-fast text-success"></i>
@@ -144,8 +144,8 @@
           </template>
         </card>
       </div>
-      <div class="col-lg-6 card-container" :class="{ 'text-right': isRTL }">
-        <card>
+      <div class="col-lg-6" :class="{ 'text-right': isRTL }">
+        <card class="traffic-severity-card">
           <template slot="header">
             <h4 class="text-info">
               <i class="tim-icons icon-delivery-fast text-success"></i>
@@ -170,7 +170,7 @@
       <!-- <div class="col-lg-12" :class="{ 'text-right': isRTL }"> -->
       <div class="col-lg-6" :class="{ 'text-right': isRTL }">
         <!-- ///////////////////////////////////////// -->
-        <card>
+        <card class="traffic-country-card">
           <template slot="header">
             <h4 class=" text-info">
               <i class="tim-icons icon-globe-2 text-success"></i>
@@ -179,7 +179,7 @@
             <ul class="list-group list-group-flush">
               <li v-for="countryData in top5CountryTrafficAllowed" :key="countryData.key" class="country-list">
                 <country-flag :country="getCountryCode(countryData.key)" svg class="country-flag" />
-                {{ countryData.key }}: {{ formatNumber(countryData.docCount) }}
+                <span class="country-span">{{ countryData.key }}: {{ formatNumber(countryData.docCount) }}</span>
               </li>
             </ul>
             <div class="donut-chart-area">
@@ -193,16 +193,16 @@
       </div>
       <div class="col-lg-6" :class="{ 'text-right': isRTL }">
         <!-- ///////////////////////////////////////// -->
-        <card>
+        <card class="traffic-country-card">
           <template slot="header">
             <h4 class=" text-info">
               <i class="tim-icons icon-globe-2 text-success"></i>
               {{ $t("dashboard.top5CountryTrafficBlocked") }}
             </h4>
             <ul class="list-group list-group-flush">
-              <li v-for="countryData in top5CountryTrafficBlocked" :key="countryData.key">
+              <li v-for="countryData in top5CountryTrafficBlocked" :key="countryData.key" class="country-list">
                 <country-flag :country="getCountryCode(countryData.key)" svg class="country-flag" />
-                {{ countryData.key }}: {{ formatNumber(countryData.docCount) }}
+                <span class="country-span">{{ countryData.key }}: {{ formatNumber(countryData.docCount) }}</span>
               </li>
             </ul>
             <div class="donut-chart-area">
@@ -217,6 +217,7 @@
     </div>
     <!-- ///////////////////////////////////////////////////////// -->
     <div class="row">
+      <!-- //////////////////////////////////////////////////////// -->
       <div class="col-lg-12" :class="{ 'text-right': isRTL }">
         <card>
           <h4 class=" text-info">
@@ -236,15 +237,16 @@
           </div>
         </card>
       </div>
+      <!-- ////////////////////////////////////////////////////////////////// -->
     </div>
     <div class="row">
       <div class="col-lg-4" :class="{ 'text-right': isRTL }">
         <card style="width: 20rem">
           <template slot="header">
-            <h5 class=" text-info">
+            <h4 class=" text-info">
               <i class="tim-icons icon-email-85 text-success"></i>
-              {{ $t("dashboard.successfulReceivedEmail") }}
-            </h5>
+              Successfully Received Email
+            </h4>
             <h3 class="card-title">
               <i class="tim-icons icon-email-85 text-success"></i>
               {{ formatNumber(successfulReceivedEmail) }}
@@ -255,10 +257,10 @@
       <div class="col-lg-4" :class="{ 'text-right': isRTL }">
         <card style="width: 20rem">
           <template slot="header">
-            <h5 class=" text-info">
+            <h4 class=" text-info">
               <i class="tim-icons icon-email-85 text-success"></i>
-              {{ $t("dashboard.quarantinedReceivedEmail") }}
-            </h5>
+              Quarantined Received Email
+            </h4>
             <h3 class="card-title">
               <i class="tim-icons icon-email-85 text-success"></i>
               {{ formatNumber(quarantinedReceivedEmail) }}
@@ -269,10 +271,10 @@
       <div class="col-lg-4" :class="{ 'text-right': isRTL }">
         <card style="width: 20rem">
           <template slot="header">
-            <h5 class=" text-info">
+            <h4 class=" text-info">
               <i class="tim-icons icon-email-85 text-success"></i>
-              {{ $t("dashboard.failedReceivedEmail") }}
-            </h5>
+              Failed Received Email
+            </h4>
             <h3 class="card-title">
               <i class="tim-icons icon-email-85 text-success"></i>
               {{ formatNumber(failedReceivedEmail) }}
@@ -282,6 +284,7 @@
       </div>
     </div>
     <div class="row">
+      <!-- ////////////////////////////////////////////////////////////////////// -->
       <div class="col-lg-12" :class="{ 'text-right': isRTL }">
         <card>
           <template slot="header">
@@ -289,14 +292,25 @@
               <i class="tim-icons icon-app text-success"></i>
               {{ $t("dashboard.top10AppsUsedInternally") }}
             </h4>
-            <ul class="list-group list-group-flush">
-              <li v-for="appData in top10AppsUsedInternally" :key="appData.key">
-                {{ appData.key }}: {{ formatNumber(appData.docCount) }}
-              </li>
-            </ul>
+            <div class="row">
+              <div class="col-lg-6">
+                <ul class="list-group list-group-flush">
+                  <li v-for="appData in top10AppsUsedInternally" :key="appData.key">
+                    {{ appData.key }}: {{ formatNumber(appData.docCount) }}
+                  </li>
+                </ul>
+              </div>
+              <div class="col-lg-6">
+                <div class="pie-chart-area">
+                  <apexchart type="pie" :options="top10AppsUsedInternallyChartOptions"
+                    :series="top10AppsUsedInternallySeries"></apexchart>
+                </div>
+              </div>
+            </div>
           </template>
         </card>
       </div>
+      <!-- ///////////////////////////////////////////////////////////////// -->
     </div>
     <div class="row">
       <div class="col-lg-6" :class="{ 'text-right': isRTL }">
@@ -311,6 +325,10 @@
                 {{ appData.key }}: {{ formatNumber(appData.docCount) }}
               </li>
             </ul>
+            <div class="pie-chart-area">
+                  <apexchart type="pie" :options="top10RequestedAppsGovNetChartOptions"
+                    :series="top10RequestedAppsGovNetSeries"></apexchart>
+                </div>
           </template>
         </card>
       </div>
@@ -326,6 +344,10 @@
                 {{ appData.key }}: {{ formatNumber(appData.docCount) }}
               </li>
             </ul>
+            <div class="pie-chart-area">
+                  <apexchart type="pie" :options="top10RequestedAppsInternetChartOptions"
+                    :series="top10RequestedAppsInternetSeries"></apexchart>
+                </div>
           </template>
         </card>
       </div>
@@ -400,9 +422,9 @@ export default {
       successfulReceivedEmail: 0,
       quarantinedReceivedEmail: 0,
       failedReceivedEmail: 0,
-      top10AppsUsedInternally: 0,
-      top10RequestedAppsGovNet: 0,
-      top10RequestedAppsInternet: 0,
+      // top10AppsUsedInternally: 0,
+      // top10RequestedAppsGovNet: 0,
+      // top10RequestedAppsInternet: 0,
       selectedOption: "Allowed",
       ////////////////////////////////////////////////////////////////////
       severityColorMap: {
@@ -414,7 +436,7 @@ export default {
       droppedTrafficSeverityGovNetSeries: [],
       droppedTrafficSeverityGovNetChartOptions: {
         chart: {
-          width: 380,
+          width: 400,
           type: 'donut',
         },
         labels: [],
@@ -442,7 +464,7 @@ export default {
       droppedTrafficSeverityInternetSeries: [],
       droppedTrafficSeverityInternetChartOptions: {
         chart: {
-          width: 380,
+          width: 400,
           type: 'donut',
         },
         labels: [],
@@ -471,7 +493,7 @@ export default {
       top5CountryTrafficAllowedSeries: [],
       top5CountryTrafficAllowedChartOptions: {
         chart: {
-          width: 380,
+          width: 400,
           type: 'donut',
         },
         labels: [],
@@ -498,7 +520,7 @@ export default {
       top5CountryTrafficBlockedSeries: [],
       top5CountryTrafficBlockedChartOptions: {
         chart: {
-          width: 380,
+          width: 400,
           type: 'donut',
         },
         labels: [],
@@ -595,6 +617,88 @@ export default {
         grid: {
           borderColor: '#f1f1f1'
         },
+      },
+      //////////////////////////////////////////////////////////////
+      top10AppsUsedInternally: [],
+      top10AppsUsedInternallySeries: [],
+      top10AppsUsedInternallyChartOptions: {
+        chart: {
+          width: 450,
+          type: 'pie'
+        },
+        labels: [],
+        legend: {
+          position: 'bottom',
+          formatter: (seriesName, opts) => {
+            const color = opts.w.globals.colors[opts.seriesIndex];
+            return `<span style="color: ${color}">${seriesName}</span>`;
+          },
+        },
+        responsive: [{
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 200
+            },
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }]
+      },
+      top10RequestedAppsGovNet: [],
+      top10RequestedAppsGovNetSeries: [],
+      top10RequestedAppsGovNetChartOptions: {
+        chart: {
+          width: 450,
+          type: 'pie'
+        },
+        labels: [],
+        legend: {
+          position: 'bottom',
+          formatter: (seriesName, opts) => {
+            const color = opts.w.globals.colors[opts.seriesIndex];
+            return `<span style="color: ${color}">${seriesName}</span>`;
+          },
+        },
+        responsive: [{
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 200
+            },
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }]
+      },
+      top10RequestedAppsInternet: [],
+      top10RequestedAppsInternetSeries: [],
+      top10RequestedAppsInternetChartOptions: {
+        chart: {
+          width: 450,
+          type: 'pie'
+        },
+        labels: [],
+        legend: {
+          position: 'bottom',
+          formatter: (seriesName, opts) => {
+            const color = opts.w.globals.colors[opts.seriesIndex];
+            return `<span style="color: ${color}">${seriesName}</span>`;
+          },
+        },
+        responsive: [{
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 200
+            },
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }]
       },
       //////////////////////////////////////////////////////////////
       bigLineChartSeries: [
@@ -787,7 +891,7 @@ export default {
 
         this.fetchData(timeRange);
 
-        console.log("fetchTimeDateData timeRange:", timeRange);
+        // console.log("fetchTimeDateData timeRange:", timeRange);
 
 
       } catch (error) {
@@ -892,6 +996,9 @@ export default {
         this.updateTop5CountryTrafficAllowedChartData();
         this.updateTop5CountryTrafficBlockedChartData();
         this.updateVpnUsersConnectedChartData();
+        this.updateTop10AppsUsedInternallyChartData();
+        this.updateTop10RequestedAppsGovNetChartData();
+        this.updateTop10RequestedAppsInternetChartData();
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
       } catch (error) {
         console.error("Error fetching data from APIs:", error);
@@ -944,6 +1051,27 @@ export default {
         xaxis: {
           categories: this.vpnUsersConnected.map(data => this.capitalizeFirstLetter(data.key))
         }
+      };
+    },
+    updateTop10AppsUsedInternallyChartData() {
+      this.top10AppsUsedInternallySeries = this.top10AppsUsedInternally.map(data => data.docCount);
+      this.top10AppsUsedInternallyChartOptions = {
+        ...this.top10AppsUsedInternallyChartOptions,
+        labels: this.top10AppsUsedInternally.map(data => data.key),
+      };
+    },
+    updateTop10RequestedAppsGovNetChartData() {
+      this.top10RequestedAppsGovNetSeries = this.top10RequestedAppsGovNet.map(data => data.docCount);
+      this.top10RequestedAppsGovNetChartOptions = {
+        ...this.top10RequestedAppsGovNetChartOptions,
+        labels: this.top10RequestedAppsGovNet.map(data => data.key),
+      };
+    },
+    updateTop10RequestedAppsInternetChartData() {
+      this.top10RequestedAppsInternetSeries = this.top10RequestedAppsInternet.map(data => data.docCount);
+      this.top10RequestedAppsInternetChartOptions = {
+        ...this.top10RequestedAppsInternetChartOptions,
+        labels: this.top10RequestedAppsInternet.map(data => data.key),
       };
     },
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -1125,13 +1253,6 @@ export default {
   align-items: center;
 }
 
-/* .refresh-checkbox {
-  margin-top: 5px;
-  border-radius: 5px;
-  height: 20px;
-  width: 20px;
-} */
-
 .refresh-dropdown {
   margin-left: 0px;
   /* border-radius: 5px; */
@@ -1153,9 +1274,18 @@ export default {
   width: 100%;
 }
 
-.card-container {
-  flex-grow: 1;
-  /* height: 300px; */
+.donut-chart-area {
+  /* width: 100%; */
+  display: flex;
+  justify-content: center;
+  /* align-items: center; */
+}
+
+.pie-chart-area {
+  display: flex;
+  justify-content: center;
+  /* align-items: center; */
+  /* margin-top: 20px; */
 }
 
 /* .bar-chart-area {
@@ -1163,7 +1293,39 @@ export default {
   width: 100%;
 } */
 
-.country-flag {}
+.traffic-counts-card {
+  height: 144px;
+}
 
-.country-list {}
+.traffic-severity-card {
+  height: 450px;
+}
+
+.traffic-country-card {
+  height: 525px;
+}
+
+.country-item {
+  /* display: flex;
+  align-items: center; */
+}
+
+.country-flag {
+  /* vertical-align: middle; */
+  border-radius: 10px;
+  /* height: 40px;
+  width: 55px; */
+}
+
+.country-list {
+  display: flex;
+}
+
+.country-span {
+  /* display: flex; */
+  /* align-items: center; */
+  /* margin-bottom: 2px; */
+  margin-top: 10px;
+  margin-left: 10px;
+}
 </style>
