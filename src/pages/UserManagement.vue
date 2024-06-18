@@ -1,131 +1,110 @@
-<!-- eslint-disable vue/no-mutating-props -->
 <template>
   <div>
     <card>
       <h5 slot="header" class="title">Create User</h5>
-      <!-- ////////////////////////////////////////////////////// -->
       <div class="row">
         <div class="col-md-8 pr-md-12">
-          <base-input label="Full Name" placeholder="Full Name" :value="model.fullName">
-          </base-input>
+          <base-input label="Full Name" placeholder="Full Name" v-model="newUser.fullname"></base-input>
         </div>
       </div>
       <div class="row">
         <div class="col-md-8 pr-md-12">
-          <base-input label="Username" placeholder="Username" :value="model.username">
-          </base-input>
+          <base-input label="Username" placeholder="Username" v-model="newUser.username"></base-input>
         </div>
       </div>
       <div class="row">
         <div class="col-md-8 pr-md-12">
-          <base-input label="Email address" placeholder="example@email.com" type="email">
-          </base-input>
+          <base-input label="Email address" placeholder="example@email.com" type="email" v-model="newUser.email"></base-input>
         </div>
       </div>
-      <!-- /////////////////////////////////////////////////////// -->
-      <!-- <div class="row">
-        <div class="col-md-8">
-          <base-input>
-            <label>About Me</label>
-            <textarea rows="4" cols="80" class="form-control" placeholder="Here can be your description"
-              :value="model.about">
-          </textarea>
-          </base-input>
-        </div>
-      </div> -->
-
-      <!-- 
-        PUT A TABLE OF EXISTING USERS
-
-        COLUMNS FOR "fullname, username, email, RESET Password Button"
-       -->
-
-      <base-button slot="footer" type="primary" fill>Create</base-button>
+      <base-button slot="footer" type="primary" fill @click="createUser">Create</base-button>
     </card>
     <card>
-      <!-- ////////////////////////////////////////////////////////////////////////// -->
       <div class="table-container">
         <base-table :data="tableData" :columns="columns">
-          <template v-slot:columns>
-            <th class="text-left">Full Name</th>
+          <template slot="columns">
+            <th class="text-left">ID</th>
             <th class="text-left">Username</th>
+            <th class="text-left">Full Name</th>
             <th class="text-left">Email</th>
             <th class="text-left">Actions</th>
           </template>
-          <template v-slot:default="{ row }">
-              <td>{{ row.fullname }}</td>
-              <td>{{ row.username }}</td>
-              <td>{{ row.email }}</td>
-              <td class="td-actions text-left">
-                <base-button type="success" size="sm" icon @click="toggleDetailData(row)">
-                  <i class="tim-icons icon-zoom-split"></i>
-                </base-button>
-              </td>
-            <div v-if="row.showDetailData" class="detail-data">
-              <pre>{{ row.actions }}</pre>
-            </div>
+          <template slot-scope="{ row }">
+            <td>{{ row.id }}</td>
+            <td>{{ row.username }}</td>
+            <td>{{ row.fullname }}</td>
+            <td>{{ row.email }}</td>
+            <td class="td-actions text-left">
+              <base-button type="success" size="sm" icon @click="editUser(row)">
+                <i class="tim-icons icon-pencil"></i>
+              </base-button>
+              <base-button type="danger" size="sm" icon @click="deleteUser(row)">
+                <i class="tim-icons icon-trash-simple"></i>
+              </base-button>
+            </td>
           </template>
         </base-table>
       </div>
-      <!-- ////////////////////////////////////////////////////////////////////////// -->
     </card>
   </div>
 </template>
+
 <script>
-import TaskList from "./Dashboard/TaskList";
-import UserTable from "./Dashboard/UserTable";
-import config from "@/config";
-import * as apiService from "@/services/api.service";
 import { BaseTable } from "@/components";
+import * as apiService from "@/services/api.service";
 
 export default {
-  /////////////////////////////////////
+  components: {
+    BaseTable
+  },
   data() {
     return {
-      ////////////////////////////////////////////////
-      selectedTimeRange: '',
-      customStartDate: null,
-      customEndDate: null,
-      tableData: [
-        {
-          id: 1,
-          fullname: "Dakota Rice",
-          username: "Dakota",
-          email: "DakotaRice@email.com",
-          showDetailData: false, // Add this field to manage detail view state
-          actions: "Some action data"
-        },
-        {
-          id: 2,
-          fullname: "Minerva Hooper",
-          username: "Minerva",
-          email: "MinervaHooper@email.com",
-          showDetailData: false, // Add this field to manage detail view state
-          actions: "Some action data"
-        }
-      ],
-      columns: ["Full Name", "Username", "Email", "Actions"],
-      timeRange: {},
-      ////////////////////////////////////////////////////////////
-      model: {
-        company: 'Creative Code Inc.',
-        email: 'mike@email.com',
-        username: 'michael23',
-        fullName: 'Mike Andrew',
-        firstName: 'Mike',
-        lastName: 'Andrew',
-        address: 'Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09',
-        city: 'Melbourne',
-        country: 'Australia',
-        about: 'Lamborghini Mercy, Your chick she so thirsty, I\'m in that two seat Lambo.'
+      newUser: {
+        fullname: '',
+        username: '',
+        email: ''
       },
-    }
+      tableData: [],
+      columns: ["id", "username", "fullname", "email", "actions"]
+    };
   },
   methods: {
-    toggleDetailData(row) {
-      row.showDetailData = !row.showDetailData;
+    async fetchUsers() {
+      try {
+        const response = await apiService.getUsers();
+        if (Array.isArray(response)) {
+          this.tableData = response.map(user => ({
+            id: user.id,
+            username: user.username,
+            fullname: user.fullname,
+            email: user.email,
+            actions: null
+          }));
+        } else {
+          console.error("Unexpected API response structure:", response);
+        }
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    },
+    createUser() {
+      // Implement create user functionality
+    },
+    editUser(user) {
+      // Implement edit user functionality
+    },
+    deleteUser(user) {
+      // Implement delete user functionality
     }
   },
-}
+  mounted() {
+    this.fetchUsers();
+  }
+};
 </script>
-<style></style>
+
+<style scoped>
+.table-container {
+  margin-top: 20px;
+}
+</style>

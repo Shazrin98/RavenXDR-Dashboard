@@ -9,6 +9,20 @@ const api = axios.create({
     password: process.env.API_PASSWORD || "1qazXSW@", // Password
   },
 });
+////////////////////////////////////////////////////////////////////////
+// Function to fetch users
+export const getUsers = async () => {
+  try {
+    console.log("Fetching users...");
+    const response = await axios.get('http://localhost/user_management/getUsers.php');
+    console.log("Users fetched:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    throw new Error(`Failed to fetch users data: ${error.message}`);
+  }
+};
+////////////////////////////////////////////////////////////////////////////////////
 // Chart Traffic Data For WEEK 1
 // allowedTrafficWeek1
 export const getAllowedTrafficWeek1 = async () => {
