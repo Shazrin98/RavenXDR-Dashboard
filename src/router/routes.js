@@ -15,6 +15,7 @@ const Events = () => import(/* webpackChunkName: "events" */"@/pages/Events.vue"
 const UserManagement = () => import(/* webpackChunkName: "userManagement" */"@/pages/UserManagement.vue");
 const Reporting = () => import(/* webpackChunkName: "reporting" */"@/pages/Reporting.vue");
 const License = () => import(/* webpackChunkName: "license" */"@/pages/License.vue");
+const SetPassword = () => import(/* webpackChunkName: "setPassword" */"@/pages/SetPassword.vue");
 
 const routes = [
   {
@@ -23,6 +24,11 @@ const routes = [
     redirect: "/dashboard",
     children: [
       ////////////////////////////////////////////////////
+      {
+        path: "set-password",
+        name: "set-password",
+        component: SetPassword
+      },
       {
         path: "license",
         name: "license",

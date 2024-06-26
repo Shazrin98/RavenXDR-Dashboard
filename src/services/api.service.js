@@ -10,7 +10,7 @@ const api = axios.create({
   },
 });
 ////////////////////////////////////////////////////////////////////////
-// Function to fetch users
+// Fetch existing users
 export const getUsers = async () => {
   try {
     console.log("Fetching users...");
@@ -20,6 +20,30 @@ export const getUsers = async () => {
   } catch (error) {
     console.error("Error fetching users:", error);
     throw new Error(`Failed to fetch users data: ${error.message}`);
+  }
+};
+// Create new users
+export const saveUser = async (userData) => {
+  try {
+    console.log("Creating new users...");
+    const response = await axios.post('http://localhost/user_management/save-user.php', userData);
+    console.log("Users created:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error saving users:", error);
+    throw new Error(`Failed to save users data: ${error.message}`);
+  }
+};
+// Set new user passwords
+export const setPassword = async (token, password) => {
+  try {
+    console.log("Creating new user password...");
+    const response = await axios.post('http://localhost/user_management/set-password.php', { token, password });
+    console.log("Users password created:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error setting users password:", error);
+    throw new Error(`Failed to set users password: ${error.message}`);
   }
 };
 ////////////////////////////////////////////////////////////////////////////////////

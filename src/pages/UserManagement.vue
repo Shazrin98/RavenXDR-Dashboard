@@ -1,7 +1,7 @@
 <template>
   <div>
     <card>
-      <h5 slot="header" class="title">Create User</h5>
+      <!-- <h5 slot="header" class="title">Create User</h5>
       <div class="row">
         <div class="col-md-8 pr-md-12">
           <base-input label="Full Name" placeholder="Full Name" v-model="newUser.fullname"></base-input>
@@ -17,8 +17,19 @@
           <base-input label="Email address" placeholder="example@email.com" type="email" v-model="newUser.email"></base-input>
         </div>
       </div>
-      <base-button slot="footer" type="primary" fill @click="createUser">Create</base-button>
+      <base-button slot="footer" type="primary" fill @click="createUser">Create</base-button> -->
+      <!-- /////////////////////////////////////////////////////////// -->
+      <div>
+        <form @submit.prevent="createUser">
+          <input v-model="username" placeholder="Username" required />
+          <input v-model="fullname" placeholder="Fullname" required />
+          <input v-model="email" type="email" placeholder="Email" required />
+          <button type="submit">Create User</button>
+        </form>
+      </div>
+      <!-- ///////////////////////////////////////////////////////// -->
     </card>
+    <!-- //////////////////////////////////////////////////////// -->
     <card>
       <div class="table-container">
         <base-table :data="tableData" :columns="columns">
@@ -52,6 +63,7 @@
 <script>
 import { BaseTable } from "@/components";
 import * as apiService from "@/services/api.service";
+import emailjs from 'emailjs-com';/////////////////
 
 export default {
   components: {
@@ -59,11 +71,16 @@ export default {
   },
   data() {
     return {
-      newUser: {
-        fullname: '',
-        username: '',
-        email: ''
-      },
+      username: '',
+      fullname: '',
+      email: '',
+      /////////////////////////////////////
+      // newUser: {
+      //   fullname: '',
+      //   username: '',
+      //   email: ''
+      // },
+      ////////////////////////////////////////
       tableData: [],
       columns: ["id", "username", "fullname", "email", "actions"]
     };
@@ -87,15 +104,45 @@ export default {
         console.error("Error fetching users:", error);
       }
     },
-    createUser() {
-      // Implement create user functionality
+    //////////////////////////////////////////////////
+    async createUser() {
+      console.log("Creating users");
+      const token = Math.random().toString(36).substr(2); // Generate a simple token
+
+      try {
+        // Save user to the database
+        await apiService.saveUser({
+          username: this.username,
+          fullname: this.fullname,
+          email: this.email,
+          token: token
+        });
+
+        // Send email
+        const templateParams = {
+          to_email: this.email,
+          to_name: this.fullname,
+          token: token
+        };
+
+        emailjs.send('service_k21537h', 'template_uck59h8', templateParams, 'etRxWIKBZbd9ORoKs')
+          .then(response => {
+            console.log('Email sent successfully!', response.status, response.text);
+            alert('User created and email sent.');
+          }, error => {
+            console.error('Failed to send email:', error);
+          });
+      } catch (error) {
+        console.error('Error creating user:', error);
+      }
     },
+    ////////////////////////////////////////////
     editUser(user) {
       // Implement edit user functionality
     },
     deleteUser(user) {
       // Implement delete user functionality
-    }
+    },
   },
   mounted() {
     this.fetchUsers();

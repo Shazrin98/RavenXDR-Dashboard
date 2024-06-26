@@ -20,6 +20,7 @@
     "canvasjs": "^1.8.3",
     "chart.js": "^2.9.3",
     "date-fns": "^3.6.0",
+    "emailjs-com": "^3.2.0",
     "eslint-plugin-vue": "^9.8.0",
     "flag-icon-css": "^4.1.7",
     "flatpickr": "^4.6.13",
