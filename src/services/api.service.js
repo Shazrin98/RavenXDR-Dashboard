@@ -46,6 +46,30 @@ export const setPassword = async (token, password) => {
     throw new Error(`Failed to set users password: ${error.message}`);
   }
 };
+// Save reset token for user
+export const saveResetToken = async (userId, token) => {
+  try {
+    console.log("Saving reset token...");
+    const response = await axios.post(`http://localhost/user_management/save-reset-token.php`, { userId, token });
+    console.log("Reset token saved:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error saving reset token:", error);
+    throw new Error(`Failed to save reset token: ${error.message}`);
+  }
+};
+// Delete user
+export const deleteUser = async (userId) => {
+  try {
+    console.log("Deleting user...");
+    const response = await axios.post(`http://localhost/user_management/delete-user.php`, { userId });
+    console.log("User deleted:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    throw new Error(`Failed to delete user: ${error.message}`);
+  }
+};
 ////////////////////////////////////////////////////////////////////////////////////
 // Chart Traffic Data For WEEK 1
 // allowedTrafficWeek1

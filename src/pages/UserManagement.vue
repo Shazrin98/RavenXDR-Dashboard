@@ -46,7 +46,7 @@
             <td>{{ row.fullname }}</td>
             <td>{{ row.email }}</td>
             <td class="td-actions text-left">
-              <base-button type="success" size="sm" icon @click="editUser(row)">
+              <base-button type="success" size="sm" icon @click="editPassword(row)">
                 <i class="tim-icons icon-pencil"></i>
               </base-button>
               <base-button type="danger" size="sm" icon @click="deleteUser(row)">
@@ -74,13 +74,6 @@ export default {
       username: '',
       fullname: '',
       email: '',
-      /////////////////////////////////////
-      // newUser: {
-      //   fullname: '',
-      //   username: '',
-      //   email: ''
-      // },
-      ////////////////////////////////////////
       tableData: [],
       columns: ["id", "username", "fullname", "email", "actions"]
     };
@@ -137,11 +130,40 @@ export default {
       }
     },
     ////////////////////////////////////////////
-    editUser(user) {
-      // Implement edit user functionality
+    async editPassword(user) {
+      const token = Math.random().toString(36).substr(2); // Generate a simple token
+
+      try {
+        // Save token in the database for the user
+        await apiService.saveResetToken(user.id, token);
+
+        // Send email with password reset link
+        const templateParams = {
+          to_email: user.email,
+          to_name: user.fullname,
+          token: token
+        };
+
+        emailjs.send('service_k21537h', 'template_05y0a1o', templateParams, 'etRxWIKBZbd9ORoKs')
+          .then(response => {
+            console.log('Email sent successfully!', response.status, response.text);
+            alert('Password reset email sent.');
+          }, error => {
+            console.error('Failed to send email:', error);
+          });
+      } catch (error) {
+        console.error('Error sending password reset email:', error);
+      }
     },
-    deleteUser(user) {
-      // Implement delete user functionality
+    /////////////////////////////////////////////////////////////////////////////
+    async deleteUser(user) {
+      try {
+        await apiService.deleteUser(user.id);
+        alert('User deleted successfully!');
+        this.fetchUsers(); // Refresh the list of users
+      } catch (error) {
+        console.error('Error deleting user:', error);
+      }
     },
   },
   mounted() {

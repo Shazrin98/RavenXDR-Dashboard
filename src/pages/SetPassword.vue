@@ -1,6 +1,6 @@
 <template>
     <div class="set-password">
-        <h1>Create Your Password</h1>
+        <h1>Set Your Password</h1>
         <form @submit.prevent="submitPassword">
             <div>
                 <label for="password">New Password:</label>
